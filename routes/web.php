@@ -7,6 +7,7 @@ use App\Http\Controllers\NewsController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\CamalController;
+use App\Http\Controllers\IndexController;
 use App\Http\Controllers\PriceController;
 use App\Http\Controllers\PrizeController;
 use App\Http\Controllers\RoundController;
@@ -27,10 +28,21 @@ use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\FestivalPointController;
 use App\Http\Controllers\LiveBroadcastController;
 
-Route::get('/', function () {
+Route::get('/admin', function () {
     // return view('welcome');
     return redirect()->route('dashboard');
 });
+
+
+
+Route::controller(IndexController::class)->group(function () {
+
+
+    Route::get('/', 'showSoon')->name('show.soon');
+
+
+});
+
 
 // Route::get('/dashboard', function () {
 //     return view('admin.index');
