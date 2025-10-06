@@ -10,7 +10,7 @@
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<!--favicon-->
-	<link rel="icon" href="{{ asset('backend/assets/images/favicon-32x32.png') }}" type="image/png" />
+	{{-- <link rel="icon" href="{{ asset('backend/assets/images/favicon-32x32.png') }}" type="image/png" /> --}}
 	<!--plugins-->
 	<link href="{{ asset('backend/assets/plugins/simplebar/css/simplebar.css') }}" rel="stylesheet" />
 	<link href="{{ asset('backend/assets/plugins/perfect-scrollbar/css/perfect-scrollbar.css') }}" rel="stylesheet" />
@@ -24,7 +24,7 @@
 	<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet">
 	<link href="{{ asset('backend/assets/css/app.css') }}" rel="stylesheet">
 	<link href="{{ asset('backend/assets/css/icons.css') }}" rel="stylesheet">
-	<title>لوحة تحكم - تطبيق چريمبة</title>
+	<title>لوحة تحكم - تطبيق فانتسي الهجن</title>
     <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.css" >
 
     <style>
@@ -49,7 +49,7 @@
 					<div class="col-12 col-xl-7 col-xxl-8 auth-cover-left bg-gradient-cosmic align-items-center justify-content-center d-none d-xl-flex">
 						<div class="card shadow-none bg-transparent shadow-none rounded-0 mb-0">
 							<div class="card-body">
-                                 <img src="{{ asset('backend/assets/images/login-images/logo_chramba.png') }}" class="img-fluid" width="400" alt=""/>
+                                 <img src="{{ asset('backend/assets/images/login-images/logo_fantacy.png') }}" class="img-fluid" width="400" alt=""/>
 							</div>
 						</div>
 					</div>
@@ -62,7 +62,7 @@
 										<img src="{{ asset('backend/assets/images/logo-icon.png') }}" width="100" alt="">
 									</div>
 									<div class="text-center mb-4">
-										<h5 class="">لوحة تحكم - تطبيق چريمبة</h5>
+										<h5 class="">لوحة تحكم - تطبيق فانتسي الهجن</h5>
 										<p class="mb-0">الرجاء تسجيل الدخول</p>
 									</div>
 									<div class="form-body">
@@ -90,7 +90,7 @@
 											</div>
 											<div class="col-12">
 												<div class="d-grid">
-													<button type="submit" class="btn btn-primary">تسجيل الدخول</button>
+													<button type="submit" class="btn btn-danger">تسجيل الدخول</button>
 												</div>
 											</div>
 											<div class="col-12">

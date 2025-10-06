@@ -12,6 +12,14 @@
     function drawChart() {
     var data = google.visualization.arrayToDataTable([
         ['Task', 'Hours per Day'],
+
+
+          ['عدد المهرجنات', {{$festival->count()}}],
+
+        ['عدد الأشواط', {{$rounds->count()}}],
+        ['عدد المطايا', {{$camal->count()}}],
+        ['عدد الترشيحات', {{$nomination->count()}}],
+
         ['الفئات', {{$category->count()}}],
 
         ['المستخدمين المسجلين', {{$users->count()}}],
@@ -24,7 +32,10 @@
         //#endregion
 
        // colors: ['#5636D3', '#67B586', '#3357FF', '#15232A'] // Add your desired colors here
-        colors: ['#67B586', '#5636D3', '#3357FF', '#15232A'] // Add your desired colors here
+        // colors: ['#67B586', '#5636D3', '#3357FF', '#15232A','#67B586', '#5636D3', '#3357FF', '#15232A'] // Add your desired colors here
+
+                colors: ['#1C3E14','#D22FBF','#67B586','#4B0A05', '#5636D3', '#3357FF', '#15232A','#894818'] // Add your desired colors here
+
 
     };
 
@@ -33,6 +44,125 @@
     chart.draw(data, options);
 }
   </script>
+
+  <style>
+
+    .bg-gradient-magenta {
+    background: linear-gradient(135deg, #FF00CC, #333399);
+    color: white;
+}
+
+
+.bg-gradient-cyan {
+ background: linear-gradient(135deg, #400000, #8B0000);
+    color: white;
+}
+
+.bg-gradient-darkteal {
+    background: linear-gradient(135deg, #0B3D0B, #06470C);
+    color: white;
+}
+
+
+.bg-gradient-darkorange {
+    background: linear-gradient(135deg, #8B4000, #FF7300);
+    color: white;
+}
+  </style>
+<div class="row row-cols-1 row-cols-md-2 row-cols-xl-4">
+    <div class="col">
+        <a href="{{route('all.festival')}}">
+        <div class="card radius-10 bg-gradient-magenta">
+         <div class="card-body">
+            <div class="d-flex align-items-center">
+                <h5 class="mb-0 text-white">{{$festival->count()}}</h5>
+                <div class="ms-auto">
+                    <i class='bx bx-party fs-3 text-white'></i>
+
+                </div>
+            </div>
+            <div class="progress my-2 bg-opacity-25 bg-white" style="height:4px;">
+                <div class="progress-bar bg-white" role="progressbar" style="width: 100%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
+            </div>
+            <div class="d-flex align-items-center text-white">
+                <p class="mb-0">عدد المهرجنات</p>
+
+            </div>
+        </div>
+    </a>
+      </div>
+    </div>
+    <div class="col">
+        <a href="{{route('all.round')}}">
+
+        <div class="card radius-10 bg-gradient-cyan">
+        <div class="card-body">
+            <div class="d-flex align-items-center">
+                <h5 class="mb-0 text-white"> {{$rounds->count()}}</h5>
+                <div class="ms-auto">
+                    <i class='bx bx-category fs-3 text-white'></i>
+                </div>
+            </div>
+            <div class="progress my-2 bg-opacity-25 bg-white" style="height:4px;">
+                <div class="progress-bar bg-white" role="progressbar" style="width: 100%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
+            </div>
+            <div class="d-flex align-items-center text-white">
+                <p class="mb-0">عدد الأشواط</p>
+            </div>
+        </div>
+    </a>
+
+      </div>
+    </div>
+    <div class="col">
+        <a href="{{route('all.camal')}}">
+
+        <div class="card radius-10 bg-gradient-darkteal">
+        <div class="card-body">
+            <div class="d-flex align-items-center">
+                <h5 class="mb-0 text-white">{{$camal->count()}}</h5>
+                <div class="ms-auto">
+                    <i class='bx  bx-category fs-3 text-white'></i>
+
+                </div>
+            </div>
+            <div class="progress my-2 bg-opacity-25 bg-white" style="height:4px;">
+                <div class="progress-bar bg-white" role="progressbar" style="width: 100%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
+            </div>
+            <div class="d-flex align-items-center text-white">
+                <p class="mb-0">عدد المطايا</p>
+            </div>
+        </div>
+    </a>
+
+    </div>
+    </div>
+    <div class="col">
+        <a href="{{route('all.nomination')}}">
+
+        <div class="card radius-10 bg-gradient-darkorange bg-warning">
+         <div class="card-body">
+            <div class="d-flex align-items-center">
+                <h5 class="mb-0 text-white">{{$nomination->count()}}</h5>
+                <div class="ms-auto">
+                    <i class='bx bx-trophy fs-3 text-white'></i>
+                </div>
+            </div>
+            <div class="progress my-2 bg-opacity-25 bg-white" style="height:4px;">
+                <div class="progress-bar bg-white" role="progressbar" style="width: 100%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
+            </div>
+            <div class="d-flex align-items-center text-white">
+                <p class="mb-0">عدد الترشيحات</p>
+            </div>
+        </div>
+    </a>
+
+     </div>
+    </div>
+</div><!--end row-->
+
+
+
 <div class="row row-cols-1 row-cols-md-2 row-cols-xl-4">
     <div class="col">
         <a href="{{route('all.users')}}">

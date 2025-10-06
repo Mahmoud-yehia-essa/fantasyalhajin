@@ -8,13 +8,18 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Laravel\Sanctum\PersonalAccessToken;
 
+// use PragmaRX\Countries\Package\Countries;
+
+
+
 
 class UserController extends Controller
 {
     public function getAllUsers()
     {
         // $users = User::latest()->get();
-        $users = User::where('role', '!=', 'admin')->latest()->get();
+        // $users = User::where('role', '!=', 'admin')->latest()->get();
+        $users = User::where('role', 'user')->latest()->get();
 
 
         return view('admin.users.all_users',compact('users'));
@@ -23,34 +28,158 @@ class UserController extends Controller
     }
 
 
-    public function addUser()
+      public function getAllOwners()
     {
+        // $users = User::latest()->get();
+        $users = User::where('role', 'owner')->latest()->get();
 
 
-        return view('admin.users.add_user');
+        return view('admin.users.all_owners',compact('users'));
 
 
     }
+
+
+
+      public function getAllAdmin()
+    {
+        // $users = User::latest()->get();
+        $users = User::where('role', 'admin')->latest()->get();
+
+
+        return view('admin.users.all_admin',compact('users'));
+
+
+    }
+
+
+
+
+
+    // public function addUser()
+    // {
+
+
+    //     $countryList = $countries->all()->map(function ($country) {
+    //     return [
+    //         'name'  => $country->name['common'] ?? '',
+    //         'code'  => $country->cca2,  // ISO Alpha-2 (e.g. KW, SA)
+    //         'dial'  => $country->callingCodes[0] ?? '',
+    //         'flag'  => $country->flag['emoji'] ?? '',
+    //     ];
+    // })->filter(fn($c) => !empty($c['dial'])) // keep only countries with dial codes
+    //   ->values();
+
+    //     return view('admin.users.add_user',compact('countryList'));
+
+
+    // }
+
+
+
+   public static $countryList = [
+    // دول الخليج أولاً
+    ['name' => 'Kuwait', 'code' => 'KW', 'dial' => '+965', 'flag' => '🇰🇼'],
+    ['name' => 'Saudi Arabia', 'code' => 'SA', 'dial' => '+966', 'flag' => '🇸🇦'],
+    ['name' => 'United Arab Emirates', 'code' => 'AE', 'dial' => '+971', 'flag' => '🇦🇪'],
+    ['name' => 'Qatar', 'code' => 'QA', 'dial' => '+974', 'flag' => '🇶🇦'],
+    ['name' => 'Oman', 'code' => 'OM', 'dial' => '+968', 'flag' => '🇴🇲'],
+    ['name' => 'Bahrain', 'code' => 'BH', 'dial' => '+973', 'flag' => '🇧🇭'],
+
+    // الدول العربية الأخرى
+    ['name' => 'Egypt', 'code' => 'EG', 'dial' => '+20', 'flag' => '🇪🇬'],
+    ['name' => 'Iraq', 'code' => 'IQ', 'dial' => '+964', 'flag' => '🇮🇶'],
+    ['name' => 'Jordan', 'code' => 'JO', 'dial' => '+962', 'flag' => '🇯🇴'],
+    ['name' => 'Lebanon', 'code' => 'LB', 'dial' => '+961', 'flag' => '🇱🇧'],
+    ['name' => 'Syria', 'code' => 'SY', 'dial' => '+963', 'flag' => '🇸🇾'],
+    ['name' => 'Yemen', 'code' => 'YE', 'dial' => '+967', 'flag' => '🇾🇪'],
+    ['name' => 'Algeria', 'code' => 'DZ', 'dial' => '+213', 'flag' => '🇩🇿'],
+    ['name' => 'Morocco', 'code' => 'MA', 'dial' => '+212', 'flag' => '🇲🇦'],
+    ['name' => 'Tunisia', 'code' => 'TN', 'dial' => '+216', 'flag' => '🇹🇳'],
+    ['name' => 'Libya', 'code' => 'LY', 'dial' => '+218', 'flag' => '🇱🇾'],
+    ['name' => 'Sudan', 'code' => 'SD', 'dial' => '+249', 'flag' => '🇸🇩'],
+
+    // باقي العالم (أبجديًا)
+    ['name' => 'Afghanistan', 'code' => 'AF', 'dial' => '+93', 'flag' => '🇦🇫'],
+    ['name' => 'Albania', 'code' => 'AL', 'dial' => '+355', 'flag' => '🇦🇱'],
+    ['name' => 'Andorra', 'code' => 'AD', 'dial' => '+376', 'flag' => '🇦🇩'],
+    ['name' => 'Angola', 'code' => 'AO', 'dial' => '+244', 'flag' => '🇦🇴'],
+    ['name' => 'Argentina', 'code' => 'AR', 'dial' => '+54', 'flag' => '🇦🇷'],
+    ['name' => 'Armenia', 'code' => 'AM', 'dial' => '+374', 'flag' => '🇦🇲'],
+    ['name' => 'Australia', 'code' => 'AU', 'dial' => '+61', 'flag' => '🇦🇺'],
+    ['name' => 'Austria', 'code' => 'AT', 'dial' => '+43', 'flag' => '🇦🇹'],
+    ['name' => 'Azerbaijan', 'code' => 'AZ', 'dial' => '+994', 'flag' => '🇦🇿'],
+    ['name' => 'Bangladesh', 'code' => 'BD', 'dial' => '+880', 'flag' => '🇧🇩'],
+    ['name' => 'Belarus', 'code' => 'BY', 'dial' => '+375', 'flag' => '🇧🇾'],
+    ['name' => 'Belgium', 'code' => 'BE', 'dial' => '+32', 'flag' => '🇧🇪'],
+    ['name' => 'Bhutan', 'code' => 'BT', 'dial' => '+975', 'flag' => '🇧🇹'],
+    ['name' => 'Bolivia', 'code' => 'BO', 'dial' => '+591', 'flag' => '🇧🇴'],
+    ['name' => 'Brazil', 'code' => 'BR', 'dial' => '+55', 'flag' => '🇧🇷'],
+    ['name' => 'Bulgaria', 'code' => 'BG', 'dial' => '+359', 'flag' => '🇧🇬'],
+    ['name' => 'Canada', 'code' => 'CA', 'dial' => '+1', 'flag' => '🇨🇦'],
+    ['name' => 'China', 'code' => 'CN', 'dial' => '+86', 'flag' => '🇨🇳'],
+    ['name' => 'France', 'code' => 'FR', 'dial' => '+33', 'flag' => '🇫🇷'],
+    ['name' => 'Germany', 'code' => 'DE', 'dial' => '+49', 'flag' => '🇩🇪'],
+    ['name' => 'India', 'code' => 'IN', 'dial' => '+91', 'flag' => '🇮🇳'],
+    ['name' => 'Italy', 'code' => 'IT', 'dial' => '+39', 'flag' => '🇮🇹'],
+    ['name' => 'Japan', 'code' => 'JP', 'dial' => '+81', 'flag' => '🇯🇵'],
+    ['name' => 'United States', 'code' => 'US', 'dial' => '+1', 'flag' => '🇺🇸'],
+    ['name' => 'United Kingdom', 'code' => 'GB', 'dial' => '+44', 'flag' => '🇬🇧'],
+    // يمكنك متابعة إضافة باقي الدول حسب الحاجة…
+];
+
+   public function addUser()
+{
+
+        $countryList = self::$countryList;
+
+
+
+    return view('admin.users.add_user', compact('countryList'));
+}
+
+
+
+
+
 
     public function addUserStore(Request $request)
     {
 
 
         $request->validate([
+
+                    'role' => 'required|not_in:non',
+
             'fname' => 'required|string|max:255',
-            'lname' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email',
-            'password' => 'required|min:6|confirmed',
-            'password_confirmation' => 'required',
+            // 'lname' => 'required|string|max:255',
+            // 'email' => 'required|email|unique:users,email',
+            // 'password' => 'required|min:6|confirmed',
+
+                    //   'phone'  => 'required|regex:/^\+?[0-9]{7,15}$/',
+
+                    //   'phone'  => 'required',
+
+'phone' => [
+    'required',
+    'regex:/^[0-9]+$/',
+    'max:15'
+],
+
+
+
+
+
+            // 'password_confirmation' => 'required',
             'photo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ], [
-            'fname.required' => 'حقل الاسم الأول مطلوب.',
+            'fname.required' => 'حقل الاسم  مطلوب.',
             'fname.string' => 'يجب أن يكون الاسم الأول نصًا.',
             'fname.max' => 'يجب ألا يزيد الاسم الأول عن 255 حرفًا.',
 
-            'lname.required' => 'حقل اسم العائلة مطلوب.',
-            'lname.string' => 'يجب أن يكون اسم العائلة نصًا.',
-            'lname.max' => 'يجب ألا يزيد اسم العائلة عن 255 حرفًا.',
+            // 'lname.required' => 'حقل اسم العائلة مطلوب.',
+            // 'lname.string' => 'يجب أن يكون اسم العائلة نصًا.',
+            // 'lname.max' => 'يجب ألا يزيد اسم العائلة عن 255 حرفًا.',
 
             'email.required' => 'حقل البريد الإلكتروني مطلوب.',
             'email.email' => 'يجب إدخال بريد إلكتروني صالح.',
@@ -67,10 +196,34 @@ class UserController extends Controller
             'photo.image' => 'يجب أن يكون الملف صورة.',
             'photo.mimes' => 'يجب أن تكون الصورة من نوع jpeg أو png أو jpg أو gif.',
             'photo.max' => 'يجب ألا يتجاوز حجم الصورة 2 ميغابايت.',
+
+
+
+              'role.required' => 'الرجاء اختيار نوع الحساب.',
+        'role.not_in' => 'الرجاء اختيار نوع الحساب.',
+
+             'phone.required' => 'يرجى إدخال رقم الهاتف.',
+
+
+        'phone.integer' => 'الرجاء ادخال رقم الهاتف',
+
+         'phone.required' => 'يرجى إدخال رقم الهاتف.',
+    'phone.regex'    => 'يجب إدخال الأرقام باللغة الإنجليزية فقط.',
+    // 'phone.min'      => 'رقم الهاتف يجب أن لا يقل عن 8 أرقام.',
+    'phone.max'      => 'رقم الهاتف يجب أن لا يتجاوز 15 رقم.',
         ]);
 
 
         $filename = "";
+    $countryData = json_decode($request->input('country_data'), true);
+
+    $dialCode = $countryData['dial'] ?? null;
+    $countryCode = $countryData['code'] ?? null;
+    $flag = $countryData['flag'] ?? null;
+
+    $cName = $countryData['name'] ?? null;
+
+
 
         if ($request->file('photo')) {
             // $file = $request->file('photo');
@@ -88,7 +241,19 @@ class UserController extends Controller
             'fname' => $request->fname,
             'lname' => $request->lname,
 
+            'role' => $request->role,
+
+
             'email' => $request->email,
+
+                        'country_code' => $dialCode,
+                        'country_flag' => $flag,
+                        'country_name' => $cName,
+
+
+
+
+
             'phone' => $request->phone,
             'address' => $request->address,
             'password' => Hash::make($request->password),
@@ -98,11 +263,30 @@ class UserController extends Controller
         ]);
 
         $notification = array(
-            'message' => 'تم اضافة المستخدم',
+            'message' => 'تمت الاضافة بنجاح',
             'alert-type' => 'success'
         );
 
-        return redirect()->route('all.users')->with($notification);
+        if($request->role === 'user')
+        {
+
+                    return redirect()->route('all.users')->with($notification);
+
+        }
+
+
+        else if($request->role === 'owner')
+        {
+
+                    return redirect()->route('all.owners')->with($notification);
+
+        }
+
+        else
+        {
+                                return redirect()->route('all.admin')->with($notification);
+
+        }
 
 
 
@@ -116,13 +300,14 @@ class UserController extends Controller
     {
 
         $user = User::findOrFail($id);
+        $countryList = self::$countryList;
 
 
 
 
 
 
-        return view('admin.users.edit_user',compact('user'));
+        return view('admin.users.edit_user',compact('user','countryList'));
 
 
 
@@ -144,22 +329,54 @@ class UserController extends Controller
 if ($old_email == $request->email) {
     // Validate without the unique rule
     $rules = [
-        'fname' => 'required|string|max:255',
-        'lname' => 'required|string|max:255',
-        'email' => 'required|email', // Removed the 'unique' rule here
-        'password' => 'nullable|min:6|confirmed', // Changed to 'nullable' to avoid validation if empty
-        'password_confirmation' => 'nullable',  // Make confirmation optional if password is empty
-        'photo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+         'role' => 'required|not_in:non',
+
+            'fname' => 'required|string|max:255',
+            // 'lname' => 'required|string|max:255',
+            // 'email' => 'required|email|unique:users,email',
+            // 'password' => 'required|min:6|confirmed',
+
+                    //   'phone'  => 'required|regex:/^\+?[0-9]{7,15}$/',
+
+                    //   'phone'  => 'required',
+
+
+
+'phone' => [
+    'required',
+    'regex:/^[0-9]+$/',
+    'max:15'
+],
+
+
+
+
+
+            // 'password_confirmation' => 'required',
+            'photo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
     ];
 } else {
     // Validate with the unique rule for a new email
     $rules = [
-        'fname' => 'required|string|max:255',
-        'lname' => 'required|string|max:255',
-        'email' => 'required|email|unique:users,email', // Unique validation for email
-        'password' => 'nullable|min:6|confirmed', // Password validation is now optional if empty
-        'password_confirmation' => 'nullable',  // Confirmation is optional if password is empty
-        'photo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+         'role' => 'required|not_in:non',
+
+            'fname' => 'required|string|max:255',
+            // 'lname' => 'required|string|max:255',
+            // 'email' => 'required|email|unique:users,email',
+            // 'password' => 'required|min:6|confirmed',
+
+                    //   'phone'  => 'required|regex:/^\+?[0-9]{7,15}$/',
+
+                      'phone'  => 'required',
+
+
+
+
+
+
+
+            // 'password_confirmation' => 'required',
+            'photo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
     ];
 
 
@@ -170,28 +387,54 @@ if ($old_email == $request->email) {
 
 
 $request->validate($rules, [
-    'fname.required' => 'حقل الاسم الأول مطلوب.',
-    'fname.string' => 'يجب أن يكون الاسم الأول نصًا.',
-    'fname.max' => 'يجب ألا يزيد الاسم الأول عن 255 حرفًا.',
+     'fname.required' => 'حقل الاسم  مطلوب.',
+            'fname.string' => 'يجب أن يكون الاسم الأول نصًا.',
+            'fname.max' => 'يجب ألا يزيد الاسم الأول عن 255 حرفًا.',
 
-    'lname.required' => 'حقل اسم العائلة مطلوب.',
-    'lname.string' => 'يجب أن يكون اسم العائلة نصًا.',
-    'lname.max' => 'يجب ألا يزيد اسم العائلة عن 255 حرفًا.',
+            // 'lname.required' => 'حقل اسم العائلة مطلوب.',
+            // 'lname.string' => 'يجب أن يكون اسم العائلة نصًا.',
+            // 'lname.max' => 'يجب ألا يزيد اسم العائلة عن 255 حرفًا.',
 
-    'email.required' => 'حقل البريد الإلكتروني مطلوب.',
-    'email.email' => 'يجب إدخال بريد إلكتروني صالح.',
-    'email.unique' => 'هذا البريد الإلكتروني مستخدم بالفعل.',
+            'email.required' => 'حقل البريد الإلكتروني مطلوب.',
+            'email.email' => 'يجب إدخال بريد إلكتروني صالح.',
+            'email.unique' => 'هذا البريد الإلكتروني مستخدم بالفعل.',
 
-    'password.min' => 'يجب أن تكون كلمة المرور على الأقل 6 أحرف.',
-    'password.confirmed' => 'تأكيد كلمة المرور غير متطابق.',
-    'password_confirmation.required' => 'حقل تأكيد كلمة المرور مطلوب.',
+            'password.required' => 'حقل كلمة المرور مطلوب.',
+            'password.min' => 'يجب أن تكون كلمة المرور على الأقل 6 أحرف.',
+            'password.confirmed' => 'تأكيد كلمة المرور غير متطابق.',
 
-    'photo.image' => 'يجب أن يكون الملف صورة.',
-    'photo.mimes' => 'يجب أن تكون الصورة من نوع jpeg أو png أو jpg أو gif.',
-    'photo.max' => 'يجب ألا يتجاوز حجم الصورة 2 ميغابايت.',
+            'password_confirmation.required' => 'حقل تأكيد كلمة المرور مطلوب.',
+
+
+
+            'photo.image' => 'يجب أن يكون الملف صورة.',
+            'photo.mimes' => 'يجب أن تكون الصورة من نوع jpeg أو png أو jpg أو gif.',
+            'photo.max' => 'يجب ألا يتجاوز حجم الصورة 2 ميغابايت.',
+
+
+
+              'role.required' => 'الرجاء اختيار نوع الحساب.',
+        'role.not_in' => 'الرجاء اختيار نوع الحساب.',
+
+             'phone.required' => 'يرجى إدخال رقم الهاتف.',
+
+    'phone.regex'    => 'يجب إدخال الأرقام باللغة الإنجليزية فقط.',
+    // 'phone.min'      => 'رقم الهاتف يجب أن لا يقل عن 8 أرقام.',
+    'phone.max'      => 'رقم الهاتف يجب أن لا يتجاوز 15 رقم.',
+            //  'phone.regex' => 'صيغة رقم الهاتف غير صحيحة. يرجى إدخال رقم مع رمز الدولة مثل دولة الكويت تبدأ ب ‎+965',
+
+
+        'phone.integer' => 'الرجاء ادخال رقم الهاتف',
 ]);
 
 
+$countryData = json_decode($request->input('country_data'), true);
+
+    $dialCode = $countryData['dial'] ?? null;
+    $countryCode = $countryData['code'] ?? null;
+    $flag = $countryData['flag'] ?? null;
+
+    $cName = $countryData['name'] ?? null;
 
 
         // $filename = "";
@@ -240,16 +483,53 @@ $request->validate($rules, [
         $user->lname = $request->lname;
         $user->phone = $request->phone;
         $user->address = $request->address;
-        $user->is_game_free = $request->is_game_free;
+        $user->country_code = $dialCode;
+                $user->country_flag = $flag;
+                $user->country_name = $cName;
+
+
+                $user->role = $request->role;
+
+
+
+
+        // $user->is_game_free = $request->is_game_free;
 
 
         $user->save();
 
         $notification = array(
-            'message' => 'تم تعديل المستخدم',
+            'message' => 'تم التعديل',
             'alert-type' => 'success'
         );
-        return redirect()->route('all.users')->with($notification);
+
+
+         if($request->role === 'user')
+        {
+
+                    return redirect()->route('all.users')->with($notification);
+
+        }
+
+
+        else if($request->role === 'owner')
+        {
+
+                    return redirect()->route('all.owners')->with($notification);
+
+        }
+
+        else
+        {
+                                return redirect()->route('all.admin')->with($notification);
+
+        }
+
+        // return redirect()->route('all.users')->with($notification);
+
+
+
+
 
 
 
@@ -372,7 +652,6 @@ $request->validate($rules, [
             'message' => 'Registration failed'
         ], 500);
     }
-
 
 
  public function checkPhoneNumberExist(Request $request) {

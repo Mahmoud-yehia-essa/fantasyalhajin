@@ -15,10 +15,37 @@
                     @csrf
                     <div class="card">
                         <div class="card-body">
+
+
+                        <div class="row mb-3">
+                                    <div class="col-sm-3">
+                                        <h6 class="mb-0">نوع المستخدم</h6>
+                                    </div>
+                                    <div class="col-sm-9 text-secondary">
+
+
+                                        <select  name="role" class="form-select" aria-label="Default select example">
+                                            <option selected="" value="non">الرجاء إختيار نوع المستخدم</option>
+
+                                        <option value="owner">مالك</option>
+                                         <option value="admin">مدير</option>
+                                        <option  value="user">مستخدم</option>
+
+
+
+
+                                        </select>
+
+                                        @error('role') <span class="text-danger">{{ $message }}</span> @enderror
+                                    </div>
+                                </div>
+
+
+
                             <!-- First Name -->
                             <div class="row mb-3">
                                 <div class="col-sm-3">
-                                    <h6 class="mb-0">الاسم الأول</h6>
+                                    <h6 class="mb-0">الاسم</h6>
                                 </div>
                                 <div class="col-sm-9 text-secondary">
                                     <input name="fname" type="text" class="form-control" value="{{ old('fname') }}" />
@@ -26,8 +53,62 @@
                                 </div>
                             </div>
 
-                            <!-- Last Name -->
+
+                            <!-- Phone -->
+<div class="row mb-3">
+    <div class="col-sm-3">
+        <h6 class="mb-0">رقم الهاتف</h6>
+    </div>
+
+    <div class="col-sm-9 text-secondary">
+        <div class="d-flex">
+
+            <!-- Phone Input -->
+            <div class="flex-grow-1">
+                <input name="phone" dir="ltr" type="text"
+                       class="form-control"
+                       placeholder="51234567"
+                       value="{{ old('phone') }}" />
+            </div>
+
+             <!-- Country Code Select -->
+            <div class="ms-2" style="min-width: 120px;">
+      <select name="country_data" class="form-select">
+    @foreach($countryList as $country)
+        <option value="{{ json_encode(['dial' => $country['dial'], 'code' => $country['code'],'name' => $country['name'], 'flag' => $country['flag']]) }}">
+            {{ $country['code'] ?? '' }} {{ $country['flag'] ?? '' }} {{ $country['dial'] }}
+        </option>
+    @endforeach
+</select>
+            </div>
+
+        </div>
+
+        <!-- Error messages -->
+        @error('country_code')
+            <span class="text-danger d-block" dir="rtl">{{ $message }}</span>
+        @enderror
+        @error('phone')
+            <span class="text-danger d-block" dir="rtl">{{ $message }}</span>
+        @enderror
+    </div>
+</div>
+
+
+
+                            <!-- Address -->
                             <div class="row mb-3">
+                                <div class="col-sm-3">
+                                    <h6 class="mb-0">العنوان</h6>
+                                </div>
+                                <div class="col-sm-9 text-secondary">
+                                    <input name="address" type="text" class="form-control" value="{{ old('address') }}" />
+                                    @error('address') <span class="text-danger">{{ $message }}</span> @enderror
+                                </div>
+                            </div>
+
+                            <!-- Last Name -->
+                            {{-- <div class="row mb-3">
                                 <div class="col-sm-3">
                                     <h6 class="mb-0">اسم العائلة</h6>
                                 </div>
@@ -35,7 +116,7 @@
                                     <input name="lname" type="text" class="form-control" value="{{ old('lname') }}" />
                                     @error('lname') <span class="text-danger">{{ $message }}</span> @enderror
                                 </div>
-                            </div>
+                            </div> --}}
 
                             <!-- Email -->
                             <div class="row mb-3">
@@ -70,27 +151,18 @@
                                 </div>
                             </div>
 
-                            <!-- Phone -->
+                            {{-- <!-- Phone -->
                             <div class="row mb-3">
                                 <div class="col-sm-3">
                                     <h6 class="mb-0">رقم الهاتف</h6>
                                 </div>
                                 <div class="col-sm-9 text-secondary">
-                                    <input name="phone" type="text" class="form-control" value="{{ old('phone') }}" />
-                                    @error('phone') <span class="text-danger">{{ $message }}</span> @enderror
+                                    <input name="phone" dir="ltr" type="text" class="form-control" value="{{ old('phone') }}" />
+                                    @error('phone') <span class="text-danger" dir="rtl">{{ $message }}</span> @enderror
                                 </div>
-                            </div>
+                            </div> --}}
 
-                            <!-- Address -->
-                            <div class="row mb-3">
-                                <div class="col-sm-3">
-                                    <h6 class="mb-0">العنوان</h6>
-                                </div>
-                                <div class="col-sm-9 text-secondary">
-                                    <input name="address" type="text" class="form-control" value="{{ old('address') }}" />
-                                    @error('address') <span class="text-danger">{{ $message }}</span> @enderror
-                                </div>
-                            </div>
+                         <!-- Phone -->
 
                             <!-- Profile Picture -->
                             <div class="row mb-3">

@@ -5,7 +5,7 @@
 
         </div>
         <div>
-            <h4 class="logo-text"> چريمبة</h4>
+            <h4 class="logo-text"> فانتسي الهجن</h4>
         </div>
         <div class="toggle-icon ms-auto"><i class='bx bx-arrow-back'></i>
         </div>
@@ -19,6 +19,247 @@
                 <div class="menu-title">الرئيسية</div>
             </a>
         </li>
+
+
+
+        <li>
+            <a href="javascript:;" class="has-arrow">
+                <div class="parent-icon">
+                    <ion-icon name="person-outline"></ion-icon>
+
+                </i>
+                </div>
+
+                <div class="menu-title"> إدارة المستخدمين</div>
+            </a>
+            <ul>
+
+
+                  <li> <a href="{{route('add.user')}}"><i class='bx bx-radio-circle'></i>إضافة مستخدم جديد</a>
+                </li>
+                 <li> <a href="{{route('all.owners')}}"><i class='bx bx-radio-circle'></i>عرض الملاك</a>
+                </li>
+
+
+                <li> <a href="{{route('all.users')}}"><i class='bx bx-radio-circle'></i>عرض المستخدمين</a>
+                </li>
+
+                 <li> <a href="{{route('all.admin')}}"><i class='bx bx-radio-circle'></i>عرض المديرين</a>
+                </li>
+
+
+
+
+
+
+            </ul>
+        </li>
+
+
+
+          <li>
+    <a href="javascript:;" class="has-arrow">
+        <div class="parent-icon">
+<ion-icon name="flag-outline"></ion-icon>
+
+
+        </div>
+        <div class="menu-title"> إدارة المطايا</div>
+    </a>
+    <ul>
+        <li> <a href="{{route('add.camal')}}"><i class='bx bx-radio-circle'></i>إضافة مطية جديدة</a></li>
+        <li> <a href="{{route('all.camal')}}"><i class='bx bx-radio-circle'></i>عرض المطايا</a></li>
+    </ul>
+</li>
+
+
+
+
+
+      <li>
+            <a href="javascript:;" class="has-arrow">
+                <div class="parent-icon"><i class="bx bx-category"></i>
+                </div>
+                <div class="menu-title">ادارة المهرجانات</div>
+            </a>
+            <ul>
+                <li> <a href="{{route('all.festival')}}"><i class='bx bx-radio-circle'></i>عرض المهرجانات</a>
+                </li>
+                <li> <a href="{{route('add.festival')}}"><i class='bx bx-radio-circle'></i>إضافة مهرجان جديد</a>
+                </li>
+
+
+
+
+
+            </ul>
+        </li>
+
+
+           <li>
+    <a href="javascript:;" class="has-arrow">
+        <div class="parent-icon"><i class="bx bx-category"></i></div>
+        <div class="menu-title">إدارة الأشواط</div>
+    </a>
+    <ul>
+        <li>
+            <a href="{{ route('all.round') }}">
+                <i class='bx bx-radio-circle'></i>عرض كل الأشواط
+            </a>
+        </li>
+        <li>
+            <a href="{{ route('add.round') }}">
+                <i class='bx bx-radio-circle'></i>إضافة شوط جديدة
+            </a>
+        </li>
+    </ul>
+</li>
+
+
+
+        <li>
+    <a href="javascript:;" class="has-arrow">
+        <div class="parent-icon"><i class="bx bx-purchase-tag-alt"></i></div>
+        <div class="menu-title">ادارة نقاط المهرجانات</div>
+    </a>
+    <ul>
+        <li>
+            <a href="{{ route('all.festival.points') }}">
+                <i class='bx bx-radio-circle'></i>عرض جميع النقاط
+            </a>
+        </li>
+        <li>
+            <a href="{{ route('add.festival.points') }}">
+                <i class='bx bx-radio-circle'></i>إضافة نقاط جديدة
+            </a>
+        </li>
+    </ul>
+</li>
+
+
+
+<li>
+    <a href="javascript:;" class="has-arrow">
+        <div class="parent-icon"><i class="bx bx-trophy"></i></div>
+        <div class="menu-title">إدارة الترشيحات</div>
+    </a>
+    <ul>
+        <li>
+            <a href="{{ route('all.nomination') }}">
+                <i class='bx bx-radio-circle'></i>عرض الترشيحات
+            </a>
+        </li>
+        {{-- <li>
+            <a href="{{ route('add.nomination') }}">
+                <i class='bx bx-radio-circle'></i>إضافة ترشيح جديد
+            </a>
+        </li> --}}
+
+         <li>
+            <a href="{{ route('add.round.winner') }}">
+                <i class='bx bx-radio-circle'></i>إضافة المطية الفائزة في الجولة
+            </a>
+        </li>
+
+
+
+          <li>
+            <a href="{{ route('add.nomination.user') }}">
+                <i class='bx bx-radio-circle'></i>تحديد المستخدم ورشح اي مطية
+            </a>
+        </li>
+
+
+
+
+
+    </ul>
+</li>
+
+
+
+
+<li>
+    <a href="javascript:;" class="has-arrow">
+        <div class="parent-icon"><i class="bx bx-news"></i></div>
+        <div class="menu-title">ادارة الأخبار</div>
+    </a>
+    <ul>
+        <li>
+            <a href="{{ route('all.news') }}">
+                <i class='bx bx-radio-circle'></i>عرض الأخبار
+            </a>
+        </li>
+        <li>
+            <a href="{{ route('add.news') }}">
+                <i class='bx bx-radio-circle'></i>إضافة خبر جديد
+            </a>
+        </li>
+    </ul>
+</li>
+
+
+<li>
+    <a href="javascript:;" class="has-arrow">
+        <div class="parent-icon"><i class="bx bx-images"></i></div>
+        <div class="menu-title">إدارة السلايدر</div>
+    </a>
+    <ul>
+        <li>
+            <a href="{{ route('all.slider') }}">
+                <i class='bx bx-radio-circle'></i>عرض السلايدر
+            </a>
+        </li>
+        <li>
+            <a href="{{ route('add.slider') }}">
+                <i class='bx bx-radio-circle'></i>إضافة سلايدر جديد
+            </a>
+        </li>
+    </ul>
+</li>
+
+
+<li>
+    <a href="javascript:;" class="has-arrow">
+        <div class="parent-icon"><i class="bx bx-tv"></i></div>
+        <div class="menu-title">ادارة البث المباشر</div>
+    </a>
+    <ul>
+        <li>
+            <a href="{{ route('all.live.broadcast') }}">
+                <i class='bx bx-radio-circle'></i>عرض البث المباشر
+            </a>
+        </li>
+        <li>
+            <a href="{{ route('add.live.broadcast') }}">
+                <i class='bx bx-radio-circle'></i>إضافة بث مباشر جديد
+            </a>
+        </li>
+    </ul>
+</li>
+
+
+
+<li>
+    <a href="javascript:;" class="has-arrow">
+        <div class="parent-icon"><i class="bx bx-gift"></i></div>
+        <div class="menu-title">إدارة الجوائز</div>
+    </a>
+    <ul>
+        <li>
+            <a href="{{ route('all.prizes') }}">
+                <i class='bx bx-radio-circle'></i>عرض الجوائز
+            </a>
+        </li>
+        <li>
+            <a href="{{ route('add.prize') }}">
+                <i class='bx bx-radio-circle'></i>إضافة جائزة جديدة
+            </a>
+        </li>
+    </ul>
+</li>
+
+
 
 
         <li>
@@ -44,31 +285,6 @@
         <li>
             <a href="javascript:;" class="has-arrow">
                 <div class="parent-icon">
-                    <ion-icon name="person-outline"></ion-icon>
-
-                </i>
-                </div>
-
-                <div class="menu-title"> إدارة المستخدمين</div>
-            </a>
-            <ul>
-                <li> <a href="{{route('all.users')}}"><i class='bx bx-radio-circle'></i>عرض المستخدمين</a>
-                </li>
-                <li> <a href="{{route('add.user')}}"><i class='bx bx-radio-circle'></i>إضافة مستخدم جديد</a>
-                </li>
-
-
-
-
-
-            </ul>
-        </li>
-
-
-
-        <li>
-            <a href="javascript:;" class="has-arrow">
-                <div class="parent-icon">
                     <ion-icon name="help-circle-outline"></ion-icon>
                 </div>
 
@@ -89,7 +305,7 @@
 
 
 
-        <li>
+        {{-- <li>
             <a href="javascript:;" class="has-arrow">
              <div class="parent-icon">
             <i class='bx bx-bot'></i> <!-- Robot icon from Boxicons -->
@@ -108,7 +324,11 @@
 
 
             </ul>
-        </li>
+        </li> --}}
+
+
+
+
 
 
         <li>
@@ -236,7 +456,7 @@
 
 
 
-           <li>
+               <li>
             <a href="javascript:;" class="has-arrow">
 <div class="parent-icon"><ion-icon name="business-outline"></ion-icon></div>
 
@@ -245,11 +465,18 @@
             </a>
             <ul>
 
-                <li> <a href="{{ route('sponsor.add.cate') }}"><i class="bx bx-right-arrow-alt"></i> في شاشة الفئات</a>
+
+                   <li> <a href="{{ route('sponsor.all') }}"><i class="bx bx-right-arrow-alt"></i>كل الرعاة</a>
+                </li>
+
+                 <li> <a href="{{ route('sponsor.add.new') }}"><i class="bx bx-right-arrow-alt"></i>اضافة جديد</a>
+                </li>
+
+                {{-- <li> <a href="{{ route('sponsor.add.cate') }}"><i class="bx bx-right-arrow-alt"></i> في شاشة الفئات</a>
                 </li>
 
                  <li> <a href="{{ route('sponsor.add.question') }}"><i class="bx bx-right-arrow-alt"></i> في شاشة السؤال</a>
-                </li>
+                </li> --}}
 
 
 

@@ -21,10 +21,38 @@
 
                     <div class="card">
                         <div class="card-body">
+
+
+
+                        <div class="row mb-3">
+                                    <div class="col-sm-3">
+                                        <h6 class="mb-0">نوع المستخدم</h6>
+                                    </div>
+                                    <div class="col-sm-9 text-secondary">
+
+
+                                        <select  name="role" class="form-select" aria-label="Default select example">
+                                            <option selected="" value="non">الرجاء إختيار نوع المستخدم</option>
+
+                                        <option {{$user->role === 'owner' ? 'selected' : ''}} value="owner">مالك</option>
+                                         <option {{$user->role === 'admin' ? 'selected' : ''}} value="admin">مدير</option>
+                                        <option {{$user->role === 'user' ? 'selected' : ''}}  value="user">مستخدم</option>
+
+
+
+
+                                        </select>
+
+                                        @error('role') <span class="text-danger">{{ $message }}</span> @enderror
+                                    </div>
+                                </div>
+
+
+
                             <!-- First Name -->
                             <div class="row mb-3">
                                 <div class="col-sm-3">
-                                    <h6 class="mb-0">الاسم الأول</h6>
+                                    <h6 class="mb-0">الاسم</h6>
                                 </div>
                                 <div class="col-sm-9 text-secondary">
                                     <input name="fname" value="{{$user->fname}}" type="text" class="form-control" value="{{ old('fname') }}" />
@@ -32,7 +60,7 @@
                                 </div>
                             </div>
 
-                            <!-- Last Name -->
+                            {{-- <!-- Last Name -->
                             <div class="row mb-3">
                                 <div class="col-sm-3">
                                     <h6 class="mb-0">اسم العائلة</h6>
@@ -41,7 +69,7 @@
                                     <input name="lname" type="text" value="{{$user->lname}}" class="form-control" value="{{ old('lname') }}" />
                                     @error('lname') <span class="text-danger">{{ $message }}</span> @enderror
                                 </div>
-                            </div>
+                            </div> --}}
 
                             <!-- Email -->
                             <div class="row mb-3">
@@ -76,16 +104,53 @@
                                 </div>
                             </div>
 
+
+
+
+
+
                             <!-- Phone -->
-                            <div class="row mb-3">
-                                <div class="col-sm-3">
-                                    <h6 class="mb-0">رقم الهاتف</h6>
-                                </div>
-                                <div class="col-sm-9 text-secondary">
-                                    <input name="phone" type="text" value="{{$user->phone}}" class="form-control" value="{{ old('phone') }}" />
-                                    @error('phone') <span class="text-danger">{{ $message }}</span> @enderror
-                                </div>
-                            </div>
+<div class="row mb-3">
+    <div class="col-sm-3">
+        <h6 class="mb-0">رقم الهاتف</h6>
+    </div>
+
+    <div class="col-sm-9 text-secondary">
+        <div class="d-flex">
+
+            <!-- Phone Input -->
+            <div class="flex-grow-1">
+                <input name="phone" dir="ltr" type="text"
+                       class="form-control"
+                       value="{{$user->phone}}"
+                       value="{{ old('phone') }}"
+                       placeholder="51234567"
+                       value="{{ old('phone') }}" />
+            </div>
+
+             <!-- Country Code Select -->
+            <div class="ms-2" style="min-width: 120px;">
+      <select name="country_data" class="form-select">
+    @foreach($countryList as $country)
+        <option {{$country['dial'] === $user->country_code ? 'selected' : ''}} value="{{ json_encode(['dial' => $country['dial'], 'code' => $country['code'],'name' => $country['name'], 'flag' => $country['flag']]) }}">
+            {{ $country['code'] ?? '' }} {{ $country['flag'] ?? '' }} {{ $country['dial'] }}
+        </option>
+    @endforeach
+</select>
+            </div>
+
+        </div>
+
+        <!-- Error messages -->
+        @error('country_code')
+            <span class="text-danger d-block" dir="rtl">{{ $message }}</span>
+        @enderror
+        @error('phone')
+            <span class="text-danger d-block" dir="rtl">{{ $message }}</span>
+        @enderror
+    </div>
+</div>
+
 
                             <!-- Address -->
                             <div class="row mb-3">
@@ -98,29 +163,6 @@
                                 </div>
                             </div>
 
-                                <div class="row mb-3">
-                    <div class="col-sm-3">
-                        <h6 class="mb-0">الألعاب لهذا المستخدم ؟</h6>
-                    </div>
-                    <div class="col-sm-9 text-secondary">
-
-
-                        <select  name="is_game_free" class="form-select" aria-label="Default select example">
-
-
-
-                            <option value="free" {{ old('app_type',$user->is_game_free) == 'free' ? 'selected' : '' }} >مجانية</option>
-
-                            <option value="paid" {{ old('app_type',$user->is_game_free) == 'paid' ? 'selected' : '' }} >مدفوعة</option>
-
-
-
-
-                        </select>
-
-                        @error('special') <span class="text-danger">{{ $message }}</span> @enderror
-                    </div>
-                </div>
 
                             <!-- Profile Picture -->
                             <div class="row mb-3">

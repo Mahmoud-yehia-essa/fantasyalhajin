@@ -39,7 +39,7 @@ class CategoryController extends Controller
         $request->validate([
             'category_name' => 'required|string|max:255',
             'category_description' => 'nullable|string',
-            'category_photo' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'category_photo' => 'required|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
         ], [
             'category_name.required' => '⚠️ الرجاء اضافة اسم الفئة',
             'category_name.string' => '⚠️ الرجاء التأكد من كتابة الفئة بشكل صحيح',
@@ -109,7 +109,7 @@ class CategoryController extends Controller
         $request->validate([
             'category_name' => 'required|string|max:255',
             'category_description' => 'nullable|string',
-            'category_photo' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
+            'category_photo' => 'image|mimes:jpeg,png,jpg,gif,webp|max:2048',
         ], [
             'category_name.required' => '⚠️ الرجاء اضافة اسم الفئة',
             'category_name.string' => '⚠️ الرجاء التأكد من كتابة الفئة بشكل صحيح',

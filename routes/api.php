@@ -3,13 +3,21 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\GameController;
+use App\Http\Controllers\NewsController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\PriceController;
+use App\Http\Controllers\PrizeController;
+use App\Http\Controllers\RoundController;
 use App\Http\Controllers\CouponController;
+use App\Http\Controllers\SliderController;
 use App\Http\Controllers\SponsorController;
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\FestivalController;
 use App\Http\Controllers\QuestionController;
 use App\Http\Controllers\AppVersionController;
+use App\Http\Controllers\NominationController;
+use App\Http\Controllers\FestivalPointController;
+use App\Http\Controllers\LiveBroadcastController;
 
 
 // PostMan URL for V1 remote : https://chraimba.net/admin-dashboard/public
@@ -21,10 +29,24 @@ Route::get('/user', function (Request $request) {
 
 
 
-Route::post('/login',[UserController::class,'loginApi']);
+ Route::post('/login',[UserController::class,'loginApiV2']);
+    Route::post('/register',[UserController::class,'registerApiV2']);
 
 
-Route::post('/register',[UserController::class,'registerApi']);
+    Route::post('/login/email',[UserController::class,'loginApi']);
+
+
+Route::post('/register/email',[UserController::class,'registerApi']);
+
+        Route::post('/check/phone',[UserController::class,'checkPhoneNumberExist']);
+
+
+
+
+// Route::post('/login',[UserController::class,'loginApi']);
+
+
+// Route::post('/register',[UserController::class,'registerApi']);
 
 Route::get('/categories',[CategoryController::class,'getCategoryApi']);
 Route::get('/question/{id}',[QuestionController::class,'getQuestionApi']);
@@ -36,6 +58,84 @@ Route::get('/question/{id}',[QuestionController::class,'getQuestionApi']);
 
 
 Route::get('/answer/{id}',[QuestionController::class,'getQuestionAnswerApi']);
+
+
+
+
+Route::post('/news',[NewsController::class,'getNewsApi']);
+
+Route::post('/sliders',[SliderController::class,'getSlidersApi']);
+
+
+
+
+//
+Route::post('/festivals',[FestivalController::class,'getFestivalsApi']);
+
+
+
+
+// {
+//   "type": "current",
+//   "limit": "1"
+// }
+
+// {
+//   "type": "upcoming",
+//   "limit": 5
+// }
+
+// {
+//   "type": "ended"
+// }
+
+// {
+//   "type": "all"
+// }
+///
+
+
+
+
+Route::post('/live/broadcast',[LiveBroadcastController::class,'getLiveBroadcastApi']);
+
+
+Route::post('/all/sponsor',[SponsorController::class,'getAllsponsorApi']);
+
+
+Route::post('/prizes',[PrizeController::class,'getPrizeApi']);
+
+
+
+Route::post('/get/rounds',[RoundController::class,'getRoundsDatesApi']);
+
+Route::post('/get/rounds/by/date',[RoundController::class,'getRoundsByDateApi']);
+
+
+
+Route::post('/get/camel/participations',[RoundController::class,'getCamelParticipationsApi']);
+
+
+Route::post('/add/nomination/user',[NominationController::class,'addNominationUserAPI']);
+
+Route::post('/check/nomination',[NominationController::class,'checkNominationApi']);
+
+Route::post('/get/user/nomination',[NominationController::class,'getUserNominationsApi']);
+
+
+
+Route::post('/get/festivals/points/nomination',[NominationController::class,'getUserFestivalsWithPoints']);
+
+
+Route::post('get/festival/leaderboard',[NominationController::class,'getFestivalLeaderboard']);
+
+
+
+Route::post('/get/festival/point',[FestivalPointController::class,'getFestivalPoints']);
+
+
+
+
 
 
 // After getting api key
