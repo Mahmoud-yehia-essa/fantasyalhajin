@@ -10,6 +10,6 @@ class IndexController extends Controller
       public function showSoon()
     {
 
-        return view('frontend.soon');
+        return view('frontend.payment.soon');
     }
 }
