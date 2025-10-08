@@ -11,36 +11,44 @@
 
                 <div class="mb-3">
                     <label class="form-label">المهرجان</label>
-                    <div class="col-sm-9 text-secondary">
-                        <select name="festival_id" id="festival_id" class="form-control" required>
-                            <option value="">اختر المهرجان</option>
-                            @foreach($festivals as $festival)
-                                <option value="{{ $festival->id }}">{{ $festival->name }}</option>
-                            @endforeach
-                        </select>
-                        @error('festival_id') <span class="text-danger">{{ $message }}</span> @enderror
-                    </div>
+                <div class="col-sm-9 text-secondary">
+
+                    <select name="festival_id" id="festival_id" class="form-control" required>
+                        <option value="">اختر المهرجان</option>
+                        @foreach($festivals as $festival)
+                            <option value="{{ $festival->id }}">{{ $festival->name }}</option>
+                        @endforeach
+                    </select>
+                    @error('festival_id') <span class="text-danger">{{ $message }}</span> @enderror
                 </div>
+                                </div>
+
 
                 <div class="mb-3">
                     <label class="form-label">الشوط</label>
-                    <div class="col-sm-9 text-secondary">
-                        <select name="round_id" id="round_id" class="form-control" required>
-                            <option value="">اختر الشوط</option>
-                        </select>
-                        @error('round_id') <span class="text-danger">{{ $message }}</span> @enderror
-                    </div>
+                                    <div class="col-sm-9 text-secondary">
+
+                    <select name="round_id" id="round_id" class="form-control" required>
+                        <option value="">اختر الشوط</option>
+                    </select>
+                    @error('round_id') <span class="text-danger">{{ $message }}</span> @enderror
                 </div>
+                                </div>
+
 
                 <div class="mb-3">
                     <label class="form-label">المطية</label>
-                    <div class="col-sm-9 text-secondary">
-                        <select name="camal_id" id="camal_id" class="form-control" required>
-                            <option value="">اختر المطية</option>
-                        </select>
-                        @error('camal_id') <span class="text-danger">{{ $message }}</span> @enderror
-                    </div>
+                                                        <div class="col-sm-9 text-secondary">
+
+                    <select name="camal_id" id="camal_id" class="form-control" required>
+                        <option value="">اختر المطية</option>
+                    </select>
+                    @error('camal_id') <span class="text-danger">{{ $message }}</span> @enderror
                 </div>
+                                </div>
+
+
+
 
                 <div class="mb-3">
                     <button type="submit" class="btn btn-success">إضافة المطية الفائزة</button>
@@ -54,14 +62,12 @@
 
 <script>
 $(document).ready(function() {
-    const days = ['الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'];
-
     // عند اختيار المهرجان
     $('#festival_id').on('change', function() {
         var festivalId = $(this).val();
 
         $('#round_id').html('<option>جاري التحميل...</option>');
-        $('#camal_id').html('<option value="">اختر المطية</option>');
+        $('#camal_id').html('<option value="">اختر المطية</option>'); // إفراغ المطايا
 
         if(festivalId) {
             $.ajax({
@@ -71,17 +77,8 @@ $(document).ready(function() {
                 success: function(data) {
                     $('#round_id').empty();
                     $('#round_id').append('<option value="">اختر الجولة</option>');
-
                     $.each(data, function(key, value) {
-                        // تنسيق التاريخ بالشكل المطلوب
-                        let date = new Date(value.start);
-                        let dayName = days[date.getDay()];
-                        let formattedDate = ("0" + date.getDate()).slice(-2) + "-" +
-                                            ("0" + (date.getMonth() + 1)).slice(-2) + "-" +
-                                            date.getFullYear();
-
-                        let displayText = `${dayName} ${formattedDate} - ${value.name} - ${value.round_type}`;
-                        $('#round_id').append(`<option value="${value.id}">${displayText}</option>`);
+                        $('#round_id').append('<option value="'+ value.id +'">'+ value.start +' - '+ value.name +' - '+ value.round_type +'</option>');
                     });
                 },
                 error: function() {
@@ -97,6 +94,7 @@ $(document).ready(function() {
     // عند اختيار الجولة
     $('#round_id').on('change', function() {
         var roundId = $(this).val();
+
         $('#camal_id').html('<option>جاري التحميل...</option>');
 
         if(roundId) {
@@ -105,6 +103,7 @@ $(document).ready(function() {
                 type: 'GET',
                 dataType: 'json',
                 success: function(data) {
+
                     $('#camal_id').empty();
                     $('#camal_id').append('<option value="">اختر المطية</option>');
                     $.each(data, function(key, value) {

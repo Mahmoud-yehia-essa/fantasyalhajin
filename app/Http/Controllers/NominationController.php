@@ -237,7 +237,12 @@ $nomination = Nomination::where('festival_id', $request->festival_id)
 
     public function getRounds($festivalId)
 {
-    $rounds = Round::where('festival_id', $festivalId)->get();
+    // $rounds = Round::where('festival_id', $festivalId)->get();
+
+      $rounds = Round::where('festival_id', $festivalId)
+                   ->where('status', '!=', 'finished')
+                   ->get();
+
     return response()->json($rounds);
 }
 
