@@ -128,11 +128,11 @@
                 <i class='bx bx-radio-circle'></i>عرض جميع النقاط
             </a>
         </li>
-        <li>
+        {{-- <li>
             <a href="{{ route('add.festival.points') }}">
                 <i class='bx bx-radio-circle'></i>إضافة نقاط جديدة
             </a>
-        </li>
+        </li> --}}
     </ul>
 </li>
 
