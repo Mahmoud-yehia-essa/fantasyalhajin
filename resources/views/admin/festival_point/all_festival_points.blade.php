@@ -17,9 +17,9 @@
             <div class="col-sm-6">
                 <h4 class="mb-0">جميع نقاط المهرجان</h4>
             </div>
-            <div class="col-sm-6 text-end">
+            {{-- <div class="col-sm-6 text-end">
                 <a href="{{ route('add.festival.points') }}" class="btn btn-primary">إضافة نقاط جديدة</a>
-            </div>
+            </div> --}}
         </div>
 
         <!-- جدول العرض -->
@@ -30,7 +30,7 @@
                         <thead>
                             <tr>
                                 <th>#</th>
-                                <th>المهرجان</th>
+                                {{-- <th>المهرجان</th> --}}
                                 <th>الفئة العمرية</th>
                                 <th>النقاط</th>
                                 <th>الإجراءات</th>
@@ -40,7 +40,7 @@
                             @forelse($points as $key => $point)
                                 <tr>
                                     <td>{{ $key + 1 }}</td>
-                                    <td>{{ $point->festival ? $point->festival->name : '---' }}</td>
+                                    {{-- <td>{{ $point->festival ? $point->festival->name : '---' }}</td> --}}
                                     <td>{{ $point->age_name }}</td>
                                     <td>{{ $point->points }}</td>
                                     <td>

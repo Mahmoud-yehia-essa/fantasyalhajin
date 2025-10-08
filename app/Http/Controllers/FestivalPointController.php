@@ -82,13 +82,30 @@ class FestivalPointController extends Controller
 
     // Api
 
+//     public function getFestivalPoints(Request $request)
+// {
+//     $festivalId = $request->input('festival_id');
+//     $ageName    = $request->input('age_name');
+
+//     $point = \App\Models\FestivalPoint::where('festival_id', $festivalId)
+//         ->where('age_name', $ageName)
+//         ->first();
+
+//     return response()->json([
+//         'success' => true,
+//         'festival_id' => $festivalId,
+//         'age_name' => $ageName,
+//         'points' => $point ? $point->points : 0,
+//     ]);
+// }
+
+
     public function getFestivalPoints(Request $request)
 {
     $festivalId = $request->input('festival_id');
     $ageName    = $request->input('age_name');
 
-    $point = \App\Models\FestivalPoint::where('festival_id', $festivalId)
-        ->where('age_name', $ageName)
+    $point = \App\Models\FestivalPoint::where('age_name', $ageName)
         ->first();
 
     return response()->json([
