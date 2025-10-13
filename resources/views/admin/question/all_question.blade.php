@@ -47,6 +47,7 @@
 
 <th> الاجابة</th>
 <th> التاريخ</th>
+<th> النقاط</th>
 
 <th>الاجراء</th>
 </tr>
@@ -79,6 +80,12 @@ $item->answers->first()->answer_title ?? 'لم يتم تحديد الاجابة'
 
 <td >{{ $item->created_at ? $item->created_at->diffForHumans() : 'لم يتم التحديد' }}</td>
 
+
+
+
+<td class="question-column text-wrap">{{ $item->qu_points}}</td>
+
+
 <td>
 <a href="{{route('edit.question',$item->id)}}" class="btn btn-info">تعديل</a>
 <a href="{{ route('delete.question',$item->id) }}" class="btn btn-danger" id="delete" >حذف</a>
@@ -99,6 +106,7 @@ $item->answers->first()->answer_title ?? 'لم يتم تحديد الاجابة'
 
     <th> الاجابة</th>
     <th> التاريخ</th>
+<th> النقاط</th>
 
     <th>الاجراء</th>
 </tr>
