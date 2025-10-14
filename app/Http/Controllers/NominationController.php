@@ -120,9 +120,13 @@ $nominations = Nomination::with(['user', 'camal', 'festival', 'round'])->get();
 
            // get points
 
-$festivalPoint = FestivalPoint::where('festival_id', $request->festival_id)
-    ->where('age_name', $camelRoundParticipation->camal->age_name)
+// $festivalPoint = FestivalPoint::where('festival_id', $request->festival_id)
+//     ->where('age_name', $camelRoundParticipation->camal->age_name)
+//     ->first();
+
+$festivalPoint = FestivalPoint::where('age_name', $camelRoundParticipation->camal->age_name)
     ->first();
+
 
     //Get point OK
             // return $festivalPoint->points;
