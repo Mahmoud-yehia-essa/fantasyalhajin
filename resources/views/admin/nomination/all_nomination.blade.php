@@ -50,7 +50,7 @@
                                 </td>
 
                                 <td>{{ $nomination->user->fname ?? '-' }}</td>
-                                <td>{{ $nomination->camelRoundParticipation->camal->name ?? '-' }}</td>
+                                <td>{{ $nomination->camelRoundParticipation->camel_name ?? '-' }}</td>
                                 <td>{{ $nomination->festival->name ?? '-' }}</td>
                                 <td>{{ $nomination->round->name ?? '-' }}</td>
 

@@ -4,7 +4,7 @@
 <div class="col-lg-12">
     <div class="card">
         <div class="card-body">
-            <h4 class="mb-4">تحديد المطية الفائزة</h4>
+            <h4 class="mb-4"> تحديد المطية الفائزة</h4>
 
             <form action="{{ route('add.round.winner.store') }}" method="POST">
                 @csrf
@@ -108,7 +108,7 @@ $(document).ready(function() {
                     $('#camal_id').empty();
                     $('#camal_id').append('<option value="">اختر المطية</option>');
                     $.each(data, function(key, value) {
-                        $('#camal_id').append('<option value="'+ value.id +'">'+ value.name +'</option>');
+                        $('#camal_id').append('<option value="'+ value.id +'">'+ value.name +' ( المالك ' + value.camel_owner_name + ')'+ '</option>');
                     });
                 },
                 error: function() {

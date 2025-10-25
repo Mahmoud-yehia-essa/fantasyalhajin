@@ -27,6 +27,8 @@ use App\Http\Controllers\QuestionAIController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\FestivalPointController;
 use App\Http\Controllers\LiveBroadcastController;
+use App\Http\Controllers\NotificationForAppController;
+use App\Http\Controllers\NotificationDashboardController;
 
 Route::get('/admin', function () {
     // return view('welcome');
@@ -57,14 +59,44 @@ Route::controller(DashboardController::class)->middleware(['auth', 'verified','c
 
 });
 
-Route::controller(NotificationController::class)->middleware(['checkUserRole','auth'])->group(function () {
+// Route::controller(NotificationController::class)->middleware(['checkUserRole','auth'])->group(function () {
+
+
+//     Route::get('/add/notification', 'sendNotification')->name('send.notification');
+//     Route::get('/all/notification', 'alldNotification')->name('all.notification');
+
+
+// });
+
+
+Route::controller(NotificationForAppController::class)->middleware(['checkUserRole','auth'])->group(function () {
+
+
+    // Route::get('/add/notification', 'sendNotification')->name('send.notification');
+    // Route::get('/all/notification', 'alldNotification')->name('all.notification');
+
 
 
     Route::get('/add/notification', 'sendNotification')->name('send.notification');
+        Route::post('/add/notification', 'sendNotificationStore')->name('send.notification.store');
+
     Route::get('/all/notification', 'alldNotification')->name('all.notification');
+    Route::get('/test-notification', 'sendPush')->name('send.push');
+
+
+        Route::get('/notification/delete/{id}', 'deleteNotification')->name('delete.notification');
+
+                // Route::get('/notification/delete/all', 'deleteAllNotificationCpanel')->name('delete.all.notification.new');
+
+    Route::get('/delete/all/notifcations', 'deleteAllNotifications')->name('delete.notification.all');
+
 
 
 });
+
+
+
+
 
 Route::controller(AppVersionController::class)->middleware(['checkUserRole','auth'])->group(function () {
 
@@ -193,6 +225,11 @@ Route::controller(RoundController::class)
         Route::get('/round/active/{id}', 'roundActive')->name('active.round');
         // Route::get('/get-camals/{gender}', 'getCamals')->name('get.camals');
 
+
+
+          Route::get('/round/close/{id}', 'roundClose')->name('close.round');
+
+        Route::get('/round/open/{id}', 'roundOpen')->name('open.round');
 
 
 
@@ -392,7 +429,13 @@ Route::controller(NominationController::class)
     });
 
 
+Route::controller(NotificationDashboardController::class)->middleware(['checkUserRole','auth'])->group(function () {
 
+
+
+    Route::get('/notification/read/{id}' , 'setNotificationRead')->name('notification.read');
+
+});
 
 
 

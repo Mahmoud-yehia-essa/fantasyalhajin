@@ -681,6 +681,7 @@ $countryData = json_decode($request->input('country_data'), true);
 
 
 
+
         // Check if email already exists
 
         if (User::where('phone', $request->phone)->where('country_code', $request->country_code)->exists()) {
@@ -697,6 +698,8 @@ $countryData = json_decode($request->input('country_data'), true);
             'email' => $request->email,
             'phone' => $request->phone,
             'country_code' => $request->country_code,
+                        'country_flag' => $request->country_flag,
+
             'password' => Hash::make($request->password),
             'photo' => $request->photo,
             'is_game_free' => 'paid',

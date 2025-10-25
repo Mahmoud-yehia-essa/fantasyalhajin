@@ -1,5 +1,6 @@
 @extends('admin.master_admin')
 @section('admin')
+
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 
 <div class="col-lg-16">
@@ -10,7 +11,7 @@
             <form method="POST" action="{{ route('add.round.store') }}">
                 @csrf
 
-                {{-- اختيار المهرجان المرتبط --}}
+                {{-- اختيار المهرجان --}}
                 <div class="row mb-3">
                     <div class="col-sm-3">
                         <h6 class="mb-0">المهرجان</h6>
@@ -26,16 +27,16 @@
                     </div>
                 </div>
 
-                {{-- اسم الجولة --}}
+                {{-- اسم الشوط --}}
                 <div class="row mb-3">
                     <div class="col-sm-3"><h6 class="mb-0">اسم الشوط</h6></div>
                     <div class="col-sm-9 text-secondary">
-                        <input type="text" name="name" class="form-control" />
+                        <input type="text" name="name" class="form-control" required />
                         @error('name') <span class="text-danger">{{ $message }}</span> @enderror
                     </div>
                 </div>
 
-                {{-- اسم الجولة انجليزي --}}
+                {{-- اسم الشوط (EN) --}}
                 <div class="row mb-3">
                     <div class="col-sm-3"><h6 class="mb-0">اسم الشوط (EN)</h6></div>
                     <div class="col-sm-9 text-secondary">
@@ -53,7 +54,7 @@
                     </div>
                 </div>
 
-                {{-- الوصف انجليزي --}}
+                {{-- الوصف (EN) --}}
                 <div class="row mb-3">
                     <div class="col-sm-3"><h6 class="mb-0">الوصف (EN)</h6></div>
                     <div class="col-sm-9 text-secondary">
@@ -62,60 +63,38 @@
                     </div>
                 </div>
 
-                {{-- رقم الجولة --}}
+                {{-- رقم الشوط --}}
                 <div class="row mb-3">
                     <div class="col-sm-3"><h6 class="mb-0">رقم الشوط</h6></div>
                     <div class="col-sm-9 text-secondary">
-                        <input type="number" name="round_number" class="form-control" />
+                        <input type="number" name="round_number" class="form-control" required />
                         @error('round_number') <span class="text-danger">{{ $message }}</span> @enderror
                     </div>
                 </div>
 
-                {{-- بداية الجولة --}}
-                {{-- <div class="row mb-3">
-                    <div class="col-sm-3"><h6 class="mb-0">تاريخ البداية</h6></div>
+                {{-- تاريخ البداية --}}
+                <div class="row mb-3">
+                    <div class="col-sm-3"><h6 class="mb-0">تاريخ ووقت البداية</h6></div>
                     <div class="col-sm-9 text-secondary">
-                        <input type="date" name="start" class="form-control" />
+                        <input type="datetime-local" name="start" class="form-control" required />
                         @error('start') <span class="text-danger">{{ $message }}</span> @enderror
                     </div>
-                </div> --}}
+                </div>
 
-                {{-- نهاية الجولة --}}
-                {{-- <div class="row mb-3">
-                    <div class="col-sm-3"><h6 class="mb-0">تاريخ النهاية</h6></div>
+                {{-- تاريخ النهاية --}}
+                <div class="row mb-3">
+                    <div class="col-sm-3"><h6 class="mb-0">تاريخ ووقت النهاية</h6></div>
                     <div class="col-sm-9 text-secondary">
-                        <input type="date" name="end" class="form-control" />
+                        <input type="datetime-local" name="end" class="form-control" required />
                         @error('end') <span class="text-danger">{{ $message }}</span> @enderror
                     </div>
-                </div> --}}
+                </div>
 
-
-
-                {{-- بداية الجولة --}}
-<div class="row mb-3">
-    <div class="col-sm-3"><h6 class="mb-0">تاريخ ووقت البداية</h6></div>
-    <div class="col-sm-9 text-secondary">
-        <input type="datetime-local" name="start" class="form-control" />
-        @error('start') <span class="text-danger">{{ $message }}</span> @enderror
-    </div>
-</div>
-
-{{-- نهاية الجولة --}}
-<div class="row mb-3">
-    <div class="col-sm-3"><h6 class="mb-0">تاريخ ووقت النهاية</h6></div>
-    <div class="col-sm-9 text-secondary">
-        <input type="datetime-local" name="end" class="form-control" />
-        @error('end') <span class="text-danger">{{ $message }}</span> @enderror
-    </div>
-</div>
-
-
-
-                {{-- نوع الجولة --}}
+                {{-- نوع الشوط --}}
                 <div class="row mb-3">
                     <div class="col-sm-3"><h6 class="mb-0">نوع الشوط</h6></div>
                     <div class="col-sm-9 text-secondary">
-                        <select name="round_type" id="round_type" class="form-control" required>
+                        <select name="round_type" class="form-control" required>
                             <option value="">اختر النوع</option>
                             <option value="بكار">بكار</option>
                             <option value="قعدان">قعدان</option>
@@ -124,61 +103,52 @@
                     </div>
                 </div>
 
-
-
-
-<div class="row mb-3">
-    <div class="col-sm-3"><h6 class="mb-0">الفئة العمرية</h6></div>
-    <div class="col-sm-9 text-secondary">
-
-
-        <select name="age_name" id="age_name" class="form-control">
-    <option value="all" selected>الكل</option>
-    <option value="الحقايق">الحقايق</option>
-    <option value="اللقايا">اللقايا</option>
-    <option value="الجذاع">الجذاع</option>
-    <option value="الثنايا">الثنايا</option>
-    <option value="زمول">زمول</option>
-    <option value="الحيل">الحيل</option>
-</select>
-        @error('age_name') <span class="text-danger">{{ $message }}</span> @enderror
-    </div>
-</div>
-
-
-
-
-
+                {{-- المطايا المشاركة --}}
                 <div class="row mb-3">
-    <div class="col-sm-3">
-        <h6 class="mb-0">المطايا المشاركة</h6>
-    </div>
-    <div class="col-sm-9 text-secondary">
+                    <div class="col-sm-3"><h6 class="mb-0">المطايا المشاركة</h6></div>
+                    <div class="col-sm-9 text-secondary">
 
+                        @if($errors->has('camals'))
+                            <div class="alert alert-danger py-2">{{ $errors->first('camals') }}</div>
+                        @endif
 
-        <table class="table table-bordered">
-    <thead>
-        <tr>
-            <th>
-                <input type="checkbox" id="selectAllCamals">
-                اختيار الكل
-            </th>
-            <th>اسم المطية</th>
-            <th>المالك</th>
-            <th>الفئة العمرية</th>
-
-
-            <th>رقم التسجيل</th>
-        </tr>
-    </thead>
-    <tbody id="camalsTableBody">
-        <tr>
-            <td colspan="5" class="text-center">اختر نوع الشوط أولاً</td>
-        </tr>
-    </tbody>
-</table>
-    </div>
-</div>
+                        <table class="table table-bordered">
+                            <thead class="table-light">
+                                <tr>
+                                    <th style="width:100px;">رقم التسجيل</th>
+                                    <th>اسم المطية</th>
+                                    <th style="width:180px;">الفئة العمرية</th>
+                                    <th>اسم المالك</th>
+                                    <th>الدولة</th>
+                                    <th style="width:100px;">إجراء</th>
+                                </tr>
+                            </thead>
+                            <tbody id="camalsTableBody">
+                                <tr>
+                                    <td class="text-center">1</td>
+                                    <td><input type="text" name="camals[0][name]" class="form-control" placeholder="اسم المطية" required></td>
+                                    <td>
+                                        <select name="camals[0][age_name]" class="form-control" required>
+                                            <option value="">اختر الفئة</option>
+                                            <option value="الحقايق">الحقايق</option>
+                                            <option value="اللقايا">اللقايا</option>
+                                            <option value="الجذاع">الجذاع</option>
+                                            <option value="الثنايا">الثنايا</option>
+                                            <option value="زمول">زمول</option>
+                                            <option value="الحيل">الحيل</option>
+                                        </select>
+                                    </td>
+                                    <td><input type="text" name="camals[0][owner_name]" class="form-control" placeholder="اسم المالك" required></td>
+                                    <td><input type="text" name="camals[0][country]" class="form-control" placeholder="الدولة" required></td>
+                                    <td class="text-center">
+                                        <button type="button" class="btn btn-danger btn-sm removeRow">حذف</button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <button type="button" class="btn btn-success btn-sm" id="addRow">➕ إضافة صف</button>
+                    </div>
+                </div>
 
                 {{-- زر الإرسال --}}
                 <div class="row">
@@ -187,90 +157,63 @@
                         <input type="submit" class="btn btn-primary px-4" value="إضافة الجولة">
                     </div>
                 </div>
+
             </form>
         </div>
     </div>
 </div>
 
-
-
+{{-- سكريبت إدارة الصفوف --}}
 <script>
 $(document).ready(function() {
+    let rowIndex = 1;
 
-    function loadCamals() {
-        var gender = $('#round_type').val();
-        var age = $('#age_name').val();
+    $('#addRow').on('click', function() {
+        rowIndex++;
+        const newRow = `
+            <tr>
+                <td class="text-center">${rowIndex}</td>
+                <td><input type="text" name="camals[${rowIndex - 1}][name]" class="form-control" placeholder="اسم المطية" required></td>
+                <td>
+                    <select name="camals[${rowIndex - 1}][age_name]" class="form-control" required>
+                        <option value="">اختر الفئة</option>
+                        <option value="الحقايق">الحقايق</option>
+                        <option value="اللقايا">اللقايا</option>
+                        <option value="الجذاع">الجذاع</option>
+                        <option value="الثنايا">الثنايا</option>
+                        <option value="زمول">زمول</option>
+                        <option value="الحيل">الحيل</option>
+                    </select>
+                </td>
+                <td><input type="text" name="camals[${rowIndex - 1}][owner_name]" class="form-control" placeholder="اسم المالك" required></td>
+                <td><input type="text" name="camals[${rowIndex - 1}][country]" class="form-control" placeholder="الدولة" required></td>
+                <td class="text-center">
+                    <button type="button" class="btn btn-danger btn-sm removeRow">حذف</button>
+                </td>
+            </tr>`;
+        $('#camalsTableBody').append(newRow);
+    });
 
-        if (!gender) {
-            $('#camalsTableBody').html('<tr><td colspan="5" class="text-center">اختر نوع الشوط أولاً</td></tr>');
-            return;
-        }
+    $(document).on('click', '.removeRow', function() {
+        $(this).closest('tr').remove();
+        updateRowNumbers();
+    });
 
-        $.ajax({
-            url: "{{ url('/get-camals') }}/" + gender,
-            type: "GET",
-            data: { age: age }, // إرسال العمر كـ باراميتر
-            dataType: "json",
-            success: function(data) {
-                $('#camalsTableBody').empty();
-                if (data.length > 0) {
-                    $.each(data, function(key, camal) {
-                        $('#camalsTableBody').append(
-                            '<tr>'+
-                                '<td><input type="checkbox" class="camalCheckbox" name="camals['+ camal.id +'][selected]" value="1"></td>'+
-                                '<td>'+ camal.name +'</td>'+
-                                '<td>'+ (camal.user ? camal.user.fname : '') +'</td>'+
-                                '<td>'+ camal.age_name +'</td>'+
-                                '<td><input type="text" name="camals['+ camal.id +'][number]" class="form-control"></td>'+
-                            '</tr>'
-                        );
-                    });
-                } else {
-                    $('#camalsTableBody').append('<tr><td colspan="5" class="text-center">لا توجد مطايا لهذا النوع</td></tr>');
-                }
-            },
-            error: function(err) {
-                console.log(err);
-                $('#camalsTableBody').html('<tr><td colspan="5" class="text-center">حدث خطأ أثناء جلب البيانات</td></tr>');
-            }
+    function updateRowNumbers() {
+        let i = 1;
+        $('#camalsTableBody tr').each(function() {
+            $(this).find('td:first').text(i);
+            i++;
         });
+        rowIndex = i;
     }
-
-    // استدعاء عند تغيير النوع أو الفئة
-    $('#round_type, #age_name').on('change', loadCamals);
-
-    // زر اختيار الكل
-    $(document).on('change', '#selectAllCamals', function () {
-        var isChecked = $(this).is(':checked');
-        $('#camalsTableBody input[type="checkbox"]').prop('checked', isChecked);
-    });
-
-    // تحديث حالة اختيار الكل عند تغيير أي مطية
-    $(document).on('change', '.camalCheckbox', function () {
-        var allChecked = $('.camalCheckbox').length === $('.camalCheckbox:checked').length;
-        $('#selectAllCamals').prop('checked', allChecked);
-    });
-
 });
 </script>
 
-
-
-
 <style>
-    /* عرض صغير لخانة الاختيار */
-    table th:first-child,
-    table td:first-child {
-        width: 120px;
-        /* text-align: center; */
-    }
-
-    /* عرض صغير لخانة الرقم */
-    table th:last-child,
-    table td:last-child {
-        width: 200px;
-        text-align: center;
-    }
+table th, table td {
+    vertical-align: middle !important;
+}
 </style>
 
 @endsection

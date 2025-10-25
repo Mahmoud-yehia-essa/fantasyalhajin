@@ -37,8 +37,8 @@
 
                   <li> <a href="{{route('add.user')}}"><i class='bx bx-radio-circle'></i>إضافة مستخدم جديد</a>
                 </li>
-                 <li> <a href="{{route('all.owners')}}"><i class='bx bx-radio-circle'></i>عرض الملاك</a>
-                </li>
+                 {{-- <li> <a href="{{route('all.owners')}}"><i class='bx bx-radio-circle'></i>عرض الملاك</a>
+                </li> --}}
 
 
                 <li> <a href="{{route('all.users')}}"><i class='bx bx-radio-circle'></i>عرض المستخدمين</a>
@@ -56,7 +56,7 @@
         </li>
 
 
-
+{{--
           <li>
     <a href="javascript:;" class="has-arrow">
         <div class="parent-icon">
@@ -70,7 +70,7 @@
         <li> <a href="{{route('add.camal')}}"><i class='bx bx-radio-circle'></i>إضافة مطية جديدة</a></li>
         <li> <a href="{{route('all.camal')}}"><i class='bx bx-radio-circle'></i>عرض المطايا</a></li>
     </ul>
-</li>
+</li> --}}
 
 
 

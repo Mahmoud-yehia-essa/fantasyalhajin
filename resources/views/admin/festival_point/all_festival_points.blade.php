@@ -45,7 +45,7 @@
                                     <td>{{ $point->points }}</td>
                                     <td>
                                         <a href="{{ route('edit.festival.points', $point->id) }}" class="btn btn-sm btn-warning">تعديل</a>
-                                        <a href="{{ route('delete.festival.points', $point->id) }}" class="btn btn-sm btn-danger" onclick="return confirm('هل أنت متأكد من الحذف؟')">حذف</a>
+                                        {{-- <a href="{{ route('delete.festival.points', $point->id) }}" class="btn btn-sm btn-danger" onclick="return confirm('هل أنت متأكد من الحذف؟')">حذف</a> --}}
                                     </td>
                                 </tr>
                             @empty

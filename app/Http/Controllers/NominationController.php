@@ -10,6 +10,11 @@ use App\Models\Nomination;
 use Illuminate\Http\Request;
 use App\Models\FestivalPoint;
 use App\Models\CamelRoundParticipation;
+use App\Notifications\NominationNotification;
+
+use Illuminate\Support\Facades\Notification;
+
+
 
 class NominationController extends Controller
 {
@@ -41,9 +46,14 @@ $nominations = Nomination::with(['user', 'camal', 'festival', 'round'])->get();
 
     }
 
-
+// addNominationUserStore this is write one
     public function addNominationUserStore(Request $request)
     {
+
+
+
+
+
 
 
 
@@ -55,6 +65,20 @@ $nominations = Nomination::with(['user', 'camal', 'festival', 'round'])->get();
 
             'is_winner' =>  0,
         ]);
+
+
+        // For Notification
+        // who users recive Notifications
+                        $user = User::where('role','admin')->get();
+/////
+        $userCreatNomination = User::find($request->user_id);
+        $camelRoundParticipation = CamelRoundParticipation::find($request->camal_id);
+        $festival = Festival::find($request->festival_id);
+        $round = Round::find($request->round_id);
+
+
+        Notification::send($user, new NominationNotification($userCreatNomination , $camelRoundParticipation, $festival,$round ));
+        // For Notification
 
 
         return redirect()->route('all.nomination')->with('success', 'تم إضافة الترشيح بنجاح');
@@ -104,6 +128,7 @@ $nominations = Nomination::with(['user', 'camal', 'festival', 'round'])->get();
 
 
 
+
         /// Get point //
 
 
@@ -116,7 +141,9 @@ $nominations = Nomination::with(['user', 'camal', 'festival', 'round'])->get();
 
 
 
+
            $camelRoundParticipation = CamelRoundParticipation::find($request->camal_id);
+//   return $camelRoundParticipation->age_name;
 
            // get points
 
@@ -124,7 +151,7 @@ $nominations = Nomination::with(['user', 'camal', 'festival', 'round'])->get();
 //     ->where('age_name', $camelRoundParticipation->camal->age_name)
 //     ->first();
 
-$festivalPoint = FestivalPoint::where('age_name', $camelRoundParticipation->camal->age_name)
+$festivalPoint = FestivalPoint::where('age_name', $camelRoundParticipation->camel_age_name)
     ->first();
 
 
@@ -177,6 +204,8 @@ $nomination = Nomination::where('festival_id', $request->festival_id)
     // تخزين ترشيح جديد
     public function storeNomination(Request $request)
     {
+
+
         $request->validate([
             'user_id' => 'required|exists:users,id',
             'camal_id' => 'required|exists:camals,id',
@@ -278,7 +307,9 @@ public function getCamalsByRound($roundId)
         return [
             'id' => $item->id,
             // 'camal_id' => $item->camal->id,
-            'name' => $item->camal->name,
+            'name' => $item->camel_name,
+                        'camel_owner_name' => $item->camel_name,
+
         ];
     });
 
@@ -290,26 +321,43 @@ public function getCamalsByRound($roundId)
 
 /// API
 
+
+
 // public function addNominationUserAPI(Request $request)
 // {
-//     // إنشاء الترشيح مباشرة بدون validate
+//     $camalId    = $request->camal_id;
+//     $festivalId = $request->festival_id;
+//     $roundId    = $request->round_id;
+//     $userId     = $request->user_id;
+
+//     // التأكد من وجود سجل في camel_round_participations أو إنشاؤه
+//     $camalParticipation = \App\Models\CamelRoundParticipation::firstOrCreate(
+//         [
+//             'festival_id' => $festivalId,
+//             'round_id' => $roundId,
+//             'camal_id' => $camalId
+//         ],
+//         [
+//             'registration_number' => 'C-'.$roundId.'-'.$camalId,
+//             'is_winner' => 0
+//         ]
+//     );
+
+//     // إنشاء الترشيح
 //     $nomination = Nomination::create([
-//         'user_id' => $request->user_id,
-//         'festival_id' => $request->festival_id,
-//         'round_id' => $request->round_id,
-//         'camel_round_participations_id' => $request->camal_id,
+//         'user_id' => $userId,
+//         'festival_id' => $festivalId,
+//         'round_id' => $roundId,
+//         'camel_round_participations_id' => $camalParticipation->id,
 //         'is_winner' => 0,
 //     ]);
 
-//     // تحميل بيانات الجمل + صاحبه
-//     $camalParticipation = \App\Models\CamelRoundParticipation::with([
-//         'camal.user',
-//         'round',
-//     ])->find($request->camal_id);
+//     // تحميل بيانات الجمل + صاحبه + الشوط
+//     $camalParticipation = $camalParticipation->load(['camal.user', 'round']);
 
 //     // بيانات الجمل + صاحبه
 //     $camalData = null;
-//     if ($camalParticipation && $camalParticipation->camal) {
+//     if ($camalParticipation->camal) {
 //         $camalData = [
 //             'id' => $camalParticipation->camal->id,
 //             'name' => $camalParticipation->camal->name,
@@ -330,7 +378,7 @@ public function getCamalsByRound($roundId)
 
 //     // بيانات الشوط
 //     $roundData = null;
-//     if ($camalParticipation && $camalParticipation->round) {
+//     if ($camalParticipation->round) {
 //         $roundData = [
 //             'id' => $camalParticipation->round->id,
 //             'name' => $camalParticipation->round->name,
@@ -346,19 +394,25 @@ public function getCamalsByRound($roundId)
 //     }
 
 //     // بيانات المهرجان
-//     $festival = \App\Models\Festival::find($request->festival_id);
+//     $festival = \App\Models\Festival::find($festivalId);
 //     $festivalData = null;
 //     if ($festival) {
 //         $festivalData = [
 //             'id' => $festival->id,
-//             'title' => $festival->title,
-//             'title_en' => $festival->title_en,
+//             'name' => $festival->name,
+//             'name_en' => $festival->name_en,
+//             'des' => $festival->des,
+//             'des_en' => $festival->des_en,
+//             'location' => $festival->location,
 //             'start' => \Carbon\Carbon::parse($festival->start)
 //                         ->setTimezone('Asia/Kuwait')
 //                         ->toDateTimeString(),
 //             'end'   => \Carbon\Carbon::parse($festival->end)
 //                         ->setTimezone('Asia/Kuwait')
 //                         ->toDateTimeString(),
+//             'latitude' => $festival->latitude,
+//             'longitude' => $festival->longitude,
+//             'photo' => $festival->photo,
 //             'status' => $festival->status,
 //         ];
 //     }
@@ -375,131 +429,358 @@ public function getCamalsByRound($roundId)
 // }
 
 
+// public function addNominationUserAPI(Request $request)
+// {
+//     // التحقق من الحقول المطلوبة
+//     $request->validate([
+//         'user_id' => 'required|integer|exists:users,id',
+//         'festival_id' => 'required|integer|exists:festivals,id',
+//         'round_id' => 'required|integer|exists:rounds,id',
+//         'camal_id' => 'required|integer|exists:camel_round_participations,id',
+//     ]);
+
+//     try {
+//         // إنشاء الترشيح
+//         $nomination = Nomination::create([
+//             'user_id' => $request->user_id,
+//             'festival_id' => $request->festival_id,
+//             'round_id' => $request->round_id,
+//             'camel_round_participations_id' => $request->camal_id,
+//             'is_winner' => 0,
+//         ]);
+
+//         return response()->json([
+//             'success' => true,
+//             'message' => 'تم إضافة الترشيح بنجاح',
+//             'nomination' => $nomination,
+//         ], 201);
+
+//     } catch (\Exception $e) {
+//         return response()->json([
+//             'success' => false,
+//             'message' => 'حدث خطأ أثناء الإضافة',
+//             'error' => $e->getMessage(),
+//         ], 500);
+//     }
+// }
+
+
+
+// public function addNominationUserAPI(Request $request)
+// {
+//     // ✅ التحقق من الحقول المطلوبة
+//     $request->validate([
+//         'user_id' => 'required|integer|exists:users,id',
+//         'festival_id' => 'required|integer|exists:festivals,id',
+//         'round_id' => 'required|integer|exists:rounds,id',
+//         'camal_id' => 'required|integer|exists:camel_round_participations,id',
+//     ]);
+
+//     try {
+//         // ✅ إنشاء الترشيح
+//         $nomination = Nomination::create([
+//             'user_id' => $request->user_id,
+//             'festival_id' => $request->festival_id,
+//             'round_id' => $request->round_id,
+//             'camel_round_participations_id' => $request->camal_id,
+//             'is_winner' => 0,
+//         ]);
+
+//         // ✅ جلب بيانات الجمل المشاركة فقط من نفس الجدول
+//         $participation = \App\Models\CamelRoundParticipation::find($request->camal_id);
+
+//         if (!$participation) {
+//             return response()->json([
+//                 'success' => false,
+//                 'message' => 'لم يتم العثور على بيانات المشاركة',
+//             ], 404);
+//         }
+
+//         // ✅ تجهيز البيانات النهائية من نفس جدول المشاركة
+//         $camelData = [
+//             'id' => $participation->id,
+//             'festival_id' => $participation->festival_id,
+//             'round_id' => $participation->round_id,
+//             'camel_name' => $participation->camel_name,
+//             'camel_age_name' => $participation->camel_age_name,
+//             'camel_owner_name' => $participation->camel_owner_name,
+//             'camel_owner_country' => $participation->camel_owner_country,
+//             'registration_number' => $participation->registration_number,
+//             'is_winner' => $participation->is_winner,
+//         ];
+
+//         // ✅ استجابة JSON مبسطة
+//         return response()->json([
+//             'success' => true,
+//             'message' => 'تم إضافة الترشيح بنجاح',
+//             'nomination' => $nomination,
+//             'camel_participation' => $camelData,
+//         ], 201);
+
+//     } catch (\Exception $e) {
+//         // ⚠️ في حال وجود خطأ
+//         return response()->json([
+//             'success' => false,
+//             'message' => 'حدث خطأ أثناء الإضافة',
+//             'error' => $e->getMessage(),
+//         ], 500);
+//     }
+// }
+
+
+// public function addNominationUserAPI(Request $request)
+// {
+//     // ✅ التحقق من الحقول المطلوبة
+//     $request->validate([
+//         'user_id' => 'required|integer|exists:users,id',
+//         'festival_id' => 'required|integer|exists:festivals,id',
+//         'round_id' => 'required|integer|exists:rounds,id',
+//         'camal_id' => 'required|integer|exists:camel_round_participations,id',
+//     ]);
+
+//     try {
+//         // ✅ إنشاء الترشيح
+//         $nomination = Nomination::create([
+//             'user_id' => $request->user_id,
+//             'festival_id' => $request->festival_id,
+//             'round_id' => $request->round_id,
+//             'camel_round_participations_id' => $request->camal_id,
+//             'is_winner' => 0,
+//         ]);
+
+//         // ✅ جلب بيانات المشاركة
+//         $participation = \App\Models\CamelRoundParticipation::find($request->camal_id);
+
+//         if (!$participation) {
+//             return response()->json([
+//                 'success' => false,
+//                 'message' => 'لم يتم العثور على بيانات المشاركة',
+//             ], 404);
+//         }
+
+//         // ✅ جلب بيانات الجولة والمهرجان
+//         $round = \App\Models\Round::find($request->round_id);
+//         $festival = \App\Models\Festival::find($request->festival_id);
+
+//         // ✅ تجهيز البيانات النهائية
+//         $camelData = [
+//             'id' => $participation->id,
+//             'festival_id' => $participation->festival_id,
+//             'round_id' => $participation->round_id,
+//             'camel_name' => $participation->camel_name,
+//             'camel_age_name' => $participation->camel_age_name,
+//             'camel_owner_name' => $participation->camel_owner_name,
+//             'camel_owner_country' => $participation->camel_owner_country,
+//             'registration_number' => $participation->registration_number,
+//             'is_winner' => $participation->is_winner,
+//         ];
+
+//         // ✅ استجابة JSON شاملة
+//         return response()->json([
+//             'success' => true,
+//             'message' => 'تم إضافة الترشيح بنجاح',
+//             'nomination' => $nomination,
+//             'camel_participation' => $camelData,
+//             'round' => $round,
+//             'festival' => $festival,
+//         ], 201);
+
+//     } catch (\Exception $e) {
+//         // ⚠️ في حال وجود خطأ
+//         return response()->json([
+//             'success' => false,
+//             'message' => 'حدث خطأ أثناء الإضافة',
+//             'error' => $e->getMessage(),
+//         ], 500);
+//     }
+// }
+
+
+
 public function addNominationUserAPI(Request $request)
 {
-    $camalId    = $request->camal_id;
-    $festivalId = $request->festival_id;
-    $roundId    = $request->round_id;
-    $userId     = $request->user_id;
-
-    // التأكد من وجود سجل في camel_round_participations أو إنشاؤه
-    $camalParticipation = \App\Models\CamelRoundParticipation::firstOrCreate(
-        [
-            'festival_id' => $festivalId,
-            'round_id' => $roundId,
-            'camal_id' => $camalId
-        ],
-        [
-            'registration_number' => 'C-'.$roundId.'-'.$camalId,
-            'is_winner' => 0
-        ]
-    );
-
-    // إنشاء الترشيح
-    $nomination = Nomination::create([
-        'user_id' => $userId,
-        'festival_id' => $festivalId,
-        'round_id' => $roundId,
-        'camel_round_participations_id' => $camalParticipation->id,
-        'is_winner' => 0,
+    // ✅ التحقق من الحقول المطلوبة
+    $request->validate([
+        'user_id' => 'required|integer|exists:users,id',
+        'festival_id' => 'required|integer|exists:festivals,id',
+        'round_id' => 'required|integer|exists:rounds,id',
+        'camal_id' => 'required|integer|exists:camel_round_participations,id',
     ]);
 
-    // تحميل بيانات الجمل + صاحبه + الشوط
-    $camalParticipation = $camalParticipation->load(['camal.user', 'round']);
+    try {
+        // ✅ إنشاء الترشيح
+        $nomination = Nomination::create([
+            'user_id' => $request->user_id,
+            'festival_id' => $request->festival_id,
+            'round_id' => $request->round_id,
+            'camel_round_participations_id' => $request->camal_id,
+            'is_winner' => 0,
+        ]);
 
-    // بيانات الجمل + صاحبه
-    $camalData = null;
-    if ($camalParticipation->camal) {
-        $camalData = [
-            'id' => $camalParticipation->camal->id,
-            'name' => $camalParticipation->camal->name,
-            'photo' => $camalParticipation->camal->photo,
-        ];
+        // ✅ جلب بيانات المشاركة
+        $participation = \App\Models\CamelRoundParticipation::find($request->camal_id);
 
-        if ($camalParticipation->camal->user) {
-            $camalData = array_merge($camalData, [
-                'user_id'   => $camalParticipation->camal->user->id,
-                'fname'     => $camalParticipation->camal->user->fname,
-                'lname'     => $camalParticipation->camal->user->lname,
-                'email'     => $camalParticipation->camal->user->email,
-                'phone'     => $camalParticipation->camal->user->phone,
-                'user_photo'=> $camalParticipation->camal->user->photo,
-            ]);
+        if (!$participation) {
+            return response()->json([
+                'success' => false,
+                'message' => 'لم يتم العثور على بيانات المشاركة',
+            ], 404);
         }
-    }
 
-    // بيانات الشوط
-    $roundData = null;
-    if ($camalParticipation->round) {
-        $roundData = [
-            'id' => $camalParticipation->round->id,
-            'name' => $camalParticipation->round->name,
-            'name_en' => $camalParticipation->round->name_en,
-            'start' => \Carbon\Carbon::parse($camalParticipation->round->start)
-                        ->setTimezone('Asia/Kuwait')
-                        ->toDateTimeString(),
-            'end'   => \Carbon\Carbon::parse($camalParticipation->round->end)
-                        ->setTimezone('Asia/Kuwait')
-                        ->toDateTimeString(),
-            'status' => $camalParticipation->round->status,
+        // ✅ جلب بيانات الجولة والمهرجان
+        $round = \App\Models\Round::find($request->round_id);
+        $festival = \App\Models\Festival::find($request->festival_id);
+
+        // ✅ تجهيز البيانات النهائية
+        $camelData = [
+            'id' => $participation->id,
+            'festival_id' => $participation->festival_id,
+            'round_id' => $participation->round_id,
+            'camel_name' => $participation->camel_name,
+            'camel_age_name' => $participation->camel_age_name,
+            'camel_owner_name' => $participation->camel_owner_name,
+            'camel_owner_country' => $participation->camel_owner_country,
+            'registration_number' => $participation->registration_number,
+            'is_winner' => $participation->is_winner,
         ];
-    }
 
-    // بيانات المهرجان
-    $festival = \App\Models\Festival::find($festivalId);
-    $festivalData = null;
-    if ($festival) {
-        $festivalData = [
-            'id' => $festival->id,
-            'name' => $festival->name,
-            'name_en' => $festival->name_en,
-            'des' => $festival->des,
-            'des_en' => $festival->des_en,
-            'location' => $festival->location,
-            'start' => \Carbon\Carbon::parse($festival->start)
-                        ->setTimezone('Asia/Kuwait')
-                        ->toDateTimeString(),
-            'end'   => \Carbon\Carbon::parse($festival->end)
-                        ->setTimezone('Asia/Kuwait')
-                        ->toDateTimeString(),
-            'latitude' => $festival->latitude,
-            'longitude' => $festival->longitude,
-            'photo' => $festival->photo,
-            'status' => $festival->status,
-        ];
-    }
 
-    // استجابة JSON
-    return response()->json([
-        'success' => true,
-        'message' => 'تم إضافة الترشيح بنجاح',
-        'nomination' => $nomination,
-        'camal' => $camalData,
-        'round' => $roundData,
-        'festival' => $festivalData
-    ], 201);
+
+            // For Notification
+        // who users recive Notifications
+                        $user = User::where('role','admin')->get();
+/////
+        $userCreatNomination = User::find($request->user_id);
+        $camelRoundParticipation = CamelRoundParticipation::find($request->camal_id);
+        $festival = Festival::find($request->festival_id);
+        $round = Round::find($request->round_id);
+
+
+        Notification::send($user, new NominationNotification($userCreatNomination , $camelRoundParticipation, $festival,$round ));
+        // For Notification
+
+        // ✅ استجابة JSON شاملة
+        return response()->json([
+            'success' => true,
+            'message' => 'تم إضافة الترشيح بنجاح',
+            'nomination' => $nomination,
+            'camel_participation' => $camelData,
+            'round' => $round,
+            'festival' => $festival,
+        ], 201);
+
+    } catch (\Exception $e) {
+        // ⚠️ في حال وجود خطأ
+        return response()->json([
+            'success' => false,
+            'message' => 'حدث خطأ أثناء الإضافة',
+            'error' => $e->getMessage(),
+        ], 500);
+    }
 }
 
 
 // public function checkNominationApi(Request $request)
 // {
+
+//     // return "Hello";
 //     $userId     = $request->input('user_id');
 //     $festivalId = $request->input('festival_id');
 //     $roundId    = $request->input('round_id');
 
-//     $exists = \App\Models\Nomination::where('user_id', $userId)
-//         ->where('festival_id', $festivalId)
-//         ->where('round_id', $roundId)
-//         ->exists();
+//     // جلب الترشيح مع بيانات الجمل وصاحب الجمل والشوط والمهرجان
+//     $nomination = \App\Models\Nomination::with([
+//         'camelRoundParticipation.camal.user',
+//         'camelRoundParticipation.round',
+//         'festival'
+//     ])
+//     ->where('user_id', $userId)
+//     ->where('festival_id', $festivalId)
+//     ->where('round_id', $roundId)
+//     ->first();
+
+//     $alreadyNominated = $nomination ? true : false;
+
+//     $data = null;
+//     if ($alreadyNominated) {
+//         $camalData = null;
+//         $roundData = null;
+//         $festivalData = null;
+
+//         if ($nomination->camelRoundParticipation && $nomination->camelRoundParticipation->camal) {
+//             $camal = $nomination->camelRoundParticipation->camal;
+//             $camalData = [
+//                 'id' => $camal->id,
+//                 'name' => $camal->name,
+//                 'photo' => $camal->photo,
+//                 'owner' => $camal->user ? [
+//                     'id' => $camal->user->id,
+//                     'fname' => $camal->user->fname,
+//                     'lname' => $camal->user->lname,
+//                     'email' => $camal->user->email,
+//                     'phone' => $camal->user->phone,
+//                     'photo' => $camal->user->photo,
+//                 ] : null,
+//             ];
+//         }
+
+//         if ($nomination->camelRoundParticipation && $nomination->camelRoundParticipation->round) {
+//             $round = $nomination->camelRoundParticipation->round;
+//             $roundData = [
+//                 'id' => $round->id,
+//                 'name' => $round->name,
+//                 'name_en' => $round->name_en,
+//                 'des' => $round->des,
+//                 'des_en' => $round->des_en,
+//                 'start' => $round->start,
+//                 'end' => $round->end,
+//                 'status' => $round->status,
+//                 'round_type' => $round->round_type,
+//             ];
+//         }
+
+//         if ($nomination->festival) {
+//             $festival = $nomination->festival;
+//             $festivalData = [
+//                 'id' => $festival->id,
+//                 'name' => $festival->name,
+//                 'name_en' => $festival->name_en,
+//                 'des' => $festival->des,
+//                 'des_en' => $festival->des_en,
+//                 'start' => $festival->start,
+//                 'end' => $festival->end,
+//                 'location' => $festival->location,
+//                 'status' => $festival->status,
+//             ];
+//         }
+
+//         $data = [
+//             'nomination_id' => $nomination->id,
+//             'is_winner' => $nomination->is_winner,
+//             'created_at' => $nomination->created_at,
+//             'created_at_human' => $nomination->created_at
+//                 ? \Carbon\Carbon::parse($nomination->created_at)
+//                     ->locale('ar') // تعريب
+//                     ->diffForHumans()
+//                 : null,
+//             'updated_at' => $nomination->updated_at,
+//             // 'camal' => $camalData,
+//             'round' => $roundData,
+//             'festival' => $festivalData,
+//         ];
+//     }
 
 //     return response()->json([
 //         'success' => true,
-//         'already_nominated' => $exists,
-//         'message' => $exists
+//         'already_nominated' => $alreadyNominated,
+//         'message' => $alreadyNominated
 //             ? 'المستخدم قام بالترشيح مسبقاً'
-//             : 'المستخدم لم يقم بالترشيح بعد'
+//             : 'المستخدم لم يقم بالترشيح بعد',
+//         'data' => $data
 //     ]);
 // }
+
+
 
 
 public function checkNominationApi(Request $request)
@@ -508,83 +789,75 @@ public function checkNominationApi(Request $request)
     $festivalId = $request->input('festival_id');
     $roundId    = $request->input('round_id');
 
-    // جلب الترشيح مع بيانات الجمل وصاحب الجمل والشوط والمهرجان
-    $nomination = \App\Models\Nomination::with([
-        'camelRoundParticipation.camal.user',
-        'camelRoundParticipation.round',
-        'festival'
-    ])
-    ->where('user_id', $userId)
-    ->where('festival_id', $festivalId)
-    ->where('round_id', $roundId)
-    ->first();
+    // البحث عن الترشيح بناءً على المستخدم والمهرجان والشوط
+    $nomination = \App\Models\Nomination::where('user_id', $userId)
+        ->where('festival_id', $festivalId)
+        ->where('round_id', $roundId)
+        ->first();
 
     $alreadyNominated = $nomination ? true : false;
-
     $data = null;
+
     if ($alreadyNominated) {
-        $camalData = null;
-        $roundData = null;
-        $festivalData = null;
 
-        if ($nomination->camelRoundParticipation && $nomination->camelRoundParticipation->camal) {
-            $camal = $nomination->camelRoundParticipation->camal;
-            $camalData = [
-                'id' => $camal->id,
-                'name' => $camal->name,
-                'photo' => $camal->photo,
-                'owner' => $camal->user ? [
-                    'id' => $camal->user->id,
-                    'fname' => $camal->user->fname,
-                    'lname' => $camal->user->lname,
-                    'email' => $camal->user->email,
-                    'phone' => $camal->user->phone,
-                    'photo' => $camal->user->photo,
-                ] : null,
+        // ✅ جلب بيانات الجمل من جدول camel_round_participations
+        $camelParticipation = null;
+        if ($nomination->camel_round_participations_id) {
+            $camelParticipation = \App\Models\CamelRoundParticipation::find($nomination->camel_round_participations_id);
+        }
+
+        // ✅ إعداد بيانات الجمل إن وجدت
+        $camelData = null;
+        if ($camelParticipation) {
+            $camelData = [
+                'id' => $camelParticipation->id,
+                'camel_name' => $camelParticipation->camel_name,
+                'camel_age_name' => $camelParticipation->camel_age_name,
+                'camel_owner_name' => $camelParticipation->camel_owner_name,
+                'camel_owner_country' => $camelParticipation->camel_owner_country,
+                'registration_number' => $camelParticipation->registration_number,
+                'is_winner' => $camelParticipation->is_winner,
             ];
         }
 
-        if ($nomination->camelRoundParticipation && $nomination->camelRoundParticipation->round) {
-            $round = $nomination->camelRoundParticipation->round;
-            $roundData = [
-                'id' => $round->id,
-                'name' => $round->name,
-                'name_en' => $round->name_en,
-                'des' => $round->des,
-                'des_en' => $round->des_en,
-                'start' => $round->start,
-                'end' => $round->end,
-                'status' => $round->status,
-                'round_type' => $round->round_type,
-            ];
-        }
+        // ✅ إعداد بيانات الجولة من العلاقة round (إن وجدت)
+        $round = $nomination->round ?? null;
+        $roundData = $round ? [
+            'id' => $round->id,
+            'name' => $round->name,
+            'name_en' => $round->name_en,
+            'des' => $round->des,
+            'des_en' => $round->des_en,
+            'start' => $round->start,
+            'end' => $round->end,
+            'status' => $round->status,
+            'round_type' => $round->round_type,
+        ] : null;
 
-        if ($nomination->festival) {
-            $festival = $nomination->festival;
-            $festivalData = [
-                'id' => $festival->id,
-                'name' => $festival->name,
-                'name_en' => $festival->name_en,
-                'des' => $festival->des,
-                'des_en' => $festival->des_en,
-                'start' => $festival->start,
-                'end' => $festival->end,
-                'location' => $festival->location,
-                'status' => $festival->status,
-            ];
-        }
+        // ✅ إعداد بيانات المهرجان من العلاقة festival (إن وجدت)
+        $festival = $nomination->festival ?? null;
+        $festivalData = $festival ? [
+            'id' => $festival->id,
+            'name' => $festival->name,
+            'name_en' => $festival->name_en,
+            'des' => $festival->des,
+            'des_en' => $festival->des_en,
+            'start' => $festival->start,
+            'end' => $festival->end,
+            'location' => $festival->location,
+            'status' => $festival->status,
+        ] : null;
 
+        // ✅ بناء الاستجابة النهائية
         $data = [
             'nomination_id' => $nomination->id,
             'is_winner' => $nomination->is_winner,
             'created_at' => $nomination->created_at,
             'created_at_human' => $nomination->created_at
-                ? \Carbon\Carbon::parse($nomination->created_at)
-                    ->locale('ar') // تعريب
-                    ->diffForHumans()
+                ? \Carbon\Carbon::parse($nomination->created_at)->locale('ar')->diffForHumans()
                 : null,
             'updated_at' => $nomination->updated_at,
-            'camal' => $camalData,
+            'camel' => $camelData,
             'round' => $roundData,
             'festival' => $festivalData,
         ];
@@ -599,7 +872,6 @@ public function checkNominationApi(Request $request)
         'data' => $data
     ]);
 }
-
 
 
 
@@ -714,51 +986,147 @@ public function checkNominationApi(Request $request)
 
 
 
+// public function getUserNominationsApi(Request $request)
+// {
+//     $userId = $request->input('user_id');
+//     $festivalId = $request->input('festival_id');
+
+
+//     // جلب كل الترشيحات للمستخدم مع العلاقات اللازمة
+//     $nominations = \App\Models\Nomination::with([
+//         'camelRoundParticipation.camal.user',
+//         'camelRoundParticipation.round',
+//         'festival'
+//     ])
+//     ->where('user_id', $userId)
+//     ->where('festival_id', $festivalId)
+//     ->orderBy('created_at', 'desc')
+//     ->get();
+
+//     $result = [];
+
+//     foreach ($nominations as $nomination) {
+//         $camalData = null;
+//         $roundData = null;
+//         $festivalData = null;
+
+//         // camal + owner
+//         if ($nomination->camelRoundParticipation && $nomination->camelRoundParticipation->camal) {
+//             $camal = $nomination->camelRoundParticipation->camal;
+//             $owner = $camal->user ?? null;
+//             $camalData = [
+//                 'id' => $camal->id,
+//                 'name' => $camal->name,
+//                 'age_name' => $camal->age_name,
+//                 'photo' => $camal->photo,
+//                 'owner' => $owner ? [
+//                     'id' => $owner->id,
+//                     'fname' => $owner->fname,
+//                     'lname' => $owner->lname,
+//                     'email' => $owner->email,
+//                     'phone' => $owner->phone,
+//                     'photo' => $owner->photo,
+//                 ] : null,
+//             ];
+//         }
+
+//         // round
+//         if ($nomination->camelRoundParticipation && $nomination->camelRoundParticipation->round) {
+//             $round = $nomination->camelRoundParticipation->round;
+//             $roundData = [
+//                 'id' => $round->id,
+//                 'name' => $round->name,
+//                 'name_en' => $round->name_en,
+//                 'des' => $round->des,
+//                 'des_en' => $round->des_en,
+//                 'start' => $round->start,
+//                 'end' => $round->end,
+//                 'status' => $round->status,
+//                 'round_type' => $round->round_type,
+//             ];
+//         }
+
+//         // festival
+//         if ($nomination->festival) {
+//             $festival = $nomination->festival;
+//             $festivalData = [
+//                 'id' => $festival->id,
+//                 'name' => $festival->name,
+//                 'name_en' => $festival->name_en,
+//                 'des' => $festival->des,
+//                 'des_en' => $festival->des_en,
+//                 'start' => $festival->start,
+//                 'end' => $festival->end,
+//                 'start_date_human' => $festival->start
+//                     ? \Carbon\Carbon::parse($festival->start)
+//                         ->timezone(config('app.timezone'))
+//                         ->format('d/m/Y')
+//                     : null,
+//                 'end_date_human' => $festival->end
+//                     ? \Carbon\Carbon::parse($festival->end)
+//                         ->timezone(config('app.timezone'))
+//                         ->format('d/m/Y')
+//                     : null,
+//                 'location' => $festival->location,
+//                 'status' => $festival->status,
+//             ];
+//         }
+
+//         $result[] = [
+//             'nomination_id' => $nomination->id,
+//                         'points' => $nomination->points,
+
+//             'is_winner' => $nomination->is_winner,
+//             'created_at' => $nomination->created_at,
+//             'created_at_human' => $nomination->created_at
+//                 ? \Carbon\Carbon::parse($nomination->created_at)
+//                     ->locale('ar')
+//                     ->diffForHumans()
+//                 : null,
+//             'updated_at' => $nomination->updated_at,
+//             'camal' => $camalData,
+//             'round' => $roundData,
+//             'festival' => $festivalData,
+//         ];
+//     }
+
+//     return response()->json($result);
+// }
+
 public function getUserNominationsApi(Request $request)
 {
     $userId = $request->input('user_id');
     $festivalId = $request->input('festival_id');
 
-
     // جلب كل الترشيحات للمستخدم مع العلاقات اللازمة
-    $nominations = \App\Models\Nomination::with([
-        'camelRoundParticipation.camal.user',
-        'camelRoundParticipation.round',
-        'festival'
-    ])
-    ->where('user_id', $userId)
-    ->where('festival_id', $festivalId)
-    ->orderBy('created_at', 'desc')
-    ->get();
+    $nominations = \App\Models\Nomination::with(['festival', 'camelRoundParticipation.round'])
+        ->where('user_id', $userId)
+        ->where('festival_id', $festivalId)
+        ->orderBy('created_at', 'desc')
+        ->get();
 
     $result = [];
 
     foreach ($nominations as $nomination) {
-        $camalData = null;
+        $camelData = null;
         $roundData = null;
         $festivalData = null;
 
-        // camal + owner
-        if ($nomination->camelRoundParticipation && $nomination->camelRoundParticipation->camal) {
-            $camal = $nomination->camelRoundParticipation->camal;
-            $owner = $camal->user ?? null;
-            $camalData = [
-                'id' => $camal->id,
-                'name' => $camal->name,
-                'age_name' => $camal->age_name,
-                'photo' => $camal->photo,
-                'owner' => $owner ? [
-                    'id' => $owner->id,
-                    'fname' => $owner->fname,
-                    'lname' => $owner->lname,
-                    'email' => $owner->email,
-                    'phone' => $owner->phone,
-                    'photo' => $owner->photo,
-                ] : null,
+        // ✅ جلب بيانات الجمل من جدول camel_round_participations
+        if ($nomination->camelRoundParticipation) {
+            $camel = $nomination->camelRoundParticipation;
+            $camelData = [
+                'id' => $camel->id,
+                'camel_name' => $camel->camel_name,
+                'camel_age_name' => $camel->camel_age_name,
+                'camel_owner_name' => $camel->camel_owner_name,
+                'camel_owner_country' => $camel->camel_owner_country,
+                'registration_number' => $camel->registration_number,
+                'is_winner' => $camel->is_winner,
             ];
         }
 
-        // round
+        // ✅ بيانات الشوط
         if ($nomination->camelRoundParticipation && $nomination->camelRoundParticipation->round) {
             $round = $nomination->camelRoundParticipation->round;
             $roundData = [
@@ -774,7 +1142,7 @@ public function getUserNominationsApi(Request $request)
             ];
         }
 
-        // festival
+        // ✅ بيانات المهرجان
         if ($nomination->festival) {
             $festival = $nomination->festival;
             $festivalData = [
@@ -800,10 +1168,10 @@ public function getUserNominationsApi(Request $request)
             ];
         }
 
+        // ✅ بناء النتيجة النهائية
         $result[] = [
             'nomination_id' => $nomination->id,
-                        'points' => $nomination->points,
-
+            'points' => $nomination->points,
             'is_winner' => $nomination->is_winner,
             'created_at' => $nomination->created_at,
             'created_at_human' => $nomination->created_at
@@ -812,7 +1180,7 @@ public function getUserNominationsApi(Request $request)
                     ->diffForHumans()
                 : null,
             'updated_at' => $nomination->updated_at,
-            'camal' => $camalData,
+            'camal' => $camelData, // ← بيانات الجمل الآن من جدول camel_round_participations
             'round' => $roundData,
             'festival' => $festivalData,
         ];
@@ -820,7 +1188,6 @@ public function getUserNominationsApi(Request $request)
 
     return response()->json($result);
 }
-
 
 
 

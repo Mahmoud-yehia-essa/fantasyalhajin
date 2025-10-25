@@ -54,14 +54,14 @@ class FestivalPointController extends Controller
     public function update(Request $request, $id)
     {
         $request->validate([
-            'festival_id' => 'required|exists:festivals,id',
+            // 'festival_id' => 'required|exists:festivals,id',
             'age_name'    => 'required|in:الحقايق,اللقايا,الجذاع,الثنايا,زمول,الحيل',
             'points'      => 'required|numeric|min:0',
         ]);
 
         $point = FestivalPoint::findOrFail($id);
         $point->update([
-            'festival_id' => $request->festival_id,
+            // 'festival_id' => $request->festival_id,
             'age_name'    => $request->age_name,
             'points'      => $request->points,
         ]);

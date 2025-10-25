@@ -18,6 +18,7 @@ use App\Http\Controllers\AppVersionController;
 use App\Http\Controllers\NominationController;
 use App\Http\Controllers\FestivalPointController;
 use App\Http\Controllers\LiveBroadcastController;
+use App\Http\Controllers\NotificationForAppController;
 
 
 // PostMan URL for V1 remote : https://chraimba.net/admin-dashboard/public
@@ -192,6 +193,15 @@ Route::post('/get/coupon',[CouponController::class,'getCouponByNameApi']);
 
 
 Route::get('/get/sponsor',[SponsorController::class,'getSponsor']);
+
+
+Route::post('/update/token',[NotificationForAppController::class,'updateTokenApi']);
+
+Route::post('/get/notification',[NotificationForAppController::class,'getNotificationApiForUser']);
+
+Route::post('/update/notification/userView',[NotificationForAppController::class,'UpdateNotificationUserView']);
+
+
 
 
 
