@@ -34,7 +34,6 @@
                                         <select  name="role" class="form-select" aria-label="Default select example">
                                             <option selected="" value="non">الرجاء إختيار نوع المستخدم</option>
 
-                                        <option {{$user->role === 'owner' ? 'selected' : ''}} value="owner">مالك</option>
                                          <option {{$user->role === 'admin' ? 'selected' : ''}} value="admin">مدير</option>
                                         <option {{$user->role === 'user' ? 'selected' : ''}}  value="user">مستخدم</option>
 
@@ -52,7 +51,7 @@
                             <!-- First Name -->
                             <div class="row mb-3">
                                 <div class="col-sm-3">
-                                    <h6 class="mb-0">الاسم</h6>
+                                    <h6 class="mb-0">الإسم الأول</h6>
                                 </div>
                                 <div class="col-sm-9 text-secondary">
                                     <input name="fname" value="{{$user->fname}}" type="text" class="form-control" value="{{ old('fname') }}" />
@@ -60,7 +59,7 @@
                                 </div>
                             </div>
 
-                            {{-- <!-- Last Name -->
+                            <!-- Last Name -->
                             <div class="row mb-3">
                                 <div class="col-sm-3">
                                     <h6 class="mb-0">اسم العائلة</h6>
@@ -69,7 +68,7 @@
                                     <input name="lname" type="text" value="{{$user->lname}}" class="form-control" value="{{ old('lname') }}" />
                                     @error('lname') <span class="text-danger">{{ $message }}</span> @enderror
                                 </div>
-                            </div> --}}
+                            </div>
 
                             <!-- Email -->
                             <div class="row mb-3">

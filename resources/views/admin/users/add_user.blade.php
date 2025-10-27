@@ -4,7 +4,7 @@
 
 <!--breadcrumb-->
 <div class="page-breadcrumb d-none d-sm-flex align-items-center mb-3">
-    <div class="breadcrumb-title pe-3">اضافة مستخدم جديد</div>
+    <div class="breadcrumb-title pe-3">zاضافة مستخدم جديد</div>
 </div>
 <!--end breadcrumb-->
 <div class="container">
@@ -27,7 +27,6 @@
                                         <select  name="role" class="form-select" aria-label="Default select example">
                                             <option selected="" value="non">الرجاء إختيار نوع المستخدم</option>
 
-                                        <option value="owner">مالك</option>
                                          <option value="admin">مدير</option>
                                         <option  value="user">مستخدم</option>
 
@@ -50,6 +49,17 @@
                                 <div class="col-sm-9 text-secondary">
                                     <input name="fname" type="text" class="form-control" value="{{ old('fname') }}" />
                                     @error('fname') <span class="text-danger">{{ $message }}</span> @enderror
+                                </div>
+                            </div>
+
+                               <!-- Last Name -->
+                            <div class="row mb-3">
+                                <div class="col-sm-3">
+                                    <h6 class="mb-0">اسم العائلة</h6>
+                                </div>
+                                <div class="col-sm-9 text-secondary">
+                                    <input name="lname" type="text" class="form-control" value="{{ old('lname') }}" />
+                                    @error('lname') <span class="text-danger">{{ $message }}</span> @enderror
                                 </div>
                             </div>
 
@@ -107,16 +117,7 @@
                                 </div>
                             </div>
 
-                            <!-- Last Name -->
-                            {{-- <div class="row mb-3">
-                                <div class="col-sm-3">
-                                    <h6 class="mb-0">اسم العائلة</h6>
-                                </div>
-                                <div class="col-sm-9 text-secondary">
-                                    <input name="lname" type="text" class="form-control" value="{{ old('lname') }}" />
-                                    @error('lname') <span class="text-danger">{{ $message }}</span> @enderror
-                                </div>
-                            </div> --}}
+
 
                             <!-- Email -->
                             <div class="row mb-3">

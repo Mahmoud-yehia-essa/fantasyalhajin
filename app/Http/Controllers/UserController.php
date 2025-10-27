@@ -361,7 +361,7 @@ if ($old_email == $request->email) {
          'role' => 'required|not_in:non',
 
             'fname' => 'required|string|max:255',
-            // 'lname' => 'required|string|max:255',
+            'lname' => 'required|string|max:255',
             // 'email' => 'required|email|unique:users,email',
             // 'password' => 'required|min:6|confirmed',
 
@@ -391,9 +391,9 @@ $request->validate($rules, [
             'fname.string' => 'يجب أن يكون الاسم الأول نصًا.',
             'fname.max' => 'يجب ألا يزيد الاسم الأول عن 255 حرفًا.',
 
-            // 'lname.required' => 'حقل اسم العائلة مطلوب.',
-            // 'lname.string' => 'يجب أن يكون اسم العائلة نصًا.',
-            // 'lname.max' => 'يجب ألا يزيد اسم العائلة عن 255 حرفًا.',
+            'lname.required' => 'حقل اسم العائلة مطلوب.',
+            'lname.string' => 'يجب أن يكون اسم العائلة نصًا.',
+            'lname.max' => 'يجب ألا يزيد اسم العائلة عن 255 حرفًا.',
 
             'email.required' => 'حقل البريد الإلكتروني مطلوب.',
             'email.email' => 'يجب إدخال بريد إلكتروني صالح.',
