@@ -12,4 +12,11 @@ class IndexController extends Controller
 
         return view('frontend.payment.soon');
     }
+
+    public function showPrivacy()
+    {
+        return view("frontend.payment.privacy");
+
+
+    }
 }

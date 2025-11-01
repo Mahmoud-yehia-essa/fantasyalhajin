@@ -42,6 +42,8 @@ Route::controller(IndexController::class)->group(function () {
 
     Route::get('/', 'showSoon')->name('show.soon');
 
+     Route::get('/privacy', 'showPrivacy')->name('privacy.policy');
+
 
 });
 
