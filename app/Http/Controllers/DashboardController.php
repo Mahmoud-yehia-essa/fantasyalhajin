@@ -11,6 +11,7 @@ use App\Models\Festival;
 use App\Models\Question;
 use App\Models\Nomination;
 use Illuminate\Http\Request;
+use App\Models\CamelRoundParticipation;
 
 class DashboardController extends Controller
 {
@@ -21,7 +22,10 @@ class DashboardController extends Controller
 
     $festival = Festival::latest()->get();
      $rounds = Round::latest()->get();
-     $camal = Camal::latest()->get();
+    //  $camal = Camal::latest()->get();
+
+
+     $camal = CamelRoundParticipation::latest()->get();
 
           $nomination = Nomination::latest()->get();
 
@@ -35,6 +39,9 @@ class DashboardController extends Controller
     $games = Game::latest()->get();
 
     $questions = Question::latest()->get();
+
+
+
 
     return view('admin.index',compact('users','category','games','questions','festival','rounds','camal','nomination'));
 

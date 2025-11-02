@@ -1,4 +1,42 @@
 <header>
+
+    <style>
+          /* الاستايل الخاص بالاشعارات*/
+
+  /* إجبار ظهور التمرير داخل القائمة */
+.dropdown-menu {
+    overflow: visible; /* تأكد أن الوالد لا يخفي المحتوى */
+}
+
+/* العنصر الذي يحتوي الإشعارات */
+.header-notifications-list.ps,
+.header-notifications-list {
+    max-height: 300px !important;      /* ارتفاع أقصى */
+    overflow-y: auto !important;       /* تفعيل التمرير العمودي */
+    -webkit-overflow-scrolling: touch; /* smooth scrolling على iOS */
+}
+
+/* لو كانت مكتبة PerfectScrollbar تضيف عناصر داخلية (ps__rail-y) */
+.ps__rail-y {
+    display: block !important;
+}
+
+/* ✅ تحسين التفاف النص داخل الإشعارات */
+.header-notifications-list a,
+.header-notifications-list p,
+.header-notifications-list h6 {
+    white-space: normal !important;   /* يسمح بتعدد الأسطر */
+    word-wrap: break-word !important; /* يكسر الكلمات الطويلة */
+    overflow-wrap: break-word !important; /* دعم إضافي للمتصفحات الحديثة */
+}
+
+          /* انتهاء الاستايل الخاص بالاشعارات*/
+
+</style>
+
+
+
+
     <div class="topbar d-flex align-items-center">
         <nav class="navbar navbar-expand gap-3">
             <div class="mobile-toggle-menu"><i class='bx bx-menu'></i>
@@ -551,91 +589,83 @@
                         </div>
                     </li>
 
-      @php
-                                            $ncount = Auth::user()->unreadNotifications()->count()
-                                            @endphp
-                    <li class="nav-item dropdown dropdown-large">
-								<a class="nav-link dropdown-toggle dropdown-toggle-nocaret position-relative" href="#" data-bs-toggle="dropdown" aria-expanded="false">
-                                    @if ($ncount != 0)
-                                                                            <span class="alert-count">{{$ncount}}</span>
+    @php
+    $ncount = Auth::user()->unreadNotifications()->count();
+@endphp
 
-                                    @else
+<li class="nav-item dropdown dropdown-large">
+    <a class="nav-link dropdown-toggle dropdown-toggle-nocaret position-relative" href="#" data-bs-toggle="dropdown" aria-expanded="false">
+        @if ($ncount != 0)
+            <span class="alert-count">{{ $ncount }}</span>
+        @endif
+        <i class="bx bx-bell"></i>
+    </a>
 
-                                    @endif
+    <div class="dropdown-menu dropdown-menu-end">
+        <a href="javascript:;">
+            <div class="msg-header">
+                <p class="msg-header-title">الإشعارات</p>
+            </div>
+        </a>
 
-									<i class="bx bx-bell"></i>
-								</a>
-								<div class="dropdown-menu dropdown-menu-end">
-									<a href="javascript:;">
-										<div class="msg-header">
-											<p class="msg-header-title">الإشعارات</p>
+        <!-- ✅ قائمة الإشعارات مع scroll -->
+        <div class="header-notifications-list ps"
+             style="max-height: 300px; overflow-y: auto; scrollbar-width: thin; scrollbar-color: #ED7032 #f1f1f1;">
 
-                                        {{-- <p class="msg-header-badge">{{ $ncount !== 0 ? $ncount : "" }}</p> --}}
+            @php
+                $user = Auth::user();
+            @endphp
 
-										</div>
-									</a>
-									<div class="header-notifications-list ps">
+            @forelse ($user->unreadNotifications as $notification)
 
+                <a class="dropdown-item" href="{{ route('notification.read', $notification) }}">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-grow-1">
+                            <h6 class="msg-name">
+                                {{ $notification->data['type'] }}
+                                <span class="msg-time float-end">
+                                    {{ $notification->created_at->diffForHumans() }}
+                                </span>
+                            </h6>
 
+                            <p class="msg-info">
+                                {{ $notification->data['message'] }} بواسطة المستخدم
+                                <span style="color: red">
+                                    {{ $notification->data['userCreatNomination']['fname'] ?? '—' }}
+                                </span>
+                            </p>
 
-                                        @php
-                                            $user = Auth::user();
+                            <p class="msg-info">
+                                رشح المطية
+                                <span style="color: red">
+                                    {{ $notification->data['camelRoundParticipation']['camel_name'] ?? '—' }}
+                                </span>
+                            </p>
 
-                                        @endphp
+                            <p class="msg-info">
+                                في الشوط
+                                <span style="color: red">
+                                    {{ $notification->data['round']['name'] ?? '—' }}
+                                </span>
+                            </p>
 
-                                        @forelse ($user->unreadNotifications as $notification )
-                                <a class="dropdown-item" href="{{route('notification.read',$notification)}}">
-											<div class="d-flex align-items-center">
-												{{-- <div class="notify bg-light-danger text-danger">dc
-												</div> --}}
-												<div class="flex-grow-1">
-													<h6 class="msg-name"> {{$notification->data['type']}}<span class="msg-time float-end">
-                                                        {{$notification->created_at->diffForHumans()}}
-												</span></h6>
-													<p class="msg-info">{{$notification->data['message']}}
-                                                        بواسطة المستخدم
-                                                        <span style="color: red">
-                                                        {{$notification->data['userCreatNomination']['fname']}}
-                                                        </span>
-
-                                                    </p>
-                                                    <p class="msg-info">
-                                                        رشح المطية
-                                                                                                                <span style="color: red">
-                                                        <span style="color: red">
-
-                                                        {{$notification->data['camelRoundParticipation']['camel_name']}}
-                                                        </span>
-
-                                                    </p>
-
-                                                       <p class="msg-info">
-                                                      في الشوط
-                                                                                                                <span style="color: red">
-                                                        <span style="color: red">
-
-{{ $notification->data['round']['name'] ?? '—' }}
-                                                        </span>
-
-                                                    </p>
-
-                                                              <p class="msg-info">
-                                                       المهرجان
-                                                                                                                <span style="color: red">
-                                                        <span style="color: red">
-
-{{ $notification->data['festival']['name'] ?? '—' }}
-                                                        </span>
-
-                                                    </p>
+                            <p class="msg-info">
+                                المهرجان
+                                <span style="color: red">
+                                    {{ $notification->data['festival']['name'] ?? '—' }}
+                                </span>
+                            </p>
+                        </div>
+                    </div>
+                </a>
 
 
-												</div>
-											</div>
-										</a>
-                                        @empty
-
-                                        @endforelse
+            @empty
+                <p class="text-center text-muted p-3">لا توجد إشعارات جديدة</p>
+            @endforelse
+        </div>
+    </div>
+</li>
 
 
 

@@ -115,7 +115,7 @@
       </div>
     </div>
     <div class="col">
-        <a href="{{route('all.camal')}}">
+        {{-- <a href="{{route('all.camal')}}"> --}}
 
         <div class="card radius-10 bg-gradient-darkteal">
         <div class="card-body">
@@ -133,7 +133,7 @@
                 <p class="mb-0">عدد المطايا</p>
             </div>
         </div>
-    </a>
+    {{-- </a> --}}
 
     </div>
     </div>
