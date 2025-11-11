@@ -845,8 +845,12 @@ public function getRoundsByDateApi(Request $request)
         ->orderBy('start', 'asc')
         ->get()
         ->map(function ($item) use ($now) {
-            $start = \Carbon\Carbon::parse($item->start)->setTimezone('Asia/Kuwait');
-            $end   = \Carbon\Carbon::parse($item->end)->setTimezone('Asia/Kuwait');
+            // $start = \Carbon\Carbon::parse($item->start)->setTimezone('Asia/Kuwait');
+            // $end   = \Carbon\Carbon::parse($item->end)->setTimezone('Asia/Kuwait');
+
+            $start = \Carbon\Carbon::parse($item->start)->setTimezone('Asia/Riyadh');
+$end   = \Carbon\Carbon::parse($item->end)->setTimezone('Asia/Riyadh');
+
 
             // صيغة الوقت (12 ساعة AM/PM)
             $startTime = $start->format('h:i A');
