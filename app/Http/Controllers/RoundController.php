@@ -838,7 +838,7 @@ public function getRoundsByDateApi(Request $request)
 
 
     // الوقت الحالي بتوقيت الكويت
-    $now = now('Asia/Kuwait');
+    $now = now('Asia/Riyadh');
 
     $rounds = Round::where('festival_id', $festivalId)
         ->whereDate('start', $date)

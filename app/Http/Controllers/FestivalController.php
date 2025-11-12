@@ -516,7 +516,7 @@ public function getFestivalsApi(Request $request)
     $type  = $request->input('type', 'all'); // current, upcoming, ended, all
     $limit = $request->input('limit'); // 0 = all
 
-    $today = \Carbon\Carbon::now('Asia/Kuwait')->startOfDay();
+    $today = \Carbon\Carbon::now('Asia/Riyadh')->startOfDay();
 
     // helper function لإضافة نوع المهرجان وحساب human
     $addType = function ($festivals, $status) use ($today) {
@@ -524,13 +524,13 @@ public function getFestivalsApi(Request $request)
             $festival->type = $status;
 
             if ($festival->start) {
-                $start = \Carbon\Carbon::parse($festival->start)->setTimezone('Asia/Kuwait')->startOfDay();
+                $start = \Carbon\Carbon::parse($festival->start)->setTimezone('Asia/Riyadh')->startOfDay();
                 $festival->start_day   = $start->locale('ar')->dayName;
                 $festival->start_month = $start->locale('ar')->translatedFormat('F');
             }
 
             if ($festival->end) {
-                $end = \Carbon\Carbon::parse($festival->end)->setTimezone('Asia/Kuwait')->startOfDay();
+                $end = \Carbon\Carbon::parse($festival->end)->setTimezone('Asia/Riyadh')->startOfDay();
                 $festival->end_day   = $end->locale('ar')->dayName;
                 $festival->end_month = $end->locale('ar')->translatedFormat('F');
             }
