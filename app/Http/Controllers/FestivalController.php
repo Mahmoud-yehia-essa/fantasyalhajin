@@ -551,6 +551,7 @@ public function getFestivalsApi(Request $request)
     if ($type === 'current') {
         $festivals = Festival::whereDate('start', '<=', $today)
             ->whereDate('end', '>=', $today)
+            ->where('status', 'active')
             ->orderBy('start', 'asc');
 
         if (!is_null($limit) && $limit > 0) {
@@ -560,7 +561,7 @@ public function getFestivalsApi(Request $request)
         return response()->json($addType($festivals->get(), 'current'));
 
     } elseif ($type === 'upcoming') {
-        $festivals = Festival::whereDate('start', '>', $today)
+        $festivals = Festival::whereDate('start', '>', $today)->where('status', 'active')
             ->orderBy('start', 'asc');
 
         if (!is_null($limit) && $limit > 0) {
@@ -570,7 +571,7 @@ public function getFestivalsApi(Request $request)
         return response()->json($addType($festivals->get(), 'upcoming'));
 
     } elseif ($type === 'ended') {
-        $festivals = Festival::whereDate('end', '<', $today)
+        $festivals = Festival::whereDate('end', '<', $today)->where('status', 'active')
             ->orderBy('start', 'desc');
 
         if (!is_null($limit) && $limit > 0) {
@@ -583,15 +584,18 @@ public function getFestivalsApi(Request $request)
         // all → return current, then upcoming, then ended
         $current  = Festival::whereDate('start', '<=', $today)
             ->whereDate('end', '>=', $today)
+            ->where('status', 'active')
             ->orderBy('start', 'asc')
             ->get();
 
         $upcoming = Festival::whereDate('start', '>', $today)
             ->orderBy('start', 'asc')
+            ->where('status', 'active')
             ->get();
 
         $ended    = Festival::whereDate('end', '<', $today)
             ->orderBy('start', 'desc')
+            ->where('status', 'active')
             ->get();
 
         $festivals = collect()
