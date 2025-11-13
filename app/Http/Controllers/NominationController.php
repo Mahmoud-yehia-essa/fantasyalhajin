@@ -139,6 +139,8 @@ $nominations = Nomination::with(['user', 'camal', 'festival', 'round'])->get();
 
           $round->save();
 
+          return $round;
+
 
 
 
@@ -308,7 +310,7 @@ public function getCamalsByRound($roundId)
             'id' => $item->id,
             // 'camal_id' => $item->camal->id,
             'name' => $item->camel_name,
-                        'camel_owner_name' => $item->camel_name,
+                        'camel_owner_name' => $item->camel_owner_name,
 
         ];
     });

@@ -108,7 +108,7 @@ $(document).ready(function() {
                     $('#camal_id').empty();
                     $('#camal_id').append('<option value="">اختر المطية</option>');
                     $.each(data, function(key, value) {
-                        $('#camal_id').append('<option value="'+ value.id +'">'+ value.name +' ( المالك ' + value.camel_owner_name + ')'+ '</option>');
+                        $('#camal_id').append('<option value="'+ value.id +'">'+ value.name +' (  المالك ' + value.camel_owner_name + ')'+ '</option>');
                     });
                 },
                 error: function() {
