@@ -48,7 +48,7 @@
 @foreach($users as $key => $item)
 <tr>
 <td> {{ $key+1 }} </td>
-<td>{{ $item->fname }}</td>
+<td>{{ $item->fname }} {{ $item->lname }}</td>
 <td>{{ $item->phone }}</td>
 <td style="font-size: 32px; " >
     <p >{{ $item->country_flag }}</p>
