@@ -340,135 +340,196 @@ public function editRound($id)
 
 
 
+// // ✅ تحديث بيانات الشوط والمطايا
 // public function updateRound(Request $request)
 // {
+
+
 //     $request->validate([
-//         'id'            => 'required|exists:rounds,id',
+//         'round_id'      => 'required|exists:rounds,id',
 //         'festival_id'   => 'required|exists:festivals,id',
 //         'name'          => 'required|string|max:255',
 //         'name_en'       => 'nullable|string|max:255',
 //         'des'           => 'nullable|string',
 //         'des_en'        => 'nullable|string',
-//         'round_number'  => 'required|numeric',
+//         'round_number'  => 'required|integer',
 //         'start'         => 'required|date',
 //         'end'           => 'required|date|after_or_equal:start',
-//         'round_type'    => 'required|string',
-//         // 'age_name'      => 'nullable|string',
+//         'round_type'    => 'required|in:بكار,قعدان',
 //     ]);
 
-//     $round = \App\Models\Round::findOrFail($request->id);
+//     if (!$request->has('camals') || !is_array($request->camals) || count($request->camals) === 0) {
+//         return back()->withErrors(['camals' => 'يجب إضافة مطية واحدة على الأقل.'])->withInput();
+//     }
 
-//     // تحديث بيانات الجولة
+//     foreach ($request->camals as $index => $camal) {
+//         $row = $index + 1;
+//         if (
+//             empty($camal['name']) ||
+//             empty($camal['age_name']) ||
+//             empty($camal['owner_name']) ||
+//             empty($camal['country'])
+//         ) {
+//             return back()->withErrors([
+//                 'camals' => "يجب إدخال جميع البيانات في الصف رقم {$row}."
+//             ])->withInput();
+//         }
+//     }
+
+//     // ✅ تحديث بيانات الجولة
+//     $round = Round::findOrFail($request->round_id);
 //     $round->update([
-//         'festival_id'   => $request->festival_id,
-//         'name'          => $request->name,
-//         'name_en'       => $request->name_en,
-//         'des'           => $request->des,
-//         'des_en'        => $request->des_en,
-//         'round_number'  => $request->round_number,
-//         'start'         => $request->start,
-//         'end'           => $request->end,
-//         'round_type'    => $request->round_type,
-//         // 'age_name'      => $request->age_name,
+//         'festival_id'  => $request->festival_id,
+//         'name'         => $request->name,
+//         'name_en'      => $request->name_en,
+//         'des'          => $request->des,
+//         'des_en'       => $request->des_en,
+//         'round_number' => $request->round_number,
+//         'start'        => $request->start,
+//         'end'          => $request->end,
+//         'round_type'   => $request->round_type,
 //     ]);
 
-//     // حذف المشاركات القديمة
+//     // ✅ حذف المطايا القديمة وإعادة إدخال الجديدة
 //     CamelRoundParticipation::where('round_id', $round->id)->delete();
 
-//     // إضافة المشاركات الجديدة
-//     if ($request->has('camals')) {
-//         foreach ($request->camals as $camalId => $data) {
-//             if (isset($data['selected'])) {
-//                 $registrationNumber = $data['number'] ?? null;
-
-//                 \App\Models\CamelRoundParticipation::create([
-//                     'festival_id'         => $request->festival_id,
-//                     'round_id'            => $round->id,
-//                     'camal_id'            => $camalId,
-//                     'registration_number' => $registrationNumber,
-//                 ]);
-//             }
-//         }
+//     foreach ($request->camals as $index => $camal) {
+//         CamelRoundParticipation::create([
+//             'festival_id'          => $request->festival_id,
+//             'round_id'             => $round->id,
+//             'registration_number'  => $camal['registration_number'] ?? $index + 1,
+//             'camel_name'           => $camal['name'],
+//             'camel_age_name'       => $camal['age_name'],
+//             'camel_owner_name'     => $camal['owner_name'],
+//             'camel_owner_country'  => $camal['country'],
+//             'created_at'           => now(),
+//             'updated_at'           => now(),
+//         ]);
 //     }
 
-//     return redirect()->route('all.round')->with('success', 'تم تحديث الجولة بنجاح');
+//     $notification = [
+//         'message' => 'تم تعديل الشوط والمطايا بنجاح',
+//         'alert-type' => 'success'
+//     ];
+
+//     return redirect()->route('all.round')->with($notification);
 // }
-
-
 
 
 // public function updateRound(Request $request)
 // {
 //     $request->validate([
-//         'id'            => 'required|exists:rounds,id',
+//         'round_id'      => 'required|exists:rounds,id',
 //         'festival_id'   => 'required|exists:festivals,id',
 //         'name'          => 'required|string|max:255',
 //         'name_en'       => 'nullable|string|max:255',
 //         'des'           => 'nullable|string',
 //         'des_en'        => 'nullable|string',
-//         'round_number'  => 'required|numeric',
+//         'round_number'  => 'required|integer',
 //         'start'         => 'required|date',
 //         'end'           => 'required|date|after_or_equal:start',
-//         'round_type'    => 'required|string',
-//         // 'age_name'    => 'nullable|string',
+//         'round_type'    => 'required|in:بكار,قعدان',
 //     ]);
 
-//     $round = \App\Models\Round::findOrFail($request->id);
+//     if (!$request->has('camals') || !is_array($request->camals) || count($request->camals) === 0) {
+//         return back()->withErrors(['camals' => 'يجب إضافة مطية واحدة على الأقل.'])->withInput();
+//     }
 
-//     // تحديث بيانات الجولة
-//     $round->update([
-//         'festival_id'   => $request->festival_id,
-//         'name'          => $request->name,
-//         'name_en'       => $request->name_en,
-//         'des'           => $request->des,
-//         'des_en'        => $request->des_en,
-//         'round_number'  => $request->round_number,
-//         'start'         => $request->start,
-//         'end'           => $request->end,
-//         'round_type'    => $request->round_type,
-//         // 'age_name'    => $request->age_name,
-//     ]);
-
-//     // تحديث المشاركات حسب الاختيار
-//     if ($request->has('camals')) {
-//         foreach ($request->camals as $camalId => $data) {
-//             if (isset($data['selected'])) {
-//                 $registrationNumber = $data['number'] ?? "";
-
-//                 // تحديث أو إنشاء المشاركة
-//                 \App\Models\CamelRoundParticipation::updateOrCreate(
-//                     [
-//                         'round_id' => $round->id,
-//                         'camal_id' => $camalId,
-//                     ],
-//                     [
-//                         'festival_id'         => $request->festival_id,
-//                         'registration_number' => $registrationNumber,
-//                     ]
-//                 );
-//             } else {
-//                 // إذا تم إزالة التحديد، احذف السجل
-//                 \App\Models\CamelRoundParticipation::where([
-//                     'round_id' => $round->id,
-//                     'camal_id' => $camalId,
-//                 ])->delete();
-//             }
+//     foreach ($request->camals as $index => $camal) {
+//         $row = $index + 1;
+//         if (
+//             empty($camal['name']) ||
+//             empty($camal['age_name']) ||
+//             empty($camal['owner_name']) ||
+//             empty($camal['country'])
+//         ) {
+//             return back()->withErrors([
+//                 'camals' => "يجب إدخال جميع البيانات في الصف رقم {$row}."
+//             ])->withInput();
 //         }
 //     }
 
+//     // ===========================
+//     //  ❗ تحديث بيانات الجولة
+//     // ===========================
+//     $round = Round::findOrFail($request->round_id);
+//     $round->update([
+//         'festival_id'  => $request->festival_id,
+//         'name'         => $request->name,
+//         'name_en'      => $request->name_en,
+//         'des'          => $request->des,
+//         'des_en'       => $request->des_en,
+//         'round_number' => $request->round_number,
+//         'start'        => $request->start,
+//         'end'          => $request->end,
+//         'round_type'   => $request->round_type,
+//     ]);
 
-//       $notification = array(
-//                     'message' => 'تمت التعديل بنجاح',
-//                     'alert-type' => 'success'
-//                 );
+//     // ===========================
+//     //  ❗ جلب ids القديمة
+//     // ===========================
+//     $oldIds = CamelRoundParticipation::where('round_id', $round->id)->pluck('id')->toArray();
 
+//     // سنتتبع ids القادمة من الفورم
+//     $newIds = [];
 
-//                 // return back()->with($notification);
+//     // ===========================
+//     //  ❗ تحديث الموجود + إضافة الجديد
+//     // ===========================
+//     foreach ($request->camals as $index => $camal) {
 
-//         return redirect()->route('all.round')->with($notification);
+//         if (!empty($camal['id'])) {
+//             // تحديث
+//             $newIds[] = $camal['id'];
+
+//             CamelRoundParticipation::where('id', $camal['id'])
+//                 ->update([
+//                     'festival_id'          => $request->festival_id,
+//                     'registration_number'  => $camal['registration_number'] ?? $index + 1,
+//                     'camel_name'           => $camal['name'],
+//                     'camel_age_name'       => $camal['age_name'],
+//                     'camel_owner_name'     => $camal['owner_name'],
+//                     'camel_owner_country'  => $camal['country'],
+//                     'updated_at'           => now(),
+//                 ]);
+
+//         } else {
+//             // إضافة جديد
+//             $newCamel = CamelRoundParticipation::create([
+//                 'festival_id'          => $request->festival_id,
+//                 'round_id'             => $round->id,
+//                 'registration_number'  => $camal['registration_number'] ?? $index + 1,
+//                 'camel_name'           => $camal['name'],
+//                 'camel_age_name'       => $camal['age_name'],
+//                 'camel_owner_name'     => $camal['owner_name'],
+//                 'camel_owner_country'  => $camal['country'],
+//                 'created_at'           => now(),
+//                 'updated_at'           => now(),
+//             ]);
+
+//             $newIds[] = $newCamel->id;
+//         }
+//     }
+
+//     // ===========================
+//     //   🟥 حذف المطايا التي لم تعد موجودة
+//     // ===========================
+//     $idsToDelete = array_diff($oldIds, $newIds);
+//     if (!empty($idsToDelete)) {
+//         CamelRoundParticipation::whereIn('id', $idsToDelete)->delete();
+//     }
+
+//     $notification = [
+//         'message' => 'تم تعديل الشوط والمطايا بنجاح',
+//         'alert-type' => 'success'
+//     ];
+
+//     return redirect()->route('all.round')->with($notification);
 // }
 
-// ✅ تحديث بيانات الشوط والمطايا
+
+
+
 public function updateRound(Request $request)
 {
     $request->validate([
@@ -482,6 +543,7 @@ public function updateRound(Request $request)
         'start'         => 'required|date',
         'end'           => 'required|date|after_or_equal:start',
         'round_type'    => 'required|in:بكار,قعدان',
+        // 'camals' validation is checked below
     ]);
 
     if (!$request->has('camals') || !is_array($request->camals) || count($request->camals) === 0) {
@@ -502,44 +564,137 @@ public function updateRound(Request $request)
         }
     }
 
-    // ✅ تحديث بيانات الجولة
-    $round = Round::findOrFail($request->round_id);
-    $round->update([
-        'festival_id'  => $request->festival_id,
-        'name'         => $request->name,
-        'name_en'      => $request->name_en,
-        'des'          => $request->des,
-        'des_en'       => $request->des_en,
-        'round_number' => $request->round_number,
-        'start'        => $request->start,
-        'end'          => $request->end,
-        'round_type'   => $request->round_type,
-    ]);
-
-    // ✅ حذف المطايا القديمة وإعادة إدخال الجديدة
-    CamelRoundParticipation::where('round_id', $round->id)->delete();
-
-    foreach ($request->camals as $index => $camal) {
-        CamelRoundParticipation::create([
-            'festival_id'          => $request->festival_id,
-            'round_id'             => $round->id,
-            'registration_number'  => $camal['registration_number'] ?? $index + 1,
-            'camel_name'           => $camal['name'],
-            'camel_age_name'       => $camal['age_name'],
-            'camel_owner_name'     => $camal['owner_name'],
-            'camel_owner_country'  => $camal['country'],
-            'created_at'           => now(),
-            'updated_at'           => now(),
+    \DB::beginTransaction();
+    try {
+        // تحديث بيانات الجولة
+        $round = \App\Models\Round::findOrFail($request->round_id);
+        $round->update([
+            'festival_id'  => $request->festival_id,
+            'name'         => $request->name,
+            'name_en'      => $request->name_en,
+            'des'          => $request->des,
+            'des_en'       => $request->des_en,
+            'round_number' => $request->round_number,
+            'start'        => $request->start,
+            'end'          => $request->end,
+            'round_type'   => $request->round_type,
         ]);
+
+        // ===========================
+        // معالجة حذف محدد (إذا أرسل المستخدم ids للحذف)
+        // ===========================
+        if ($request->has('delete_ids') && is_array($request->delete_ids) && count($request->delete_ids) > 0) {
+            \App\Models\CamelRoundParticipation::whereIn('id', $request->delete_ids)
+                ->where('round_id', $round->id)
+                ->delete();
+        }
+
+        // سنتتبّع الـ ids التي تم التعامل معها (محدثة أو مضافة)
+        $handledIds = [];
+
+        foreach ($request->camals as $index => $camal) {
+            $registrationNumber = $camal['registration_number'] ?? ($index + 1);
+
+            // حالة: المستخدم وضع حقل delete على صف معين
+            $wantsDelete = !empty($camal['delete']) && ($camal['delete'] == 1 || $camal['delete'] === '1' || $camal['delete'] === true);
+
+            if (!empty($camal['id'])) {
+                // تم إرسال id -> إما تحديث أو حذف
+                $participation = \App\Models\CamelRoundParticipation::where('id', $camal['id'])
+                    ->where('round_id', $round->id)
+                    ->first();
+
+                if ($participation) {
+                    if ($wantsDelete) {
+                        $participation->delete();
+                        // لا نضيف الى handledIds لأن الحذف تم
+                        continue;
+                    } else {
+                        $participation->update([
+                            'festival_id'          => $request->festival_id,
+                            'registration_number'  => $registrationNumber,
+                            'camel_name'           => $camal['name'],
+                            'camel_age_name'       => $camal['age_name'],
+                            'camel_owner_name'     => $camal['owner_name'],
+                            'camel_owner_country'  => $camal['country'],
+                            'updated_at'           => now(),
+                        ]);
+                        $handledIds[] = $participation->id;
+                        continue;
+                    }
+                }
+                // إن لم نجد الـ id (مثلاً تم حذفه سابقاً) نستمر ونقوم بإنشاء/تحديث بناءً على التطابق
+            }
+
+            // إذا لم يُرسل id أو لم يُوجد، نتحقق إن كان يوجد سجل مطابق لتجنّب التكرار
+            $existing = \App\Models\CamelRoundParticipation::where('round_id', $round->id)
+                ->where(function($q) use ($registrationNumber, $camal) {
+                    // إما مطابق برقم التسجيل أو مطابق بالاسم + المالك + الفئة
+                    $q->where('registration_number', $registrationNumber)
+                      ->orWhere(function($q2) use ($camal) {
+                          $q2->where('camel_name', $camal['name'])
+                             ->where('camel_owner_name', $camal['owner_name'])
+                             ->where('camel_age_name', $camal['age_name']);
+                      });
+                })
+                ->first();
+
+            if ($existing) {
+                if ($wantsDelete) {
+                    $existing->delete();
+                    continue;
+                } else {
+                    // حدث الموجود ليطابق البيانات الجديدة
+                    $existing->update([
+                        'festival_id'          => $request->festival_id,
+                        'registration_number'  => $registrationNumber,
+                        'camel_name'           => $camal['name'],
+                        'camel_age_name'       => $camal['age_name'],
+                        'camel_owner_name'     => $camal['owner_name'],
+                        'camel_owner_country'  => $camal['country'],
+                        'updated_at'           => now(),
+                    ]);
+                    $handledIds[] = $existing->id;
+                }
+            } else {
+                // لم يوجد -> إنشاء سجل جديد
+                $new = \App\Models\CamelRoundParticipation::create([
+                    'festival_id'          => $request->festival_id,
+                    'round_id'             => $round->id,
+                    'registration_number'  => $registrationNumber,
+                    'camel_name'           => $camal['name'],
+                    'camel_age_name'       => $camal['age_name'],
+                    'camel_owner_name'     => $camal['owner_name'],
+                    'camel_owner_country'  => $camal['country'],
+                    'created_at'           => now(),
+                    'updated_at'           => now(),
+                ]);
+                $handledIds[] = $new->id;
+            }
+        }
+
+        // **مهم**: لا نحذف أي سجلات أخرى تلقائياً — حذف فقط عند إرسال delete flag أو delete_ids
+
+        \DB::commit();
+
+        $notification = [
+            'message' => 'تم تعديل الشوط والمطايا بنجاح',
+            'alert-type' => 'success'
+        ];
+
+        return redirect()->route('all.round')->with($notification);
+
+    } catch (\Throwable $e) {
+        \DB::rollBack();
+        // سجّل الخطأ لسهولة التعقب
+        \Log::error('updateRound error: ' . $e->getMessage(), [
+            'trace' => $e->getTraceAsString()
+        ]);
+        return back()->withErrors(['error' => 'حدث خطأ أثناء تعديل الشوط.'])->withInput();
     }
-
-    $notification = [
-        'message' => 'تم تعديل الشوط والمطايا بنجاح',
-        'alert-type' => 'success'
-    ];
-
-    return redirect()->route('all.round')->with($notification);
 }
+
+
 
     /**
      * حذف الجولة

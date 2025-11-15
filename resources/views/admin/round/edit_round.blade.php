@@ -105,7 +105,7 @@
                                     <th>إجراء</th>
                                 </tr>
                             </thead>
-                            <tbody id="camalsTableBody">
+                            {{-- <tbody id="camalsTableBody">
                                 @foreach($camals as $index => $camal)
                                     <tr>
                                         <td class="text-center">{{ $index + 1 }}</td>
@@ -124,7 +124,30 @@
                                         </td>
                                     </tr>
                                 @endforeach
-                            </tbody>
+                            </tbody> --}}
+
+                            <tbody id="camalsTableBody">
+    @foreach($camals as $index => $camal)
+        <tr data-index="{{ $index }}">
+            <input type="hidden" name="camals[{{ $index }}][id]" value="{{ $camal->id }}">
+            <input type="hidden" name="camals[{{ $index }}][delete]" value="0">
+            <td class="text-center">{{ $index + 1 }}</td>
+            <td><input type="text" name="camals[{{ $index }}][name]" value="{{ $camal->camel_name }}" class="form-control" required></td>
+            <td>
+                <select name="camals[{{ $index }}][age_name]" class="form-control" required>
+                    @foreach(['الحقايق','اللقايا','الجذاع','الثنايا','زمول','الحيل'] as $age)
+                        <option value="{{ $age }}" {{ $camal->camel_age_name == $age ? 'selected' : '' }}>{{ $age }}</option>
+                    @endforeach
+                </select>
+            </td>
+            <td><input type="text" name="camals[{{ $index }}][owner_name]" value="{{ $camal->camel_owner_name }}" class="form-control" required></td>
+            <td><input type="text" name="camals[{{ $index }}][country]" value="{{ $camal->camel_owner_country }}" class="form-control" required></td>
+            <td class="text-center">
+                <button type="button" class="btn btn-danger btn-sm removeRow">حذف</button>
+            </td>
+        </tr>
+    @endforeach
+</tbody>
                         </table>
 
                         <button type="button" class="btn btn-success btn-sm" id="addRow">➕ إضافة صف</button>
@@ -171,19 +194,36 @@ $(document).ready(function() {
         $('#camalsTableBody').append(newRow);
     });
 
-    $(document).on('click', '.removeRow', function() {
-        $(this).closest('tr').remove();
-        updateRowNumbers();
-    });
+    // $(document).on('click', '.removeRow', function() {
+    //     $(this).closest('tr').remove();
+    //     updateRowNumbers();
+    // });
 
-    function updateRowNumbers() {
-        let i = 1;
-        $('#camalsTableBody tr').each(function() {
-            $(this).find('td:first').text(i);
-            i++;
-        });
-        rowIndex = i - 1;
-    }
+    // function updateRowNumbers() {
+    //     let i = 1;
+    //     $('#camalsTableBody tr').each(function() {
+    //         $(this).find('td:first').text(i);
+    //         i++;
+    //     });
+    //     rowIndex = i - 1;
+    // }
+
+    $(document).on('click', '.removeRow', function() {
+    const row = $(this).closest('tr');
+    // ضع delete=1 قبل حذف الصف
+    row.find('input[name*="[delete]"]').val(1);
+    row.hide(); // أخفي الصف بدل حذفه فوراً
+    updateRowNumbers();
+});
+
+function updateRowNumbers() {
+    let i = 1;
+    $('#camalsTableBody tr:visible').each(function() {
+        $(this).find('td:first').text(i);
+        i++;
+    });
+    rowIndex = i - 1;
+}
 });
 </script>
 

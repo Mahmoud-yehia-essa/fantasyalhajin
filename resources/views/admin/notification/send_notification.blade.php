@@ -72,7 +72,7 @@
 
                                      <option  value="all">الكل</option>
             @foreach ($users as $user)
-                									<option value="{{ $user->id }}"  data-select2-id="{{ $user->id }}">{{ $user->fname }}</option>
+                									<option value="{{ $user->id }}"  data-select2-id="{{ $user->id }}">{{ $user->fname }} {{ $user->lname }}</option>
 
             @endforeach
 
@@ -98,9 +98,15 @@
             <div class="row">
                 <div class="col-sm-3"></div>
                 <div class="col-sm-9 text-secondary">
-                    <input type="submit" class="btn btn-primary px-4" value="ارسال الاشعار">
+                    {{-- <input type="submit" class="btn btn-primary px-4" value="ارسال الاشعار"> --}}
+
+                    <button type="submit" id="sendButton" class="btn btn-primary px-4">
+    ارسال الاشعار
+</button>
                 </div>
             </div>
+
+
 
 
         </div>
@@ -150,6 +156,19 @@
             }
         });
     });
+
+
+
+
+    $("form").on("submit", function() {
+
+        // تعطيل الزر بعد الضغط مباشرة
+        $("#sendButton").prop("disabled", true);
+        $("#sendButton").text("جاري الإرسال...");
+
+    });
+
+
 </script>
 
 

@@ -77,6 +77,8 @@ public function sendPush()
 
 public function sendNotificationStore(Request $request)
 {
+
+    // return "test";
     $request->validate([
         'title' => 'required|string',
         'description' => 'required|string',
