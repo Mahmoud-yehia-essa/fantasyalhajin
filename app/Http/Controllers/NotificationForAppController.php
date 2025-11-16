@@ -75,10 +75,99 @@ public function sendPush()
 
 
 
+// public function sendNotificationStore(Request $request)
+// {
+
+//     // return "test";
+//     $request->validate([
+//         'title' => 'required|string',
+//         'description' => 'required|string',
+//         'user_select' => 'required|array|min:1',
+//     ], [
+//         'title.required' => 'حقل العنوان مطلوب.',
+//         'title.string' => 'يجب أن يكون العنوان نصًا.',
+//         'description.required' => 'حقل الوصف مطلوب.',
+//         'description.string' => 'يجب أن يكون الوصف نصًا.',
+//         'user_select.required' => 'يجب اختيار مستخدم واحد على الأقل.',
+//         'user_select.array' => 'صيغة غير صحيحة لاختيارات المستخدم.',
+//         'user_select.min' => 'يجب اختيار مستخدم واحد على الأقل.',
+//     ]);
+
+
+
+//     // تجهيز وصف الإشعار مع الصورة إن وُجدت
+//     $modifiedDescription = "";
+
+//     if ($request->hasFile('Photo')) {
+//         $file = $request->file('Photo');
+//         $filenamePhoto = date('YmdHi') . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+//         $file->move(public_path('upload/notification'), $filenamePhoto);
+
+//         $imagePath = url('upload/notification/'.$filenamePhoto);
+//         $imageHtml = '<img src="' . $imagePath . '" alt="Notification Image" style="max-width: 100%; height: auto; display: block; margin-bottom: 10px;">';
+//         $modifiedDescription = $imageHtml . $request->description;
+//     } else {
+//         $modifiedDescription = $request->description;
+//     }
+
+//     $selectedUsers = $request->input('user_select'); // هذا مصفوفة
+
+//     // إذا اختار المستخدم "الكل" (أي في المصفوفة القيمة 'all')
+//     if (in_array('all', $selectedUsers)) {
+//         // جلب كل المستخدمين الذين لديهم توكن صالح (غير فارغ)
+//         $users = User::whereNotNull('token')->where('token', '!=', '')->get();
+//     } else {
+//         // جلب المستخدمين المختارين فقط
+//         $users = User::whereIn('id', $selectedUsers)->whereNotNull('token')->where('token', '!=', '')->get();
+//     }
+
+//     $tokenArray = [];
+//     $usersIds = [];
+
+//     foreach ($users as $user) {
+
+
+//         $tokenArray[] = $user->token;
+//         $usersIds[] = $user->id;
+
+//         NotificationForApp::insert([
+//             'user_id' => $user->id,
+//             'title' => $request->title,
+//             'des' => $modifiedDescription,
+//             'created_at' => now(),
+//         ]);
+
+
+
+//     }
+
+//     $title = $request->title;
+//     $body = "";
+//     $postId = '123';
+//     $status = 'active';
+
+//     foreach ($tokenArray as $index => $token) {
+//         $userId = $usersIds[$index] ?? null;
+//         $getNotificationsByUserCount = NotificationForApp::where('user_id', $userId)->where('user_view', 'no')->count();
+
+
+
+//         (new FirebaseNotificationService())->sendNotification($token, $title, $body, $postId, $status, $getNotificationsByUserCount);
+
+
+//     }
+
+//     $notification = [
+//         'message' => 'تم إرسال الإشعار بنجاح للمستخدمين المحددين.',
+//         'alert-type' => 'success'
+//     ];
+
+//     return redirect()->route('all.notification')->with($notification);
+// }
+
+
 public function sendNotificationStore(Request $request)
 {
-
-    // return "test";
     $request->validate([
         'title' => 'required|string',
         'description' => 'required|string',
@@ -93,9 +182,6 @@ public function sendNotificationStore(Request $request)
         'user_select.min' => 'يجب اختيار مستخدم واحد على الأقل.',
     ]);
 
-
-
-    // تجهيز وصف الإشعار مع الصورة إن وُجدت
     $modifiedDescription = "";
 
     if ($request->hasFile('Photo')) {
@@ -110,35 +196,15 @@ public function sendNotificationStore(Request $request)
         $modifiedDescription = $request->description;
     }
 
-    $selectedUsers = $request->input('user_select'); // هذا مصفوفة
+    $selectedUsers = $request->input('user_select');
 
-    // إذا اختار المستخدم "الكل" (أي في المصفوفة القيمة 'all')
     if (in_array('all', $selectedUsers)) {
-        // جلب كل المستخدمين الذين لديهم توكن صالح (غير فارغ)
         $users = User::whereNotNull('token')->where('token', '!=', '')->get();
     } else {
-        // جلب المستخدمين المختارين فقط
-        $users = User::whereIn('id', $selectedUsers)->whereNotNull('token')->where('token', '!=', '')->get();
-    }
-
-    $tokenArray = [];
-    $usersIds = [];
-
-    foreach ($users as $user) {
-
-
-        $tokenArray[] = $user->token;
-        $usersIds[] = $user->id;
-
-        NotificationForApp::insert([
-            'user_id' => $user->id,
-            'title' => $request->title,
-            'des' => $modifiedDescription,
-            'created_at' => now(),
-        ]);
-
-
-
+        $users = User::whereIn('id', $selectedUsers)
+                     ->whereNotNull('token')
+                     ->where('token', '!=', '')
+                     ->get();
     }
 
     $title = $request->title;
@@ -146,19 +212,33 @@ public function sendNotificationStore(Request $request)
     $postId = '123';
     $status = 'active';
 
-    foreach ($tokenArray as $index => $token) {
-        $userId = $usersIds[$index] ?? null;
-        $getNotificationsByUserCount = NotificationForApp::where('user_id', $userId)->where('user_view', 'no')->count();
+    foreach ($users as $user) {
+        // حفظ الإشعار في قاعدة البيانات
+        NotificationForApp::insert([
+            'user_id' => $user->id,
+            'title' => $request->title,
+            'des' => $modifiedDescription,
+            'created_at' => now(),
+        ]);
 
+        // احسب عدد الاشعارات غير المقروءة للمستخدم (لو تحتاجه في الإرسال)
+        $getNotificationsByUserCount = NotificationForApp::where('user_id', $user->id)
+            ->where('user_view', 'no')
+            ->count();
 
-
-        (new FirebaseNotificationService())->sendNotification($token, $title, $body, $postId, $status, $getNotificationsByUserCount);
-
-
+        // أرسل Job للخلفية بدلاً من الإرسال المباشر
+        dispatch(new \App\Jobs\SendFirebaseNotificationJob(
+            $user->token,
+            $title,
+            $body,
+            $postId,
+            $status,
+            $getNotificationsByUserCount
+        ));
     }
 
     $notification = [
-        'message' => 'تم إرسال الإشعار بنجاح للمستخدمين المحددين.',
+        'message' => 'تم جدولة الإشعارات للإرسال في الخلفية.',
         'alert-type' => 'success'
     ];
 
