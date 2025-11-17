@@ -130,6 +130,8 @@
                                     <td>
                                         <select name="camals[0][age_name]" class="form-control" required>
                                             <option value="">اختر الفئة</option>
+                                        <option value="مفاريد">مفاريد</option>
+
                                             <option value="الحقايق">الحقايق</option>
                                             <option value="اللقايا">اللقايا</option>
                                             <option value="الجذاع">الجذاع</option>
@@ -177,6 +179,8 @@ $(document).ready(function() {
                 <td>
                     <select name="camals[${rowIndex - 1}][age_name]" class="form-control" required>
                         <option value="">اختر الفئة</option>
+                         <option value="مفاريد">مفاريد</option>
+
                         <option value="الحقايق">الحقايق</option>
                         <option value="اللقايا">اللقايا</option>
                         <option value="الجذاع">الجذاع</option>

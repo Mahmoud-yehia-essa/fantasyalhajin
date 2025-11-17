@@ -46,7 +46,9 @@ class FestivalPointController extends Controller
     {
         $point = FestivalPoint::findOrFail($id);
         $festivals = Festival::all();
-        $ages = ['الحقايق','اللقايا','الجذاع','الثنايا','زمول','الحيل'];
+        // $ages = ['الحقايق','اللقايا','الجذاع','الثنايا','زمول','الحيل'];
+        $ages = ['مفاريد','الحقايق','اللقايا','الجذاع','الثنايا','زمول','الحيل'];
+
         return view('admin.festival_point.edit_festival_points', compact('point', 'festivals', 'ages'));
     }
 
@@ -55,7 +57,9 @@ class FestivalPointController extends Controller
     {
         $request->validate([
             // 'festival_id' => 'required|exists:festivals,id',
-            'age_name'    => 'required|in:الحقايق,اللقايا,الجذاع,الثنايا,زمول,الحيل',
+            // 'age_name'    => 'required|in:الحقايق,اللقايا,الجذاع,الثنايا,زمول,الحيل',
+            'age_name' => 'required|in:مفاريد,الحقايق,اللقايا,الجذاع,الثنايا,زمول,الحيل',
+
             'points'      => 'required|numeric|min:0',
         ]);
 

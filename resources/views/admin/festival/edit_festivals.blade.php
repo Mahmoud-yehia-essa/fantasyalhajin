@@ -116,7 +116,7 @@
                                     </div>
                                 </div>
 
-                                <!-- Latitude -->
+                                {{-- <!-- Latitude -->
                                 <div class="row mb-3">
                                     <div class="col-sm-3">
                                         <h6 class="mb-0">Latitude</h6>
@@ -136,7 +136,7 @@
                                         <input type="text" name="longitude" class="form-control" value="{{ old('longitude', $festival->longitude) }}" />
                                         @error('longitude') <span class="text-danger">{{ $message }}</span> @enderror
                                     </div>
-                                </div>
+                                </div> --}}
 
                                 <!--  Photo -->
                                 <div class="row mb-3">

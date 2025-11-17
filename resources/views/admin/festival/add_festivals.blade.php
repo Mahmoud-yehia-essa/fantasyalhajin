@@ -134,10 +134,10 @@
 
 
 
-
+{{--
                                    <div class="row mb-3">
                                     <div class="col-sm-3">
-                                        <h6 class="mb-0">latitude</h6>
+                                        <h6 class="mb-0">slatitude</h6>
                                     </div>
                                     <div class="col-sm-9 text-secondary">
                                         <input type="text" name="latitude" class="form-control" value="{{ old('latitude') }}" />
@@ -158,7 +158,7 @@
                                             <span class="text-danger">{{ $message }}</span>
                                         @enderror
                                     </div>
-                                </div>
+                                </div> --}}
 
 
                                 <!--  Photo -->

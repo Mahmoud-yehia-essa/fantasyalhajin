@@ -1196,6 +1196,7 @@ public function getUserNominationsApi(Request $request)
 
 public function getUserFestivalsWithPoints(Request $request)
 {
+
     $userId = $request->input('user_id');
 
     // نجيب مجموع النقاط لكل مهرجان شارك فيه المستخدم
@@ -1276,34 +1277,61 @@ public function getUserFestivalsWithPoints(Request $request)
 
 public function getFestivalLeaderboard(Request $request)
 {
+
     $festivalId = $request->input('festival_id');
 
     // جلب المستخدمين مع مجموع النقاط بشرط أن لا يكون المجموع صفر
+    // $usersPoints = \DB::table('nominations')
+    //     ->join('users', 'nominations.user_id', '=', 'users.id')
+    //     ->select(
+    //         'users.id',
+    //         'users.fname',
+    //         'users.lname',
+    //         'users.email',
+    //         'users.phone',
+    //         'users.country_flag',
+    //         'users.photo',
+    //         \DB::raw('SUM(nominations.points) as total_points')
+    //     )
+    //     ->where('nominations.festival_id', $festivalId)
+    //     ->groupBy(
+    //         'users.id',
+    //         'users.fname',
+    //         'users.lname',
+    //         'users.email',
+    //         'users.phone',
+    //         'users.country_flag',
+    //         'users.photo'
+    //     )
+    //     ->orderByDesc('total_points')
+    //     ->get();
+
     $usersPoints = \DB::table('nominations')
-        ->join('users', 'nominations.user_id', '=', 'users.id')
-        ->select(
-            'users.id',
-            'users.fname',
-            'users.lname',
-            'users.email',
-            'users.phone',
-            'users.country_flag',
-            'users.photo',
-            \DB::raw('SUM(nominations.points) as total_points')
-        )
-        ->where('nominations.festival_id', $festivalId)
-        ->groupBy(
-            'users.id',
-            'users.fname',
-            'users.lname',
-            'users.email',
-            'users.phone',
-            'users.country_flag',
-            'users.photo'
-        )
-        // ->havingRaw('SUM(nominations.points) != 0') // ✅ هنا التصفية المطلوبة
-        ->orderByDesc('total_points')
-        ->get();
+    ->join('users', 'nominations.user_id', '=', 'users.id')
+    ->select(
+        'users.id',
+        'users.fname',
+        'users.lname',
+        'users.email',
+        'users.phone',
+        'users.country_flag',
+        'users.photo',
+        \DB::raw('SUM(nominations.points) as total_points')
+    )
+    ->where('nominations.festival_id', $festivalId)
+    ->groupBy(
+        'users.id',
+        'users.fname',
+        'users.lname',
+        'users.email',
+        'users.phone',
+        'users.country_flag',
+        'users.photo'
+    )
+    ->orderByDesc('total_points')       // ترتيب تنازلي حسب النقاط
+    ->orderBy('fname')                  // ترتيب تصاعدي أبجدي حسب الاسم الأول عند التساوي
+    ->get();
+
 
     return response()->json($usersPoints);
 }
