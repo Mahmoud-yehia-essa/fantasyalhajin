@@ -105,8 +105,8 @@
 
                 {{-- المطايا المشاركة --}}
                 <div class="row mb-3">
-                    <div class="col-sm-3"><h6 class="mb-0">المطايا المشاركة</h6></div>
-                    <div class="col-sm-9 text-secondary">
+                    {{-- <div class="col-sm-3"><h6 class="mb-0">المطايا المشاركة</h6></div> --}}
+                    <div class="col-12 text-secondary">
 
                         @if($errors->has('camals'))
                             <div class="alert alert-danger py-2">{{ $errors->first('camals') }}</div>
@@ -114,14 +114,22 @@
 
                         <table class="table table-bordered">
                             <thead class="table-light">
-                                <tr>
+                                {{-- <tr>
                                     <th style="width:100px;">رقم التسجيل</th>
                                     <th>اسم المطية</th>
                                     <th style="width:180px;">الفئة العمرية</th>
                                     <th>اسم المالك</th>
                                     <th>الدولة</th>
                                     <th style="width:100px;">إجراء</th>
-                                </tr>
+                                </tr> --}}
+                                <tr>
+    <th style="width:100px;">رقم التسجيل</th>
+    <th style="min-width:250px;">اسم المطية</th>
+    <th style="width:180px;">الفئة العمرية</th>
+    <th style="min-width:300px;">اسم المالك</th>
+    <th style="width:200px;">الدولة</th>
+    <th style="width:100px;">إجراء</th>
+</tr>
                             </thead>
                             <tbody id="camalsTableBody">
                                 <tr>

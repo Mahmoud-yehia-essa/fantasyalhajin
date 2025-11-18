@@ -515,21 +515,21 @@
               <a href="#" class="logo">
                 <h2>التواصل الاجتماعي</h2>
               </a>
-              <p>تايع أخبار التطبيق من خلال صفحات التواصل الاجتماعي</p>
+              {{-- <p>تايع أخبار التطبيق من خلال صفحات التواصل الاجتماعي</p> --}}
               <ul class="social-list">
-                <li>
+                {{-- <li>
                   <a href="" target="_blank">
                     <i class="fab fa-facebook-f"></i>
                   </a>
-                </li>
-                <li>
+                </li> --}}
+                {{-- <li>
                   <a href="" target="_blank">
                     <i class="fab fa-twitter"></i>
                   </a>
-                </li>
+                </li> --}}
                 <li>
                   <a
-                    href=""
+                    href="https://www.instagram.com/fantasy_hajen/?hl=en"
                     target="_blank"
                   >
                     <i class="fab fa-instagram"></i>

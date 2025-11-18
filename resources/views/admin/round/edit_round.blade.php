@@ -91,19 +91,28 @@
 
                 {{-- المطايا --}}
                 <div class="row mb-3">
-                    <div class="col-sm-3"><h6>المطايا المشاركة</h6></div>
-                    <div class="col-sm-9 text-secondary">
+                    {{-- <div class="col-sm-3"><h6>المطايا المشاركة</h6></div> --}}
+                    <div class="col-12 text-secondary">
 
                         <table class="table table-bordered">
                             <thead class="table-light">
-                                <tr>
+                                {{-- <tr>
                                     <th>رقم التسجيل</th>
                                     <th>اسم المطية</th>
                                     <th>الفئة العمرية</th>
                                     <th>اسم المالك</th>
                                     <th>الدولة</th>
                                     <th>إجراء</th>
-                                </tr>
+                                </tr> --}}
+
+                                                          <tr>
+    <th style="width:100px;">رقم التسجيل</th>
+    <th style="min-width:250px;">اسم المطية</th>
+    <th style="width:180px;">الفئة العمرية</th>
+    <th style="min-width:300px;">اسم المالك</th>
+    <th style="width:200px;">الدولة</th>
+    <th style="width:100px;">إجراء</th>
+</tr>
                             </thead>
                             {{-- <tbody id="camalsTableBody">
                                 @foreach($camals as $index => $camal)
@@ -133,13 +142,23 @@
             <input type="hidden" name="camals[{{ $index }}][delete]" value="0">
             <td class="text-center">{{ $index + 1 }}</td>
             <td><input type="text" name="camals[{{ $index }}][name]" value="{{ $camal->camel_name }}" class="form-control" required></td>
-            <td>
+            {{-- <td>
                 <select name="camals[{{ $index }}][age_name]" class="form-control" required>
                     @foreach(['الحقايق','اللقايا','الجذاع','الثنايا','زمول','الحيل'] as $age)
                         <option value="{{ $age }}" {{ $camal->camel_age_name == $age ? 'selected' : '' }}>{{ $age }}</option>
                     @endforeach
                 </select>
-            </td>
+            </td> --}}
+
+            <td>
+    <select name="camals[{{ $index }}][age_name]" class="form-control" required>
+        @foreach(['مفاريد','الحقايق','اللقايا','الجذاع','الثنايا','زمول','الحيل'] as $age)
+            <option value="{{ $age }}" {{ $camal->camel_age_name == $age ? 'selected' : '' }}>{{ $age }}</option>
+        @endforeach
+    </select>
+</td>
+
+
             <td><input type="text" name="camals[{{ $index }}][owner_name]" value="{{ $camal->camel_owner_name }}" class="form-control" required></td>
             <td><input type="text" name="camals[{{ $index }}][country]" value="{{ $camal->camel_owner_country }}" class="form-control" required></td>
             <td class="text-center">
@@ -179,6 +198,8 @@ $(document).ready(function() {
                 <td>
                     <select name="camals[${rowIndex - 1}][age_name]" class="form-control" required>
                         <option value="">اختر الفئة</option>
+                         <option value="مفاريد">مفاريد</option>
+
                         <option value="الحقايق">الحقايق</option>
                         <option value="اللقايا">اللقايا</option>
                         <option value="الجذاع">الجذاع</option>
