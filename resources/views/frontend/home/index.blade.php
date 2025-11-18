@@ -479,14 +479,20 @@
       <div class="container">
         <div class="app-download-content">
           <h3>حمل التطبيق الان</h3>
+
           <div class="bar"></div>
           <p>متاح الآن على App Store وGoogle Play</p>
+            <br>
+                        <br>
           <div class="app-holderx">
             <a
               href="https://play.google.com/store/apps/details?id=com.app.fantasy_alhajin"
             >
 <img src="{{ asset('frontend/assets/img/store/1.png') }}" alt="image" />
             </a>
+            <br>
+                        <br>
+
             <a
               href="https://apps.apple.com/kw/app/fantasy-alhajin-%D9%81%D8%A7%D9%86%D8%AA%D8%B3%D9%8A-%D8%A7%D9%84%D9%87%D8%AC%D9%86/id6754517310"
             >
@@ -634,6 +640,32 @@
 
 <!-- Main JS -->
 <script src="{{ asset('frontend/assets/js/main.js') }}"></script>
+
+
+
+<!-- WhatsApp Floating Button -->
+<style>
+    .whatsapp-float {
+        position: fixed;
+        bottom: 20px;
+        right: 20px; /* يمين الشاشة */
+        z-index: 99999;
+    }
+    .whatsapp-float img {
+        width: 60px;
+        height: 60px;
+    }
+</style>
+
+<a
+    href="https://wa.me/+96551673464"
+    class="whatsapp-float"
+    target="_blank"
+>
+    <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" alt="WhatsApp">
+</a>
+
+
 
   </body>
 </html>
