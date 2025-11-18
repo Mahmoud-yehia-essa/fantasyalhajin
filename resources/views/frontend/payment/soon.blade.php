@@ -106,7 +106,7 @@
 <body>
   <div class="container">
     <img src="{{ asset('backend/assets/images/logo-icon.png') }}" alt="شعار فانتسي الهجن" class="logo" />
-    <h1>قريباً تطبيق فانتسي الهجن</h1>
+    <h1>مت تطبيق فانتسي الهجن</h1>
     <p>استعد لتجربة تفاعلية فريدة في عالم سباقات الهجن — متوفّر قريباً على المتاجر الرسمية</p>
     <div class="stores">
       <img src="https://upload.wikimedia.org/wikipedia/commons/7/78/Google_Play_Store_badge_EN.svg" alt="Google Play">
