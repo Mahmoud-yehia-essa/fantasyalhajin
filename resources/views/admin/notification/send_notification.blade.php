@@ -72,7 +72,7 @@
 
                                      <option  value="all">الكل</option>
             @foreach ($users as $user)
-                									<option value="{{ $user->id }}"  data-select2-id="{{ $user->id }}">{{ $user->fname }} {{ $user->lname }}</option>
+                									<option value="{{ $user->id }}"  data-select2-id="{{ $user->id }}">{{ $user->fname }} {{ $user->lname }} - {{ $user->phone }}</option>
 
             @endforeach
 
