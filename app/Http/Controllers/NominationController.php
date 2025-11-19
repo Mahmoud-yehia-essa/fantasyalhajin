@@ -237,7 +237,10 @@ $nomination = Nomination::where('festival_id', $request->festival_id)
 
         // return $camelRoundParticipation;
 
-    return redirect()->route('all.nomination')->with('success', 'تم اضافة المطية الفائزة بنجاح');
+    // return redirect()->route('all.nomination')->with('success', 'تم اضافة المطية الفائزة بنجاح');
+
+        return redirect()->route('filter.users')->with('success', 'تم اضافة المطية الفائزة بنجاح');
+
 
     }
 

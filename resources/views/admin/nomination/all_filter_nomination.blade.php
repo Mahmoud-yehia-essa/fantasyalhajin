@@ -20,7 +20,7 @@
     </div>
     <div class="ms-auto">
         <div class="btn-group">
-            <a href="{{route('add.user')}}" >
+            <a href="{{route('filter.users')}}" >
 
 <button type="button" class="btn btn-primary">
 
@@ -158,7 +158,7 @@
 
     <div class="d-flex align-items-center" style="gap: 5px;">
         <span style="font-size: 16px;">🏆</span>
-        <strong>إجمالي النقاط في كافة المهرجنات:</strong>
+        <strong>إجمالي النقاط في كافة المهرجانات:</strong>
 
         <span>{{ $item->user->nominations->sum('points') ?? 0 }}</span>
     </div>
