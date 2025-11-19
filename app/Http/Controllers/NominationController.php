@@ -119,6 +119,44 @@ $nominations = Nomination::with(['user', 'camal', 'festival', 'round'])->get();
 
 
 
+      public function filterNomination()
+    {
+
+
+
+        $users = User::all();
+        $camals = Camal::all();
+        $festivals = Festival::all();
+        $rounds = Round::all();
+        return view('admin.nomination.filter_nomination', compact('users', 'camals', 'festivals', 'rounds'));
+    }
+
+       public function filterNominationStore(Request $request)
+    {
+
+
+
+
+
+// $getNomination = Nomination::where('festival_id', $request->festival_id)
+//     ->where('round_id', $request->round_id)
+//     ->with('user') // تأكد أن العلاقة موجودة
+//     ->get();
+
+$getNomination = Nomination::where('festival_id', $request->festival_id)
+    ->where('round_id', $request->round_id)
+    ->with('user')
+    ->orderByDesc('points')  // ترتيب من الأعلى للنقاط
+    ->get();
+
+return view('admin.nomination.all_filter_nomination',compact('getNomination'));
+    }
+
+
+
+
+
+
 
  public function addRoundWinnerStore(Request $request)
     {
@@ -281,6 +319,15 @@ $nomination = Nomination::where('festival_id', $request->festival_id)
     return response()->json($rounds);
 }
 
+
+   public function getRoundsforFilter($festivalId)
+{
+    // $rounds = Round::where('festival_id', $festivalId)->get();
+
+      $rounds = Round::where('festival_id', $festivalId)->get();
+
+    return response()->json($rounds);
+}
 
 //   public function getCamalsByRound($roundId)
 // {

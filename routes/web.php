@@ -401,6 +401,8 @@ Route::controller(NominationController::class)
 
                         Route::get('/add/round/winner', 'addRoundWinner')->name('add.round.winner');
 
+                        Route::get('/filter/users', 'filterNomination')->name('filter.users');
+                        Route::post('/filter/users/store', 'filterNominationStore')->name('filter.users.store');
 
 
 
@@ -411,6 +413,8 @@ Route::controller(NominationController::class)
 
 
                 Route::get('/get-rounds/{festival}', 'getRounds')->name('get.round');
+                                Route::get('/get-rounds/filter/{festival}', 'getRoundsforFilter')->name('get.round.filter');
+
 
 
 

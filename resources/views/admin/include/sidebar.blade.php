@@ -163,12 +163,21 @@
 
 
 
+
           <li>
             <a href="{{ route('add.nomination.user') }}">
                 <i class='bx bx-radio-circle'></i>تحديد المستخدم ورشح اي مطية
             </a>
         </li>
 
+
+         <li>
+            <a href="{{ route('filter.users') }}">
+                <i class='bx bx-radio-circle'></i>
+
+  فرز المشاريكن
+            </a>
+        </li>
 
 
 
