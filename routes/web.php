@@ -406,6 +406,15 @@ Route::controller(NominationController::class)
 
 
 
+
+                        ////
+                  Route::get('/filter/users/festival', 'filterNominationFestival')->name('filter.users.fesitval');
+
+
+                        Route::post('/filter/users/festival/store', 'filterNominationFestivalStore')->name('filter.users.festival.store');
+
+                  ////
+
         // Route::post('/add/round/winner', 'addRoundWinnerStore')->name('add.round.winner.store');
         Route::post('/add/round/winner/store', 'addRoundWinnerStore')->name('add.round.winner.store');
 

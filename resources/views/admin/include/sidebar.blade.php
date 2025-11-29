@@ -180,6 +180,14 @@
         </li>
 
 
+          <li>
+            <a href="{{ route('filter.users.fesitval') }}">
+                <i class='bx bx-radio-circle'></i>
+
+  فرز المشاريكن في المهرجان
+            </a>
+        </li>
+
 
 
     </ul>

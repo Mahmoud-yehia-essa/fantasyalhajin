@@ -14,6 +14,9 @@ use App\Notifications\NominationNotification;
 
 use Illuminate\Support\Facades\Notification;
 
+use Illuminate\Support\Facades\DB;
+
+
 
 
 class NominationController extends Controller
@@ -130,6 +133,86 @@ $nominations = Nomination::with(['user', 'camal', 'festival', 'round'])->get();
         $rounds = Round::all();
         return view('admin.nomination.filter_nomination', compact('users', 'camals', 'festivals', 'rounds'));
     }
+
+
+
+      public function filterNominationFestival()
+    {
+
+
+
+        $users = User::all();
+        $camals = Camal::all();
+        $festivals = Festival::all();
+        $rounds = Round::all();
+        return view('admin.nomination.filter_nomination_festival', compact('users', 'camals', 'festivals', 'rounds'));
+    }
+
+
+
+//  public function filterNominationFestivalStore(Request $request)
+//     {
+
+
+
+
+
+// $getNomination = Nomination::where('festival_id', $request->festival_id)
+//     ->with('user')
+//     ->orderByDesc('points')  // ترتيب من الأعلى للنقاط
+//     ->get();
+
+// return view('admin.nomination.all_filter_nomination_festival',compact('getNomination'));
+//     }
+
+
+
+// public function filterNominationFestivalStore(Request $request)
+// {
+//     $getNomination = Nomination::select('user_id', DB::raw('SUM(points) as total_points'))
+//         ->where('festival_id', $request->festival_id)
+//         ->groupBy('user_id')
+//         ->orderByDesc('total_points')
+//         ->with(['user', 'camel']) // ← إضافة علاقة المطية
+//         ->get();
+
+//         // return $getNomination;
+
+//     return view('admin.nomination.all_filter_nomination_festival', compact('getNomination'));
+// }
+
+
+// public function filterNominationFestivalStore(Request $request)
+// {
+//     $getNomination = Nomination::select('user_id', DB::raw('SUM(points) as total_points'), DB::raw('COUNT(id) as total_participations'))
+//         ->where('festival_id', $request->festival_id)
+//         ->groupBy('user_id')
+//         ->orderByDesc('total_points')
+//         ->with('user')
+//         ->get();
+
+//     return view('admin.nomination.all_filter_nomination_festival', compact('getNomination'));
+// }
+
+public function filterNominationFestivalStore(Request $request)
+{
+    $getNomination = Nomination::select(
+            'user_id',
+            DB::raw('SUM(points) as total_points'),
+            DB::raw('COUNT(id) as total_participations')
+        )
+        ->where('festival_id', $request->festival_id)
+        ->groupBy('user_id')
+        ->with('user')
+        ->orderByDesc('total_points')        // أولاً ترتيب أعلى نقاط
+        ->orderBy(User::select('fname')       // ثانياً ترتيب أبجدي بالاسم
+            ->whereColumn('users.id', 'nominations.user_id')
+            ->limit(1)
+        )
+        ->get();
+
+    return view('admin.nomination.all_filter_nomination_festival', compact('getNomination'));
+}
 
        public function filterNominationStore(Request $request)
     {
