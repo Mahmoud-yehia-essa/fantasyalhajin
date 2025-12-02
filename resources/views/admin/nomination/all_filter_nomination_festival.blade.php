@@ -46,13 +46,19 @@
 <tr>
     <td>{{ $key + 1 }}</td>
     <td>{{ $item->user->fname }} {{ $item->user->lname }}</td>
-    <td>{{ $item->user->phone }} </td>
+    <td dir="ltr">{{ $item->user->country_code }} {{ $item->user->phone }} </td>
     <td>{{ $item->total_points }}</td>
     <td>
         @php
-            // تحويل الرقم لمناسب واتساب
-            $phone = preg_replace('/^0/', '20', $item->user->phone); // 20 = كود مصر
-            $whatsappUrl = "https://wa.me/$phone";
+            // // تحويل الرقم لمناسب واتساب
+            // $phone = preg_replace('/^0/', '20', $item->user->phone); // 20 = كود مصر
+            // $whatsappUrl = "https://wa.me/$phone";
+
+    // إضافة كود الدولة من الداتا
+    $fullPhone = $item->user->country_code . $item->user->phone;
+
+    // رابط الواتساب
+    $whatsappUrl = "https://wa.me/$fullPhone";
         @endphp
 
         <a href="{{ $whatsappUrl }}" target="_blank" class="btn btn-success btn-sm">
