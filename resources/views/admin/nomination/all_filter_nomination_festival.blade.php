@@ -6,7 +6,7 @@
         <h3>نتائج الفرز</h3>
     </div>
     <div class="ms-auto">
-        <a href="{{route('filter.users')}}" class="btn btn-primary">فرز جديد</a>
+        <a href="{{route('filter.users.fesitval')}}" class="btn btn-primary">فرز جديد</a>
     </div>
 </div>
 
