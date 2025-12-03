@@ -67,12 +67,20 @@ Route::controller(DashboardController::class)->middleware(['auth', 'verified','c
 // Route::controller(NotificationController::class)->middleware(['checkUserRole','auth'])->group(function () {
 
 
-//     Route::get('/add/notification', 'sendNotification')->name('send.notification');
-//     Route::get('/all/notification', 'alldNotification')->name('all.notification');
+//     // Route::get('/add/notification', 'sendNotification')->name('send.notification');
+//     // Route::get('/all/notification', 'alldNotification')->name('all.notification');
 
+// Route::get('/notifications/load',  'loadNotifications')->name('notifications.load');
 
 // });
 
+Route::get('/notifications/load', [NotificationController::class, 'loadMore'])
+    ->name('notifications.load')
+    ->middleware('auth');
+
+Route::get('/notification/read/{notification}', [NotificationController::class, 'read'])
+    ->name('notification.read')
+    ->middleware('auth');
 
 Route::controller(NotificationForAppController::class)->middleware(['checkUserRole','auth'])->group(function () {
 

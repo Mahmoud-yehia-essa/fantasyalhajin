@@ -30,6 +30,41 @@
     overflow-wrap: break-word !important; /* دعم إضافي للمتصفحات الحديثة */
 }
 
+
+/* إصلاح حجم وموقع قائمة الإشعارات */
+.dropdown-menu {
+    max-height: 350px !important; /* يمكنك تغيير الارتفاع */
+    overflow-y: auto !important;  /* تشغيل التمرير */
+    overflow-x: hidden !important;
+}
+
+
+/* خصوصاً لقائمة الإشعارات */
+.header-notifications-list {
+    max-height: 300px !important;
+    overflow-y: auto !important;
+}
+
+
+.alert-count {
+    position: absolute;
+    top: 0;
+    right: 0;
+    background: red;
+    color: white;
+    font-size: 0.7rem;
+    font-weight: bold;
+    padding: 0.15rem 0.4rem;
+    border-radius: 50%;
+    min-width: 23px;
+    height: 23px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+    white-space: nowrap;
+}
+
           /* انتهاء الاستايل الخاص بالاشعارات*/
 
 </style>
@@ -589,11 +624,11 @@
                         </div>
                     </li>
 
-    {{-- @php
+    @php
     $ncount = Auth::user()->unreadNotifications()->count();
-@endphp --}}
-
-{{-- <li class="nav-item dropdown dropdown-large">
+@endphp
+{{--
+<li class="nav-item dropdown dropdown-large">
     <a class="nav-link dropdown-toggle dropdown-toggle-nocaret position-relative" href="#" data-bs-toggle="dropdown" aria-expanded="false">
         @if ($ncount != 0)
             <span class="alert-count">{{ $ncount }}</span>
@@ -669,9 +704,50 @@
 
 
 
+<li class="nav-item dropdown dropdown-large">
+    {{-- <a id="notificationsToggle"
+       class="nav-link dropdown-toggle dropdown-toggle-nocaret position-relative"
+       href="#" data-bs-toggle="dropdown">
+        @if ($ncount != 0)
+            <span class="alert-count">{{ $ncount }}</span>
+        @endif
+        <i class="bx bx-bell"></i>
+    </a> --}}
 
+    <a id="notificationsToggle"
+   class="nav-link dropdown-toggle dropdown-toggle-nocaret position-relative"
+   href="#" data-bs-toggle="dropdown">
+    @if ($ncount != 0)
+        <span class="alert-count">
+            {{ $ncount > 99 ? '99+' : $ncount }}
+        </span>
+    @endif
+    <i class="bx bx-bell"></i>
+</a>
 
+    <div class="dropdown-menu dropdown-menu-end">
+        <div class="msg-header">
+            <p class="msg-header-title">الإشعارات</p>
+        </div>
 
+        <div id="notifications-container"
+             class="header-notifications-list ps"
+             style="max-height: 300px; overflow-y: auto;">
+        </div>
+
+        <div id="loading-spinner"
+             class="text-center py-2"
+             style="display:none;">
+            <small>جارِ التحميل...</small>
+        </div>
+
+        <p id="no-data"
+           class="text-center text-muted p-3"
+           style="display:none;">
+            لا توجد إشعارات جديدة
+        </p>
+    </div>
+</li>
 
 
 
@@ -705,4 +781,93 @@
             </div>
         </nav>
     </div>
+
+
 </header>
+<script>
+    let notifyPage = 1;
+    let isLoading = false;
+    let hasMoreData = true;
+
+    const container = document.getElementById('notifications-container');
+    const toggleBtn = document.getElementById('notificationsToggle');
+
+    function loadNotifications() {
+        if (isLoading || !hasMoreData) return;
+        isLoading = true;
+        document.getElementById('loading-spinner').style.display = 'block';
+
+        fetch(`{{ route('notifications.load') }}?page=${notifyPage}`)
+            .then(res => res.json())
+            .then(data => {
+                const items = data.notifications;
+
+                if (items.length === 0 && notifyPage === 1) {
+                    document.getElementById('no-data').style.display = 'block';
+                }
+
+                items.forEach(n => {
+                    container.insertAdjacentHTML('beforeend', `
+                        <a class="dropdown-item" href="/notification/read/${n.id}">
+                            <div class="d-flex align-items-center">
+                                <div class="flex-grow-1">
+                                    <h6 class="msg-name">
+                                        ${n.data.type ?? ''}
+                                        <span class="msg-time float-end">
+                                                ${n.timeAgo}
+
+                                        </span>
+                                    </h6>
+
+                                    <p class="msg-info">
+                                        ${n.data.message ?? ''} بواسطة المستخدم
+                                        <span style="color: red">
+                                            ${n.data.userCreatNomination?.fname ?? '—'}
+                                        </span>
+                                    </p>
+
+                                    <p class="msg-info">
+                                        رشح المطية
+                                        <span style="color: red">
+                                            ${n.data.camelRoundParticipation?.camel_name ?? '—'}
+                                        </span>
+                                    </p>
+
+                                    <p class="msg-info">
+                                        في الشوط
+                                        <span style="color: red">
+                                            ${n.data.round?.name ?? '—'}
+                                        </span>
+                                    </p>
+
+                                    <p class="msg-info">
+                                        المهرجان
+                                        <span style="color: red">
+                                            ${n.data.festival?.name ?? '—'}
+                                        </span>
+                                    </p>
+                                </div>
+                            </div>
+                        </a>
+                    `);
+                });
+
+                hasMoreData = data.hasMore;
+                notifyPage++;
+                isLoading = false;
+                document.getElementById('loading-spinner').style.display = 'none';
+            });
+    }
+
+    toggleBtn.addEventListener('click', () => {
+        if (notifyPage === 1) {
+            loadNotifications();
+        }
+    });
+
+    container.addEventListener('scroll', function () {
+        if (this.scrollTop + this.clientHeight >= this.scrollHeight - 10) {
+            loadNotifications();
+        }
+    });
+</script>
