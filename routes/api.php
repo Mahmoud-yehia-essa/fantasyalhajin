@@ -131,6 +131,9 @@ Route::post('/get/festivals/points/nomination',[NominationController::class,'get
 Route::post('get/festival/leaderboard',[NominationController::class,'getFestivalLeaderboard']);
 
 
+Route::post('get/festival/leaderboard/lazy',[NominationController::class,'getFestivalLeaderboardLazy']);
+
+
 
 Route::post('/get/festival/point',[FestivalPointController::class,'getFestivalPoints']);
 
