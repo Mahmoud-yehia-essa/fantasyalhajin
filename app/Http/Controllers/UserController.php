@@ -812,53 +812,89 @@ $countryData = json_decode($request->input('country_data'), true);
 
 /// editUserApi
 
+    // public function editUserApi(Request $request)
+    // {
+
+
+
+    //     $user_id = $request->id;
+
+    //     $user = User::findOrFail($user_id);
+
+
+
+
+
+    //     if($request->password != "")
+    //     {
+
+    //         $user->password = Hash::make($request->password);
+
+    //     }
+
+
+    //     $user->fname = $request->fname;
+    //     $user->lname = $request->lname;
+    //     $user->phone = $request->phone;
+    //     $user->photo = $request->photo;
+    //     // $user->address = $request->address;
+    //     $user->save();
+
+
+
+
+
+    //     $token = "Non";
+
+    //     return response()->json([
+    //         'success' => true,
+    //         'message' => 'updated user successful',
+    //         'user' => $user, // Return all user data
+    //         'token' => $token
+    //     ], 200);
+
+
+
+
+
+
+
+    // }
+
+
+
     public function editUserApi(Request $request)
-    {
+{
+    $request->validate([
+        'fname' => ['required', 'regex:/^[\pL\pN\s]+$/u'],
+        'lname' => ['required', 'regex:/^[\pL\pN\s]+$/u'],
+        'phone' => ['nullable'],
+        'password' => ['nullable', 'min:6'],
+    ], [
+        'fname.regex' => 'الاسم الأول يجب أن يحتوي على حروف وأرقام فقط',
+        'lname.regex' => 'الاسم الأخير يجب أن يحتوي على حروف وأرقام فقط',
+    ]);
 
+    $user = User::findOrFail($request->id);
 
-        $user_id = $request->id;
-
-        $user = User::findOrFail($user_id);
-
-
-
-
-
-        if($request->password != "")
-        {
-
-            $user->password = Hash::make($request->password);
-
-        }
-
-
-        $user->fname = $request->fname;
-        $user->lname = $request->lname;
-        $user->phone = $request->phone;
-        $user->photo = $request->photo;
-        // $user->address = $request->address;
-        $user->save();
-
-
-
-
-
-        $token = "Non";
-
-        return response()->json([
-            'success' => true,
-            'message' => 'updated user successful',
-            'user' => $user, // Return all user data
-            'token' => $token
-        ], 200);
-
-
-
-
-
-
-
+    if (!empty($request->password)) {
+        $user->password = Hash::make($request->password);
     }
+
+    $user->fname = $request->fname;
+    $user->lname = $request->lname;
+    $user->phone = $request->phone;
+    $user->photo = $request->photo;
+    $user->save();
+
+    return response()->json([
+        'success' => true,
+        'message' => 'updated user successful',
+        'user' => $user,
+        'token' => 'Non'
+    ], 200);
+}
+
 
     public function getUserByEmail($email)
     {
