@@ -1,42 +1,64 @@
 @extends('admin.master_admin')
-@section('admin')
 
-<!--breadcrumb-->
+@section('admin')
+{{ $notification->links('pagination::bootstrap-5') }}
+
+<!-- breadcrumb -->
+<style>
+/* تصغير أيقونة السهم داخل pagination */
+.pagination svg {
+    width: 12px !important;
+    height: 12px !important;
+}
+
+/* تقليل المساحة حوالين السهم */
+.pagination .page-link {
+    padding: 4px 8px !important;
+    line-height: 1 !important;
+}
+</style>
+
+
 <div class="page-breadcrumb d-none d-sm-flex align-items-center mb-3">
-    <div class="breadcrumb-title pe-3">كل الاشعارات</div>
+    <div class="breadcrumb-title pe-3">كل الإشعارات</div>
 
     <div class="ps-3">
-<a href="{{route('delete.notification.all')}}" class="btn btn-danger" id="delete"gi>حذف الكل</a>
-
-        <nav aria-label="breadcrumb"></nav>
+        <a href="{{ route('delete.notification.all') }}" class="btn btn-danger" id="delete">
+            حذف الكل
+        </a>
     </div>
 </div>
-<!--end breadcrumb-->
 
 <hr/>
+
 <div class="card">
     <div class="card-body">
         <div class="table-responsive">
-            <table id="example" class="table table-striped table-bordered" style="width:100%">
+
+            <table class="table table-striped table-bordered" style="width:100%">
                 <thead>
                     <tr>
                         <th>الرقم</th>
                         <th>العنوان</th>
-                        {{-- <th> الوصف</th> --}}
-                        <th>تم الارسال الى</th>
+                        <th>تم الإرسال إلى</th>
                         <th>وقت الإرسال</th>
                         <th>الحالة</th>
-                        <th>الاجراء</th>
+                        <th>الإجراء</th>
                     </tr>
                 </thead>
+
                 <tbody>
-                    @foreach($notification as $key => $item)
+                    @forelse($notification as $key => $item)
                     <tr>
-                        <td>{{ $key+1 }}</td>
+                        {{-- ترقيم صحيح مع pagination --}}
+                        <td>{{ $notification->firstItem() + $key }}</td>
+
                         <td>{{ $item->title }}</td>
-                        {{-- <td>{{ $item->des }}</td> --}}
-                        <td>{{ $item->user->fname }}</td>
-                        <td>{{ \Carbon\Carbon::parse($item->created_at)->diffForHumans() }}</td>
+
+                        <td>{{ $item->user->fname ?? '-' }}</td>
+
+                        <td>{{ $item->created_at->diffForHumans() }}</td>
+
                         <td>
                             @if ($item->user_view == 'no')
                                 <span class="badge bg-dark">لم تتم المشاهدة</span>
@@ -46,6 +68,7 @@
                                 <span class="badge bg-danger">تم الحذف</span>
                             @endif
                         </td>
+
                         <td>
                             <a href="javascript:void(0);"
                                class="btn btn-primary showNotificationBtn"
@@ -54,46 +77,55 @@
                                title="تفاصيل">
                                 <i class="fa-solid fa-eye"></i>
                             </a>
-                            <a href="{{ route('delete.notification', $item->id) }}" class="btn btn-danger" id="delete">حذف</a>
+
+                            <a href="{{ route('delete.notification', $item->id) }}"
+                               class="btn btn-danger"
+                               id="delete">
+                                حذف
+                            </a>
                         </td>
                     </tr>
-                    @endforeach
-                </tbody>
-                <tfoot>
+                    @empty
                     <tr>
-                        <th>الرقم</th>
-                        <th>العنوان</th>
-                        {{-- <th> الوصف</th> --}}
-                        <th>تم الارسال الى</th>
-                        <th>وقت الإرسال</th>
-                        <th>الحالة</th>
-                        <th>الاجراء</th>
+                        <td colspan="6" class="text-center text-muted">
+                            لا توجد إشعارات
+                        </td>
                     </tr>
-                </tfoot>
+                    @endforelse
+                </tbody>
+
             </table>
+
+            <!-- Pagination Links -->
+            <div class="mt-3 d-flex justify-content-center">
+                {{ $notification->links() }}
+            </div>
+
         </div>
     </div>
 </div>
 
 <!-- Modal -->
-<div class="modal fade" id="notificationModal" tabindex="-1" aria-labelledby="notificationModalLabel" aria-hidden="true">
+<div class="modal fade" id="notificationModal" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-lg modal-dialog-scrollable">
     <div class="modal-content">
+
       <div class="modal-header">
         <h5 class="modal-title" id="notificationModalLabel">عنوان الإشعار</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="إغلاق"></button>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
-      <div class="modal-body" id="notificationDescription">
-        <!-- سيتم عرض الوصف هنا -->
-      </div>
+
+      <div class="modal-body" id="notificationDescription"></div>
+
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إغلاق</button>
       </div>
+
     </div>
   </div>
 </div>
 
-<!-- Optional styling (if you prefer CSS over JS for image control) -->
+<!-- Image Styling -->
 <style>
     #notificationDescription img {
         max-width: 100%;
@@ -105,50 +137,39 @@
     }
 </style>
 
-<!-- JavaScript to handle modal, responsive video, and medium image size -->
+<!-- Modal JS -->
 <script>
-    document.addEventListener("DOMContentLoaded", function () {
-        const buttons = document.querySelectorAll('.showNotificationBtn');
-        const modal = new bootstrap.Modal(document.getElementById('notificationModal'));
+document.addEventListener("DOMContentLoaded", function () {
 
-        buttons.forEach(btn => {
-            btn.addEventListener('click', function () {
-                const title = this.getAttribute('data-title');
-                const description = this.getAttribute('data-description');
+    const modal = new bootstrap.Modal(document.getElementById('notificationModal'));
 
-                const container = document.getElementById('notificationDescription');
-                document.getElementById('notificationModalLabel').innerText = title;
-                container.innerHTML = description;
+    document.querySelectorAll('.showNotificationBtn').forEach(btn => {
 
-                // Wrap iframes with Bootstrap 5 responsive video container
-                const iframes = container.querySelectorAll('iframe');
-                iframes.forEach(iframe => {
-                    if (!iframe.parentElement.classList.contains('ratio')) {
-                        const wrapper = document.createElement('div');
-                        wrapper.className = 'ratio ratio-16x9';
-                        iframe.parentNode.insertBefore(wrapper, iframe);
-                        wrapper.appendChild(iframe);
-                    }
-                });
+        btn.addEventListener('click', function () {
 
-                // Resize images to medium height
-                const images = container.querySelectorAll('img');
-                images.forEach(img => {
-                    img.style.maxWidth = '100%';
-                    img.style.height = 'auto';
-                    img.style.maxHeight = '400px';
-                    img.style.objectFit = 'contain';
-                    img.style.display = 'block';
-                    img.style.marginBottom = '10px';
-                });
+            const title = this.getAttribute('data-title');
+            const description = this.getAttribute('data-description');
 
-                modal.show();
+            const container = document.getElementById('notificationDescription');
+
+            document.getElementById('notificationModalLabel').innerText = title;
+            container.innerHTML = description;
+
+            // Responsive videos
+            container.querySelectorAll('iframe').forEach(iframe => {
+                if (!iframe.parentElement.classList.contains('ratio')) {
+                    const wrapper = document.createElement('div');
+                    wrapper.className = 'ratio ratio-16x9 mb-2';
+                    iframe.parentNode.insertBefore(wrapper, iframe);
+                    wrapper.appendChild(iframe);
+                }
             });
-        });
-    });
-</script>
 
-<!-- Include Bootstrap JS if not already present in your layout -->
-{{-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script> --}}
+            modal.show();
+        });
+
+    });
+});
+</script>
 
 @endsection

@@ -5,6 +5,7 @@ namespace App\Providers;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Contracts\Http\Kernel;
 use App\Http\Middleware\CheckUserRole; // Import the middleware
+use Illuminate\Pagination\Paginator;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -23,5 +24,7 @@ class AppServiceProvider extends ServiceProvider
     {
         // Register middleware
         // $kernel->appendMiddlewareToGroup('web', CheckUserRole::class);
+            Paginator::useBootstrapFive();
+
     }
 }

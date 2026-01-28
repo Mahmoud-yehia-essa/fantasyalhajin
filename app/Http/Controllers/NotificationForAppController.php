@@ -36,12 +36,23 @@ return view('admin.notification.send_notification',compact('users'));
 // return view('admin.notification.all_notification');
 //     }
 
-   public function alldNotification()
-    {
-        $notification = NotificationForApp::latest()->get();
+//    public function alldNotification()
+//     {
 
-return view('admin.notification.all_notification',compact('notification'));
-    }
+//         $notification = NotificationForApp::latest()->get();
+
+// return view('admin.notification.all_notification',compact('notification'));
+//     }
+
+
+public function alldNotification()
+{
+    $notification = NotificationForApp::with('user')
+        ->latest()
+        ->paginate(20); // عدد العناصر في الصفحة
+
+    return view('admin.notification.all_notification', compact('notification'));
+}
 
 
        public function deleteAllNotifications()
