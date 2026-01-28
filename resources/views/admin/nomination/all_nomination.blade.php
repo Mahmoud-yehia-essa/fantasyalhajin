@@ -2,6 +2,8 @@
 @section('admin')
 
 <div class="page-content">
+
+    <!-- breadcrumb -->
     <div class="page-breadcrumb d-none d-sm-flex align-items-center mb-3">
         <div class="breadcrumb-title pe-3">عرض الترشيحات</div>
     </div>
@@ -34,9 +36,9 @@
                         </tr>
                     </thead>
                     <tbody class="text-center">
-                        @foreach($nominations as $key => $nomination)
+                        @forelse($nominations as $key => $nomination)
                             <tr>
-                                <td>{{ $key + 1 }}</td>
+                                <td>{{ $nominations->firstItem() + $key }}</td>
                                 <td>{{ $nomination->round->round_number ?? '-' }}</td>
 
                                 <td>
@@ -82,19 +84,49 @@
                                     </a>
                                 </td>
                             </tr>
-                        @endforeach
+                        @empty
+                            <tr>
+                                <td colspan="10" class="text-center text-muted">
+                                    لا توجد ترشيحات
+                                </td>
+                            </tr>
+                        @endforelse
                     </tbody>
                 </table>
-            </div>
 
+                <!-- Pagination -->
+                <div class="mt-3 d-flex justify-content-center">
+                    {{ $nominations->links('pagination::bootstrap-5') }}
+                </div>
+            </div>
         </div>
     </div>
 </div>
 
+<!-- CSS لتصغير Pagination -->
+<style>
+.pagination .page-link,
+.pagination .page-item span {
+    padding: 2px 6px !important;
+    font-size: 12px !important;
+    line-height: 1 !important;
+}
+
+.pagination svg {
+    width: 10px !important;
+    height: 10px !important;
+}
+
+.pagination .page-link {
+    min-height: auto !important;
+}
+</style>
+
+<!-- العد التنازلي -->
 <script>
 document.addEventListener('DOMContentLoaded', function () {
     @foreach($nominations as $nomination)
-        // العد التنازلي لبداية الجولة
+        // عداد البداية
         var startTime{{ $nomination->id }} = new Date("{{ $nomination->round->start }}").getTime();
         var countdownStart{{ $nomination->id }} = setInterval(function() {
             var now = new Date().getTime();
@@ -104,16 +136,16 @@ document.addEventListener('DOMContentLoaded', function () {
                 clearInterval(countdownStart{{ $nomination->id }});
                 document.getElementById("countdown-start-{{ $nomination->id }}").innerHTML = "بدأت الجولة";
             } else {
-                var days = Math.floor(distance / (1000 * 60 * 60 * 24));
-                var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-                var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+                var days = Math.floor(distance / (1000*60*60*24));
+                var hours = Math.floor((distance % (1000*60*60*24))/(1000*60*60));
+                var minutes = Math.floor((distance % (1000*60*60))/(1000*60));
+                var seconds = Math.floor((distance % (1000*60))/1000);
                 document.getElementById("countdown-start-{{ $nomination->id }}").innerHTML =
                     "فاضل: " + days + " أيام " + hours + " ساعات " + minutes + " دقائق " + seconds + " ثواني";
             }
         }, 1000);
 
-        // العد التنازلي لنهاية الجولة
+        // عداد النهاية
         var endTime{{ $nomination->id }} = new Date("{{ $nomination->round->end }}").getTime();
         var countdownEnd{{ $nomination->id }} = setInterval(function() {
             var now = new Date().getTime();
@@ -123,10 +155,10 @@ document.addEventListener('DOMContentLoaded', function () {
                 clearInterval(countdownEnd{{ $nomination->id }});
                 document.getElementById("countdown-end-{{ $nomination->id }}").innerHTML = "انتهت الجولة";
             } else {
-                var days = Math.floor(distance / (1000 * 60 * 60 * 24));
-                var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-                var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+                var days = Math.floor(distance / (1000*60*60*24));
+                var hours = Math.floor((distance % (1000*60*60*24))/(1000*60*60));
+                var minutes = Math.floor((distance % (1000*60*60))/(1000*60));
+                var seconds = Math.floor((distance % (1000*60))/1000);
                 document.getElementById("countdown-end-{{ $nomination->id }}").innerHTML =
                     "فاضل: " + days + " أيام " + hours + " ساعات " + minutes + " دقائق " + seconds + " ثواني";
             }

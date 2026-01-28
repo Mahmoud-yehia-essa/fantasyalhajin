@@ -22,17 +22,33 @@ use Illuminate\Support\Facades\DB;
 class NominationController extends Controller
 {
     // عرض جميع الترشيحات
-    public function allNomination()
-    {
+//     public function allNomination()
+//     {
 
-        // $nominations = Nomination::with(['user', 'camel', 'festival', 'round'])->get();
-$nominations = Nomination::with(['user', 'camal', 'festival', 'round'])->get();
 
-                // $nominations = Nomination::latest()->get();
+//         // $nominations = Nomination::with(['user', 'camel', 'festival', 'round'])->get();
+// $nominations = Nomination::with(['user', 'camal', 'festival', 'round'])->get();
 
-                // return $nominations;
-        return view('admin.nomination.all_nomination', compact('nominations'));
-    }
+//                 // $nominations = Nomination::latest()->get();
+
+//                 // return $nominations;
+//         return view('admin.nomination.all_nomination', compact('nominations'));
+//     }
+
+
+public function allNomination()
+{
+    $nominations = Nomination::with([
+            'user',
+            'camelRoundParticipation',
+            'festival',
+            'round'
+        ])
+        ->latest()
+        ->paginate(20); // غير الرقم حسب ما تحب
+
+    return view('admin.nomination.all_nomination', compact('nominations'));
+}
 
 
       // عرض جميع الترشيحات
