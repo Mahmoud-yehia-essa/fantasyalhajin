@@ -59,6 +59,7 @@ Route::controller(IndexController::class)->group(function () {
      Route::get('/privacy', 'showPrivacy')->name('privacy.policy');
 
           Route::get('/group/invitation/{code_number}', 'groupJoin')->name('group.join');
+          Route::get('/group/invitation/{code_number}/steps', 'groupJoinSteps')->name('group.join.steps');
 
         //   Route::get('/group/invite/{code_number}/{user_id}', 'groupJoin')->name('group.join');
 

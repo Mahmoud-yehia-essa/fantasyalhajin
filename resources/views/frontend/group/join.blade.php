@@ -305,7 +305,7 @@
               data-aos-delay="700"
             >
               <a
-                href="https://fantasyalhajin.com/group/join/{{$group->code_number}}"
+                href="{{ route('group.join.steps', $group->code_number) }}"
                 class="relative inline-flex group w-full sm:w-auto"
               >
                 <div
@@ -655,8 +655,7 @@
             <div
               class="relative flex items-center justify-center gap-6 px-16 py-8 bg-brand-dark rounded-full group-hover:bg-black transition-colors duration-300"
             >
-              <a    href="https://fantasyalhajin.com/group/join/{{$group->code_number}}"
-"
+              <a    href="{{ route('group.join.steps', $group->code_number) }}"
                 class="text-3xl font-black text-white tracking-wide group-hover:text-brand-red transition-colors"
                 >انضم للمجموعة الان</a
               >

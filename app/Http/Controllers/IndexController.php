@@ -392,5 +392,23 @@ public function groupJoin($codeNumber)
     return view('frontend.group.join', compact('group', 'owner'));
 }
 
+public function groupJoinSteps($codeNumber)
+{
+    // جلب بيانات المجموعة مع العلاقات المطلوبة
+    $group = \App\Models\Groub::where('code_number', $codeNumber)
+        ->with(['user', 'festival'])
+        ->withCount('groupUsers')
+        ->firstOrFail();
+
+    // جلب بيانات مؤسس/مالك المجموعة
+    $owner = \App\Models\GroupUser::where('groub_id', $group->id)
+        ->where('is_owner_group', 1)
+        ->with('user')
+        ->first();
+
+    // إرسال البيانات إلى صفحة خطوات الانضمام
+    return view('frontend.group.join-steps', compact('group', 'owner'));
+}
+
 
 }
