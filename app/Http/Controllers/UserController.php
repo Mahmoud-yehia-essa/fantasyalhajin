@@ -1172,7 +1172,7 @@ public function loginApiV2(Request $request)
 
         if ($request->file('photo')) {
             $file = $request->file('photo');
-            @unlink(public_path('upload/user_images/'.$user->photo));
+            // @unlink(public_path('upload/user_images/'.$user->photo));
             $filename = 'app-'.date('YmdHi').$file->getClientOriginalName();
             $file->move(public_path('upload/group'),$filename);
 
