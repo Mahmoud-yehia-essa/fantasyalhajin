@@ -29,11 +29,15 @@ class DiscoverConnectionProfileResponse extends \Google\Model
   protected $postgresqlRdbmsDataType = '';
   protected $salesforceOrgType = SalesforceOrg::class;
   protected $salesforceOrgDataType = '';
+  protected $spannerDatabaseType = SpannerDatabase::class;
+  protected $spannerDatabaseDataType = '';
   protected $sqlServerRdbmsType = SqlServerRdbms::class;
   protected $sqlServerRdbmsDataType = '';
 
   /**
-   * @param MongodbCluster
+   * Enriched MongoDB cluster.
+   *
+   * @param MongodbCluster $mongodbCluster
    */
   public function setMongodbCluster(MongodbCluster $mongodbCluster)
   {
@@ -47,7 +51,9 @@ class DiscoverConnectionProfileResponse extends \Google\Model
     return $this->mongodbCluster;
   }
   /**
-   * @param MysqlRdbms
+   * Enriched MySQL RDBMS object.
+   *
+   * @param MysqlRdbms $mysqlRdbms
    */
   public function setMysqlRdbms(MysqlRdbms $mysqlRdbms)
   {
@@ -61,7 +67,9 @@ class DiscoverConnectionProfileResponse extends \Google\Model
     return $this->mysqlRdbms;
   }
   /**
-   * @param OracleRdbms
+   * Enriched Oracle RDBMS object.
+   *
+   * @param OracleRdbms $oracleRdbms
    */
   public function setOracleRdbms(OracleRdbms $oracleRdbms)
   {
@@ -75,7 +83,9 @@ class DiscoverConnectionProfileResponse extends \Google\Model
     return $this->oracleRdbms;
   }
   /**
-   * @param PostgresqlRdbms
+   * Enriched PostgreSQL RDBMS object.
+   *
+   * @param PostgresqlRdbms $postgresqlRdbms
    */
   public function setPostgresqlRdbms(PostgresqlRdbms $postgresqlRdbms)
   {
@@ -89,7 +99,9 @@ class DiscoverConnectionProfileResponse extends \Google\Model
     return $this->postgresqlRdbms;
   }
   /**
-   * @param SalesforceOrg
+   * Enriched Salesforce organization.
+   *
+   * @param SalesforceOrg $salesforceOrg
    */
   public function setSalesforceOrg(SalesforceOrg $salesforceOrg)
   {
@@ -103,7 +115,25 @@ class DiscoverConnectionProfileResponse extends \Google\Model
     return $this->salesforceOrg;
   }
   /**
-   * @param SqlServerRdbms
+   * Enriched Spanner database.
+   *
+   * @param SpannerDatabase $spannerDatabase
+   */
+  public function setSpannerDatabase(SpannerDatabase $spannerDatabase)
+  {
+    $this->spannerDatabase = $spannerDatabase;
+  }
+  /**
+   * @return SpannerDatabase
+   */
+  public function getSpannerDatabase()
+  {
+    return $this->spannerDatabase;
+  }
+  /**
+   * Enriched SQLServer RDBMS object.
+   *
+   * @param SqlServerRdbms $sqlServerRdbms
    */
   public function setSqlServerRdbms(SqlServerRdbms $sqlServerRdbms)
   {

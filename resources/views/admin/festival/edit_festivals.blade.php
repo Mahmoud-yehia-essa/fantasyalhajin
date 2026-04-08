@@ -90,6 +90,17 @@
                                     </div>
                                 </div>
 
+
+                                  <div class="row mb-3">
+                                    <div class="col-sm-3">
+        <h6 class="mb-0">عدد مرات استخدام دبل النقاط</h6>
+                                    </div>
+                                    <div class="col-sm-9 text-secondary">
+                                        <input disabled type="text"  name="count_double_used" class="form-control" value="{{ old('count_double_used', $festival->count_double_used == null ? 'لا يوجد استخدام لدبل النقاط في هذا المهرجان' : $festival->count_double_used) }}" />
+                                        @error('count_double_used') <span class="text-danger">{{ $message }}</span> @enderror
+                                    </div>
+                                </div>
+
                                 <!-- Start Date -->
                                 <div class="row mb-3">
                                     <div class="col-sm-3">

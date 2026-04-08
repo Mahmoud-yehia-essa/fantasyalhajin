@@ -1060,6 +1060,151 @@ $end   = \Carbon\Carbon::parse($item->end)->setTimezone('Asia/Riyadh');
 
 
 
+public function getRoundsByDateAndRoundIdApi(Request $request)
+{
+    $festivalId = $request->input('festival_id');
+    $date = $request->input('date'); // صيغة YYYY-MM-DD
+    $round_id = $request->input('round_id');
+
+    // الوقت الحالي بتوقيت الكويت أو الرياض حسب اختيارك
+    $now = now('Asia/Riyadh'); // إذا أردت الكويت استخدم 'Asia/Kuwait'
+
+    // جلب الشوط الواحد
+    $round = Round::where('festival_id', $festivalId)
+        ->where('id', $round_id)
+        ->whereDate('start', $date)
+        ->orderBy('start', 'asc')
+        ->first();
+
+    // إذا لم يوجد أي شوط
+    if (!$round) {
+        return response()->json([]);
+    }
+
+    // تحويل الوقت للتوقيت المطلوب
+    $start = \Carbon\Carbon::parse($round->start)->setTimezone('Asia/Riyadh');
+    $end   = \Carbon\Carbon::parse($round->end)->setTimezone('Asia/Riyadh');
+
+    // صيغة الوقت 12 ساعة AM/PM
+    $startTime = $start->format('h:i A');
+    $endTime   = $end->format('h:i A');
+
+    // اليوم بالاسم باللغة العربية
+    $startDay = $start->locale('ar')->isoFormat('dddd');
+    $endDay   = $end->locale('ar')->isoFormat('dddd');
+
+    // حساب الوقت المتبقي
+    if ($now->lt($start)) {
+        $diff = $now->diff($start);
+        $timeStatus = sprintf(
+            'سيبدأ بعد %d يوم %d ساعة %d دقيقة',
+            $diff->d,
+            $diff->h,
+            $diff->i
+        );
+        $type = 'upcoming';
+    } elseif ($now->between($start, $end)) {
+        $diff = $now->diff($end);
+        $timeStatus = sprintf(
+            'سينتهي بعد %d يوم %d ساعة %d دقيقة',
+            $diff->d,
+            $diff->h,
+            $diff->i
+        );
+        $type = 'current';
+    } else {
+        $timeStatus = 'انتهى الشوط';
+        $type = 'ended';
+    }
+
+    // إنشاء المصفوفة النهائية
+    $data = $round->toArray();
+    $data['start_time']  = $startTime;
+    $data['end_time']    = $endTime;
+    $data['time_status'] = $timeStatus;
+    $data['start_day']   = $startDay;
+    $data['end_day']     = $endDay;
+    $data['start_date']  = $start->toDateString();
+    $data['end_date']    = $end->toDateString();
+    $data['type']        = $type;
+
+    return response()->json($data);
+}
+
+
+
+// public function getRoundsByDateAndRoundIdApi(Request $request)
+// {
+//     $festivalId = $request->input('festival_id');
+//     $date = $request->input('date'); // صيغة YYYY-MM-DD
+//     $round_id = $request->input('round_id');
+
+//     // الوقت الحالي بتوقيت الكويت
+//     $now = now('Asia/Riyadh');
+
+//     $rounds = Round::where('festival_id', $festivalId)
+//     ->where('id',$round_id)
+//         ->whereDate('start', $date)
+//         ->orderBy('start', 'asc')
+//         ->get()->first()
+//         ->map(function ($item) use ($now) {
+//             // $start = \Carbon\Carbon::parse($item->start)->setTimezone('Asia/Kuwait');
+//             // $end   = \Carbon\Carbon::parse($item->end)->setTimezone('Asia/Kuwait');
+
+//             $start = \Carbon\Carbon::parse($item->start)->setTimezone('Asia/Riyadh');
+// $end   = \Carbon\Carbon::parse($item->end)->setTimezone('Asia/Riyadh');
+
+
+//             // صيغة الوقت (12 ساعة AM/PM)
+//             $startTime = $start->format('h:i A');
+//             $endTime   = $end->format('h:i A');
+
+//             // اليوم بالاسم
+//             $startDay = $start->locale('ar')->isoFormat('dddd');
+//             $endDay   = $end->locale('ar')->isoFormat('dddd');
+
+//             // حساب الوقت المتبقي
+//             if ($now->lt($start)) {
+//                 $diff = $now->diff($start);
+//                 $timeStatus = sprintf(
+//                     'سيبدأ بعد %d يوم %d ساعة %d دقيقة',
+//                     $diff->d,
+//                     $diff->h,
+//                     $diff->i
+//                 );
+//                 $type = 'upcoming';
+//             } elseif ($now->between($start, $end)) {
+//                 $diff = $now->diff($end);
+//                 $timeStatus = sprintf(
+//                     'سينتهي بعد %d يوم %d ساعة %d دقيقة',
+//                     $diff->d,
+//                     $diff->h,
+//                     $diff->i
+//                 );
+//                 $type = 'current';
+//             } else {
+//                 $timeStatus = 'انتهى الشوط';
+//                 $type = 'ended';
+//             }
+
+//             // نحافظ على الأعمدة الأصلية + نضيف الجديد
+//             $data = $item->toArray();
+//             $data['start_time']  = $startTime;
+//             $data['end_time']    = $endTime;
+//             $data['time_status'] = $timeStatus;
+//             $data['start_day']   = $startDay;
+//             $data['end_day']     = $endDay;
+//             $data['start_date']  = $start->toDateString();
+//             $data['end_date']    = $end->toDateString();
+//             $data['type']        = $type;
+
+//             return $data;
+//         });
+
+//     return response()->json($rounds);
+// }
+
+
 // public function getCamelParticipationsApi(Request $request)
 // {
 //     $festivalId = $request->input('festival_id');

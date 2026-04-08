@@ -1,34 +1,36 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\AdsController;
-use App\Http\Controllers\GameController;
-use App\Http\Controllers\NewsController;
-use App\Http\Controllers\UserController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\AdsController;
+use App\Http\Controllers\AppVersionController;
 use App\Http\Controllers\CamalController;
+use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\CouponController;
+use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\FestivalController;
+use App\Http\Controllers\FestivalPointController;
+use App\Http\Controllers\GameController;
+use App\Http\Controllers\GroubController;
 use App\Http\Controllers\IndexController;
+use App\Http\Controllers\LiveBroadcastController;
+use App\Http\Controllers\NewsController;
+use App\Http\Controllers\NominationController;
+use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\NotificationDashboardController;
+use App\Http\Controllers\NotificationForAppController;
+use App\Http\Controllers\PayMentController;
+use App\Http\Controllers\PositionController;
 use App\Http\Controllers\PriceController;
 use App\Http\Controllers\PrizeController;
-use App\Http\Controllers\RoundController;
-use App\Http\Controllers\CouponController;
-use App\Http\Controllers\ReportController;
-use App\Http\Controllers\SliderController;
-use App\Http\Controllers\PayMentController;
 use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\SponsorController;
-use App\Http\Controllers\CategoryController;
-use App\Http\Controllers\FestivalController;
-use App\Http\Controllers\QuestionController;
-use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\AppVersionController;
-use App\Http\Controllers\NominationController;
 use App\Http\Controllers\QuestionAIController;
-use App\Http\Controllers\NotificationController;
-use App\Http\Controllers\FestivalPointController;
-use App\Http\Controllers\LiveBroadcastController;
-use App\Http\Controllers\NotificationForAppController;
-use App\Http\Controllers\NotificationDashboardController;
+use App\Http\Controllers\QuestionController;
+use App\Http\Controllers\ReportController;
+use App\Http\Controllers\RoundController;
+use App\Http\Controllers\SliderController;
+use App\Http\Controllers\SponsorController;
+use App\Http\Controllers\UserController;
+use Illuminate\Support\Facades\Route;
 
 Route::get('/admin', function () {
     // return view('welcome');
@@ -42,10 +44,16 @@ Route::controller(IndexController::class)->group(function () {
 
     // Route::get('/', 'showSoon')->name('show.soon');
     Route::get('/', 'showHome')->name('show.home.index');
+    Route::get('/ranking', 'showRanking')->name('show.user.ranking');
 
 
 
      Route::get('/privacy', 'showPrivacy')->name('privacy.policy');
+
+          Route::get('/group/invitation/{code_number}', 'groupJoin')->name('group.join');
+
+        //   Route::get('/group/invite/{code_number}/{user_id}', 'groupJoin')->name('group.join');
+
 
 
 });
@@ -119,6 +127,33 @@ Route::controller(AppVersionController::class)->middleware(['checkUserRole','aut
 
 
 });
+
+
+
+
+Route::controller(PositionController::class)->middleware(['checkUserRole','auth'])->group(function () {
+
+
+    // Route::get('/add/position', 'addVersions')->name('add.versions');
+    // Route::post('/update/versions', 'updateVersions')->name('update.versions.store');
+
+
+            Route::get('add/position/user', 'addPositionUser')->name('add.position.user');
+            Route::post('add/position/user', 'addPositionUserStore')->name('add.position.user.store');
+
+                Route::get('/search/position', 'searchPosition')->name('search.position');
+                Route::post('/search/position/result', 'searchPositionResult')->name('search.position.result');
+
+
+
+                // Route::get('/get-rounds/{festival}', 'getRounds')->name('get.round');
+
+
+
+
+
+});
+
 
 
 
@@ -215,6 +250,37 @@ Route::controller(FestivalController::class)->middleware(['checkUserRole','auth'
 
 
 });
+
+Route::controller(GroubController::class)->middleware(['checkUserRole','auth'])->group(function () {
+    Route::get('/all/groub', 'allGroub')->name('all.groub');
+
+    // Route::get('/add/festival', 'addFestival')->name('add.festival');
+
+
+    // Route::post('/add/festival' , 'storeFestival')->name('add.festival.store');
+
+    // Route::get('/edit/festival/{id}', 'editFestival')->name('edit.festival');
+
+    // Route::post('/edit/festival' , 'updateFestival')->name('update.festival');
+
+
+    Route::get('/delete/groub/{id}' , 'deleteGroub')->name('delete.groub');
+
+    Route::get('/groub/inactive/{id}', 'groubInactive')->name('inactive.groub');
+
+
+    Route::get('/groub/active/{id}', 'groubActive')->name('active.groub');
+
+
+    Route::get('/groub/details/{id}', 'groubDetails')->name('groub.details');
+
+
+
+});
+
+
+
+
 
 
 Route::controller(RoundController::class)

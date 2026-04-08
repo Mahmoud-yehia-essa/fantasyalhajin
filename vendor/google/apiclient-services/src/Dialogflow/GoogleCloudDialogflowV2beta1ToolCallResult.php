@@ -47,7 +47,7 @@ class GoogleCloudDialogflowV2beta1ToolCallResult extends \Google\Model
   public $tool;
 
   /**
-   * @param string
+   * @param string $action
    */
   public function setAction($action)
   {
@@ -61,7 +61,7 @@ class GoogleCloudDialogflowV2beta1ToolCallResult extends \Google\Model
     return $this->action;
   }
   /**
-   * @param string
+   * @param string $answerRecord
    */
   public function setAnswerRecord($answerRecord)
   {
@@ -75,7 +75,7 @@ class GoogleCloudDialogflowV2beta1ToolCallResult extends \Google\Model
     return $this->answerRecord;
   }
   /**
-   * @param string
+   * @param string $content
    */
   public function setContent($content)
   {
@@ -89,7 +89,7 @@ class GoogleCloudDialogflowV2beta1ToolCallResult extends \Google\Model
     return $this->content;
   }
   /**
-   * @param string
+   * @param string $createTime
    */
   public function setCreateTime($createTime)
   {
@@ -103,7 +103,7 @@ class GoogleCloudDialogflowV2beta1ToolCallResult extends \Google\Model
     return $this->createTime;
   }
   /**
-   * @param GoogleCloudDialogflowV2beta1ToolCallResultError
+   * @param GoogleCloudDialogflowV2beta1ToolCallResultError $error
    */
   public function setError(GoogleCloudDialogflowV2beta1ToolCallResultError $error)
   {
@@ -117,7 +117,7 @@ class GoogleCloudDialogflowV2beta1ToolCallResult extends \Google\Model
     return $this->error;
   }
   /**
-   * @param string
+   * @param string $rawContent
    */
   public function setRawContent($rawContent)
   {
@@ -131,7 +131,7 @@ class GoogleCloudDialogflowV2beta1ToolCallResult extends \Google\Model
     return $this->rawContent;
   }
   /**
-   * @param string
+   * @param string $tool
    */
   public function setTool($tool)
   {

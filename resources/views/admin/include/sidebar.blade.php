@@ -104,7 +104,7 @@
     <ul>
         <li>
             <a href="{{ route('all.round') }}">
-                <i class='bx bx-radio-circle'></i>عرض كل الأشواط
+                <i class='bx bx-radio-circle'></i>عرض  الأشواط
             </a>
         </li>
         <li>
@@ -133,6 +133,47 @@
                 <i class='bx bx-radio-circle'></i>إضافة نقاط جديدة
             </a>
         </li> --}}
+    </ul>
+</li>
+
+
+
+     <li>
+            <a href="javascript:;" class="has-arrow">
+                <div class="parent-icon"><i class="bx bx-category"></i>
+                </div>
+                <div class="menu-title">ادارة المجموعات</div>
+            </a>
+            <ul>
+                <li> <a href="{{route('all.groub')}}"><i class='bx bx-radio-circle'></i>عرض المجموعات</a>
+                </li>
+                {{-- <li> <a href="{{route('add.festival')}}"><i class='bx bx-radio-circle'></i>إضافة مهرجان جديد</a>
+                </li> --}}
+
+
+
+
+
+            </ul>
+        </li>
+
+
+     <li>
+    <a href="javascript:;" class="has-arrow">
+        <div class="parent-icon"><i class="bx bx-category"></i></div>
+        <div class="menu-title">إدارة ترتيب المستخدمين</div>
+    </a>
+    <ul>
+        <li>
+            <a href="{{ route('search.position') }}">
+                <i class='bx bx-radio-circle'></i>عرض ترتيب المستخدمين
+            </a>
+        </li>
+        <li>
+            <a href="{{ route('add.position.user') }}">
+                <i class='bx bx-radio-circle'></i>إضافة ترتيب جديدة
+            </a>
+        </li>
     </ul>
 </li>
 

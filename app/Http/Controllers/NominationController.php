@@ -2,19 +2,19 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\User;
 use App\Models\Camal;
-use App\Models\Round;
-use App\Models\Festival;
-use App\Models\Nomination;
-use Illuminate\Http\Request;
-use App\Models\FestivalPoint;
 use App\Models\CamelRoundParticipation;
+use App\Models\Festival;
+use App\Models\FestivalPoint;
+use App\Models\Nomination;
+use App\Models\Round;
+use App\Models\User;
+use App\Models\UserDoublePointUsage;
 use App\Notifications\NominationNotification;
-
-use Illuminate\Support\Facades\Notification;
-
+use Illuminate\Http\Request;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Notification;
 
 
 
@@ -256,6 +256,7 @@ return view('admin.nomination.all_filter_nomination',compact('getNomination'));
 
 
 
+    /* Very Important function to add Store to users
 
  public function addRoundWinnerStore(Request $request)
     {
@@ -342,6 +343,66 @@ $nomination = Nomination::where('festival_id', $request->festival_id)
 
 
     }
+
+
+    */
+
+
+public function addRoundWinnerStore(Request $request)
+{
+    // تحديث حالة الشوط
+    $round = Round::find($request->round_id);
+    $round->status = "finished";
+    $round->save();
+
+    // جلب معلومات الترشيح للمطية
+    $camelRoundParticipation = CamelRoundParticipation::find($request->camal_id);
+
+    // جلب نقاط العمر
+    $festivalPoint = FestivalPoint::where('age_name', $camelRoundParticipation->camel_age_name)
+        ->first();
+
+    // جلب الترشيحات في نفس المهرجان والشوط
+    $nominations = Nomination::where('festival_id', $request->festival_id)
+        ->where('round_id', $request->round_id)
+        ->get();
+
+    foreach ($nominations as $nomination) {
+
+        // تحقق إذا المستخدم استخدم دبل النقاط
+        $usedDouble = UserDoublePointUsage::where('user_id', $nomination->user_id)
+            ->where('festival_id', $request->festival_id)
+            ->where('round_id', $request->round_id)
+            ->exists();
+
+        // تعيين النقاط: مضاعفة إذا استخدم الدبل
+        $points = $festivalPoint->points;
+        if ($usedDouble) {
+            $points *= 2; // مضاعفة النقاط
+        }
+
+        if ($nomination->camel_round_participations_id == $request->camal_id) {
+            // الفائز
+            $nomination->points = $points;
+            $nomination->is_winner = 1;
+        } else {
+            // الخاسرين
+            $nomination->is_winner = 2;
+        }
+
+        $nomination->save();
+    }
+
+    // تحديث حالة المطية الفائزة
+    $camelRoundParticipation->is_winner = 1;
+    $camelRoundParticipation->save();
+
+    return redirect()->route('filter.users')->with('success', 'تم اضافة المطية الفائزة بنجاح');
+}
+
+
+
+
 
     // تخزين ترشيح جديد
     public function storeNomination(Request $request)
@@ -968,6 +1029,7 @@ public function checkNominationApi(Request $request)
                 'camel_owner_country' => $camelParticipation->camel_owner_country,
                 'registration_number' => $camelParticipation->registration_number,
                 'is_winner' => $camelParticipation->is_winner,
+
             ];
         }
 
@@ -1003,6 +1065,8 @@ public function checkNominationApi(Request $request)
         $data = [
             'nomination_id' => $nomination->id,
             'is_winner' => $nomination->is_winner,
+            'points' => $nomination->points,
+
             'created_at' => $nomination->created_at,
             'created_at_human' => $nomination->created_at
                 ? \Carbon\Carbon::parse($nomination->created_at)->locale('ar')->diffForHumans()
@@ -1501,11 +1565,13 @@ public function getFestivalLeaderboard(Request $request)
 
 
 
-// public function getFestivalLeaderboardLazy(Request $request)
+
+// public function getUserInfoNomination(Request $request)
 // {
 
 //     $festivalId = $request->input('festival_id');
 
+//     $user_id = $request->input('user_id');
 
 //     $usersPoints = \DB::table('nominations')
 //     ->join('users', 'nominations.user_id', '=', 'users.id')
@@ -1537,12 +1603,214 @@ public function getFestivalLeaderboard(Request $request)
 //     return response()->json($usersPoints);
 // }
 
+
+// public function getUserInfoNomination(Request $request)
+// {
+//     $festivalId = $request->input('festival_id');
+//     $userId     = $request->input('user_id');
+
+//     // 1️⃣ إجمالي نقاط المستخدم
+//     $user = \DB::table('nominations')
+//         ->join('users', 'nominations.user_id', '=', 'users.id')
+//         ->select(
+//             'users.id',
+//             'users.fname',
+//             'users.lname',
+//             'users.email',
+//             'users.phone',
+//             'users.country_flag',
+//             'users.photo',
+//             \DB::raw('SUM(nominations.points) AS total_points')
+//         )
+//         ->where('nominations.festival_id', $festivalId)
+//         ->where('users.id', $userId)
+//         ->groupBy(
+//             'users.id',
+//             'users.fname',
+//             'users.lname',
+//             'users.email',
+//             'users.phone',
+//             'users.country_flag',
+//             'users.photo'
+//         )
+//         ->first();
+
+//     if (!$user) {
+//         return response()->json(null);
+//     }
+
+//     // 2️⃣ حساب الترتيب
+//     $rank = \DB::table('nominations')
+//         ->select(\DB::raw('SUM(points) as total_points'))
+//         ->where('festival_id', $festivalId)
+//         ->groupBy('user_id')
+//         ->havingRaw('SUM(points) > ?', [$user->total_points])
+//         ->count() + 1;
+
+//     $user->user_rank = $rank;
+
+//     return response()->json($user);
+// }
+
+
+//Important
+public function getUserInfoNomination(Request $request)
+{
+
+    $festivalId = $request->input('festival_id');
+    $userId     = $request->input('user_id');
+
+    // جلب كل المستخدمين مرتبين حسب النقاط ثم الاسم أبجديًا
+    $usersPoints = \DB::table('nominations')
+        ->join('users', 'nominations.user_id', '=', 'users.id')
+        ->select(
+            'users.id',
+            'users.fname',
+            'users.lname',
+            'users.email',
+            'users.phone',
+            'users.country_flag',
+            'users.photo',
+            \DB::raw('SUM(nominations.points) AS total_points')
+        )
+        ->where('nominations.festival_id', $festivalId)
+        ->groupBy(
+            'users.id',
+            'users.fname',
+            'users.lname',
+            'users.email',
+            'users.phone',
+            'users.country_flag',
+            'users.photo'
+        )
+        ->orderByDesc('total_points') // الأعلى نقاط أولاً
+        ->orderBy('fname')            // أبجدي عند التساوي
+        ->get();
+
+    // جلب المستخدم المطلوب
+    $userIndex = $usersPoints->search(fn($u) => $u->id == $userId);
+
+    if ($userIndex === false) {
+        return response()->json([
+            'message' => 'User not found in this festival.'
+        ], 404);
+    }
+
+    // المستخدم + إضافة الترتيب
+    $user = $usersPoints[$userIndex];
+    $user->user_rank = $userIndex + 1; // الترتيب يبدأ من 1
+
+    return response()->json($user);
+}
+
+
+
+// Stop important for lazyLoading
+// public function getFestivalLeaderboardLazy(Request $request)
+// {
+//     $festivalId = $request->input('festival_id');
+//     $page = $request->input('page', 1);      // رقم الصفحة الحالية
+//     $limit = $request->input('limit', 10);   // عدد العناصر في الصفحة
+
+//     $usersPoints = \DB::table('nominations')
+//         ->join('users', 'nominations.user_id', '=', 'users.id')
+//         ->select(
+//             'users.id',
+//             'users.fname',
+//             'users.lname',
+//             'users.email',
+//             'users.phone',
+//             'users.country_flag',
+//             'users.photo',
+//             \DB::raw('SUM(nominations.points) as total_points')
+//         )
+//         ->where('nominations.festival_id', $festivalId)
+//         ->groupBy(
+//             'users.id',
+//             'users.fname',
+//             'users.lname',
+//             'users.email',
+//             'users.phone',
+//             'users.country_flag',
+//             'users.photo'
+//         )
+//         ->orderByDesc('total_points')
+//         ->orderBy('fname')
+//         ->paginate($limit, ['*'], 'page', $page);
+
+//     return response()->json($usersPoints);
+// }
+
+
+// important 2
+// public function getFestivalLeaderboardLazy(Request $request)
+// {
+//     $festivalId = $request->input('festival_id');
+//     $page       = $request->input('page', 1);
+//     $limit      = $request->input('limit', 10);
+
+//     // 1️⃣ جلب كل المستخدمين مع إجمالي النقاط
+//     $usersPoints = \DB::table('nominations')
+//         ->join('users', 'nominations.user_id', '=', 'users.id')
+//         ->select(
+//             'users.id',
+//             'users.fname',
+//             'users.lname',
+//             'users.email',
+//             'users.phone',
+//             'users.country_flag',
+//             'users.photo',
+//             \DB::raw('SUM(nominations.points) as total_points')
+//         )
+//         ->where('nominations.festival_id', $festivalId)
+//         ->groupBy(
+//             'users.id',
+//             'users.fname',
+//             'users.lname',
+//             'users.email',
+//             'users.phone',
+//             'users.country_flag',
+//             'users.photo'
+//         )
+//         ->get();
+
+//     // 2️⃣ ترتيب النقاط + الأبجدية عند تساوي النقاط (مع الحفاظ على الرموز)
+//     $sortedCollection = $usersPoints->sort(function ($a, $b) {
+//         if ($a->total_points != $b->total_points) {
+//             return $b->total_points <=> $a->total_points; // الأعلى نقاط أولاً
+//         }
+//         return $a->fname <=> $b->fname; // أبجدي عند تساوي النقاط بدون تنظيف الرموز
+//     })->values();
+
+//     // 3️⃣ Pagination يدوي
+//     $total = $sortedCollection->count();
+//     $itemsForCurrentPage = $sortedCollection->slice(($page - 1) * $limit, $limit)->values();
+
+//     $paginated = new \Illuminate\Pagination\LengthAwarePaginator(
+//         $itemsForCurrentPage,
+//         $total,
+//         $limit,
+//         $page,
+//         ['path' => \Illuminate\Pagination\LengthAwarePaginator::resolveCurrentPath()]
+//     );
+
+//     // 4️⃣ إضافة الترتيب لكل عنصر
+//     foreach ($itemsForCurrentPage as $index => $item) {
+//         $item->user_rank = ($page - 1) * $limit + $index + 1;
+//     }
+
+//     return response()->json($paginated);
+// }
+
+
+
 public function getFestivalLeaderboardLazy(Request $request)
 {
     $festivalId = $request->input('festival_id');
-    $page = $request->input('page', 1);      // رقم الصفحة الحالية
-    $limit = $request->input('limit', 10);   // عدد العناصر في الصفحة
+    $page       = $request->input('page', 1);
+    $limit      = $request->input('limit', 10);
 
+    // 1️⃣ جلب كل المستخدمين مع إجمالي النقاط
     $usersPoints = \DB::table('nominations')
         ->join('users', 'nominations.user_id', '=', 'users.id')
         ->select(
@@ -1565,12 +1833,80 @@ public function getFestivalLeaderboardLazy(Request $request)
             'users.country_flag',
             'users.photo'
         )
-        ->orderByDesc('total_points')
-        ->orderBy('fname')
-        ->paginate($limit, ['*'], 'page', $page);
+        ->get();
 
-    return response()->json($usersPoints);
+    // 2️⃣ ترتيب النقاط + الأبجدية عند تساوي النقاط (مع الحفاظ على الرموز)
+    $sortedCollection = $usersPoints->sort(function ($a, $b) {
+        if ($a->total_points != $b->total_points) {
+            return $b->total_points <=> $a->total_points; // الأعلى نقاط أولاً
+        }
+        return $a->fname <=> $b->fname; // أبجدي عند تساوي النقاط بدون تنظيف الرموز
+    })->values();
+
+    // 3️⃣ Pagination يدوي
+    $total = $sortedCollection->count();
+    $itemsForCurrentPage = $sortedCollection->slice(($page - 1) * $limit, $limit)->values();
+
+    // 4️⃣ إضافة الترتيب وحقل has_any_position لكل عنصر
+    foreach ($itemsForCurrentPage as $index => $item) {
+        $item->user_rank = ($page - 1) * $limit + $index + 1;
+
+        // التحقق إذا حصل المستخدم على أي مركز في أي مهرجان
+        $item->has_any_position = \DB::table('user_positions')
+            ->where('user_id', $item->id)
+            ->exists();
+    }
+
+    $paginated = new \Illuminate\Pagination\LengthAwarePaginator(
+        $itemsForCurrentPage,
+        $total,
+        $limit,
+        $page,
+        ['path' => \Illuminate\Pagination\LengthAwarePaginator::resolveCurrentPath()]
+    );
+
+    return response()->json($paginated);
 }
+
+
+
+
+
+
+
+public function getUserWinningFestivals(Request $request)
+{
+    $userId = $request->input('user_id');
+
+    if (!$userId) {
+        return response()->json([
+            'status'  => false,
+            'message' => 'user_id مطلوب',
+        ], 422);
+    }
+
+    $festivals = DB::table('user_positions')
+        ->join('festivals', 'user_positions.festival_id', '=', 'festivals.id')
+        ->where('user_positions.user_id', $userId)
+        ->select(
+            'festivals.id as festival_id',
+            'festivals.name as festival_name',
+            'user_positions.user_position'
+        )
+        ->orderBy('user_positions.user_position') // المركز الأول ثم الثاني ...
+        ->get();
+
+    return response()->json([
+        'status' => true,
+        'count'  => $festivals->count(),
+        'data'   => $festivals,
+    ]);
+}
+
+
+
+
+
 
 
 }

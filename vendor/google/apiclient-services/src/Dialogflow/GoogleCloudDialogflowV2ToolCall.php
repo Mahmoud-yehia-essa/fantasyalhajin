@@ -19,6 +19,9 @@ namespace Google\Service\Dialogflow;
 
 class GoogleCloudDialogflowV2ToolCall extends \Google\Model
 {
+  public const STATE_STATE_UNSPECIFIED = 'STATE_UNSPECIFIED';
+  public const STATE_TRIGGERED = 'TRIGGERED';
+  public const STATE_NEEDS_CONFIRMATION = 'NEEDS_CONFIRMATION';
   /**
    * @var string
    */
@@ -53,7 +56,7 @@ class GoogleCloudDialogflowV2ToolCall extends \Google\Model
   public $toolDisplayName;
 
   /**
-   * @param string
+   * @param string $action
    */
   public function setAction($action)
   {
@@ -67,7 +70,7 @@ class GoogleCloudDialogflowV2ToolCall extends \Google\Model
     return $this->action;
   }
   /**
-   * @param string
+   * @param string $answerRecord
    */
   public function setAnswerRecord($answerRecord)
   {
@@ -81,7 +84,7 @@ class GoogleCloudDialogflowV2ToolCall extends \Google\Model
     return $this->answerRecord;
   }
   /**
-   * @param string
+   * @param string $createTime
    */
   public function setCreateTime($createTime)
   {
@@ -95,7 +98,7 @@ class GoogleCloudDialogflowV2ToolCall extends \Google\Model
     return $this->createTime;
   }
   /**
-   * @param array[]
+   * @param array[] $inputParameters
    */
   public function setInputParameters($inputParameters)
   {
@@ -109,21 +112,21 @@ class GoogleCloudDialogflowV2ToolCall extends \Google\Model
     return $this->inputParameters;
   }
   /**
-   * @param string
+   * @param self::STATE_* $state
    */
   public function setState($state)
   {
     $this->state = $state;
   }
   /**
-   * @return string
+   * @return self::STATE_*
    */
   public function getState()
   {
     return $this->state;
   }
   /**
-   * @param string
+   * @param string $tool
    */
   public function setTool($tool)
   {
@@ -137,7 +140,7 @@ class GoogleCloudDialogflowV2ToolCall extends \Google\Model
     return $this->tool;
   }
   /**
-   * @param string
+   * @param string $toolDisplayDetails
    */
   public function setToolDisplayDetails($toolDisplayDetails)
   {
@@ -151,7 +154,7 @@ class GoogleCloudDialogflowV2ToolCall extends \Google\Model
     return $this->toolDisplayDetails;
   }
   /**
-   * @param string
+   * @param string $toolDisplayName
    */
   public function setToolDisplayName($toolDisplayName)
   {

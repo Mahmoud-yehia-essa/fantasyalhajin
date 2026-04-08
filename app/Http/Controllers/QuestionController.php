@@ -1094,16 +1094,7 @@ public function getQuestionApi($id)
     // Merge in the required order: 200, 200, 400, 400, 600, 600
     $qu = $questions_200->merge($questions_400)->merge($questions_600);
 
-    // If less than 6 questions, fill missing ones from other available questions
-    // if ($qu->count() < 6) {
-    //     $extra_questions = Question::where('category_id', $id)
-    //         ->whereNotIn('id', $qu->pluck('id')) // Exclude already selected
-    //         ->inRandomOrder()
-    //         ->take(6 - $qu->count())
-    //         ->get();
 
-    //     $qu = $qu->merge($extra_questions);
-    // }
 
     // Map and return in the correct order
     $qu = $qu->map(function ($question) {
@@ -1113,6 +1104,117 @@ public function getQuestionApi($id)
     });
 
     return response()->json($qu->values()); // Ensure proper indexing
+}
+
+
+
+// public function createQuestionSessionApi($id)
+// {
+//     // Fetch 2 random questions for each qu_points category
+//     $questions_200 = Question::where('category_id', $id)
+//         ->where('qu_points', 200)
+//         ->inRandomOrder()
+//         ->take(2)
+//         ->get();
+
+//     $questions_400 = Question::where('category_id', $id)
+//         ->where('qu_points', 400)
+//         ->inRandomOrder()
+//         ->take(2)
+//         ->get();
+
+//     $questions_600 = Question::where('category_id', $id)
+//         ->where('qu_points', 600)
+//         ->inRandomOrder()
+//         ->take(2)
+//         ->get();
+
+//     // Merge in the required order: 200, 200, 400, 400, 600, 600
+//     $qu = $questions_200->merge($questions_400)->merge($questions_600);
+
+
+
+//     // Map and return in the correct order
+//     $qu = $qu->map(function ($question) {
+//         $question->is_user_answer = false;
+//         $question->who_answer = 0;
+//         return $question;
+//     });
+
+//     return response()->json($qu->values()); // Ensure proper indexing
+// }
+
+
+
+public function createQuestionSessionApi(Request $request)
+{
+    $sessionId = $request->input('session_id');
+        $categoryId = $request->input('category_id');
+
+
+    if (!$sessionId) {
+        return response()->json(['error' => 'session_id is required'], 422);
+    }
+
+    // هل الأسئلة محفوظة مسبقًا لهذه الجلسة؟
+    $existingQuestions = \DB::table('game_session_questions')
+        ->where('session_id', $sessionId)
+        ->orderBy('index_order')
+        ->pluck('question_id');
+
+    if ($existingQuestions->isNotEmpty()) {
+        // جلب نفس الأسئلة
+        $questions = Question::whereIn('id', $existingQuestions)
+            ->get()
+            ->sortBy(function ($q) use ($existingQuestions) {
+                return $existingQuestions->search($q->id);
+            })
+            ->values();
+    } else {
+        // توليد أسئلة جديدة لأول مرة
+        $questions_200 = Question::where('category_id', $categoryId)
+            ->where('qu_points', 200)
+            ->inRandomOrder()
+            ->take(2)
+            ->get();
+
+        $questions_400 = Question::where('category_id', $categoryId)
+            ->where('qu_points', 400)
+            ->inRandomOrder()
+            ->take(2)
+            ->get();
+
+        $questions_600 = Question::where('category_id', $categoryId)
+            ->where('qu_points', 600)
+            ->inRandomOrder()
+            ->take(2)
+            ->get();
+
+        $questions = $questions_200
+            ->merge($questions_400)
+            ->merge($questions_600)
+            ->values();
+
+        // حفظ الأسئلة للجلسة
+        foreach ($questions as $index => $question) {
+            \DB::table('game_session_questions')->insert([
+                'session_id' => $sessionId,
+                'question_id' => $question->id,
+                'index_order' => $index,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        }
+    }
+
+    // إضافة القيم الافتراضية
+    $questions = $questions->map(function ($question) {
+        $question->is_user_answer = false;
+        $question->who_answer = 0;
+        return $question;
+    });
+
+    return response()->json($questions);
 }
 
 

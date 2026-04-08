@@ -35,6 +35,8 @@ class Type extends \Google\Model
   protected $float32TypeDataType = '';
   protected $float64TypeType = GoogleBigtableAdminV2TypeFloat64::class;
   protected $float64TypeDataType = '';
+  protected $geographyTypeType = GoogleBigtableAdminV2TypeGeography::class;
+  protected $geographyTypeDataType = '';
   protected $int64TypeType = GoogleBigtableAdminV2TypeInt64::class;
   protected $int64TypeDataType = '';
   protected $mapTypeType = GoogleBigtableAdminV2TypeMap::class;
@@ -49,7 +51,9 @@ class Type extends \Google\Model
   protected $timestampTypeDataType = '';
 
   /**
-   * @param GoogleBigtableAdminV2TypeAggregate
+   * Aggregate
+   *
+   * @param GoogleBigtableAdminV2TypeAggregate $aggregateType
    */
   public function setAggregateType(GoogleBigtableAdminV2TypeAggregate $aggregateType)
   {
@@ -63,7 +67,9 @@ class Type extends \Google\Model
     return $this->aggregateType;
   }
   /**
-   * @param GoogleBigtableAdminV2TypeArray
+   * Array
+   *
+   * @param GoogleBigtableAdminV2TypeArray $arrayType
    */
   public function setArrayType(GoogleBigtableAdminV2TypeArray $arrayType)
   {
@@ -77,7 +83,9 @@ class Type extends \Google\Model
     return $this->arrayType;
   }
   /**
-   * @param GoogleBigtableAdminV2TypeBool
+   * Bool
+   *
+   * @param GoogleBigtableAdminV2TypeBool $boolType
    */
   public function setBoolType(GoogleBigtableAdminV2TypeBool $boolType)
   {
@@ -91,7 +99,9 @@ class Type extends \Google\Model
     return $this->boolType;
   }
   /**
-   * @param GoogleBigtableAdminV2TypeBytes
+   * Bytes
+   *
+   * @param GoogleBigtableAdminV2TypeBytes $bytesType
    */
   public function setBytesType(GoogleBigtableAdminV2TypeBytes $bytesType)
   {
@@ -105,7 +115,9 @@ class Type extends \Google\Model
     return $this->bytesType;
   }
   /**
-   * @param GoogleBigtableAdminV2TypeDate
+   * Date
+   *
+   * @param GoogleBigtableAdminV2TypeDate $dateType
    */
   public function setDateType(GoogleBigtableAdminV2TypeDate $dateType)
   {
@@ -119,7 +131,9 @@ class Type extends \Google\Model
     return $this->dateType;
   }
   /**
-   * @param GoogleBigtableAdminV2TypeEnum
+   * Enum
+   *
+   * @param GoogleBigtableAdminV2TypeEnum $enumType
    */
   public function setEnumType(GoogleBigtableAdminV2TypeEnum $enumType)
   {
@@ -133,7 +147,9 @@ class Type extends \Google\Model
     return $this->enumType;
   }
   /**
-   * @param GoogleBigtableAdminV2TypeFloat32
+   * Float32
+   *
+   * @param GoogleBigtableAdminV2TypeFloat32 $float32Type
    */
   public function setFloat32Type(GoogleBigtableAdminV2TypeFloat32 $float32Type)
   {
@@ -147,7 +163,9 @@ class Type extends \Google\Model
     return $this->float32Type;
   }
   /**
-   * @param GoogleBigtableAdminV2TypeFloat64
+   * Float64
+   *
+   * @param GoogleBigtableAdminV2TypeFloat64 $float64Type
    */
   public function setFloat64Type(GoogleBigtableAdminV2TypeFloat64 $float64Type)
   {
@@ -161,7 +179,25 @@ class Type extends \Google\Model
     return $this->float64Type;
   }
   /**
-   * @param GoogleBigtableAdminV2TypeInt64
+   * Geography
+   *
+   * @param GoogleBigtableAdminV2TypeGeography $geographyType
+   */
+  public function setGeographyType(GoogleBigtableAdminV2TypeGeography $geographyType)
+  {
+    $this->geographyType = $geographyType;
+  }
+  /**
+   * @return GoogleBigtableAdminV2TypeGeography
+   */
+  public function getGeographyType()
+  {
+    return $this->geographyType;
+  }
+  /**
+   * Int64
+   *
+   * @param GoogleBigtableAdminV2TypeInt64 $int64Type
    */
   public function setInt64Type(GoogleBigtableAdminV2TypeInt64 $int64Type)
   {
@@ -175,7 +211,9 @@ class Type extends \Google\Model
     return $this->int64Type;
   }
   /**
-   * @param GoogleBigtableAdminV2TypeMap
+   * Map
+   *
+   * @param GoogleBigtableAdminV2TypeMap $mapType
    */
   public function setMapType(GoogleBigtableAdminV2TypeMap $mapType)
   {
@@ -189,7 +227,9 @@ class Type extends \Google\Model
     return $this->mapType;
   }
   /**
-   * @param GoogleBigtableAdminV2TypeProto
+   * Proto
+   *
+   * @param GoogleBigtableAdminV2TypeProto $protoType
    */
   public function setProtoType(GoogleBigtableAdminV2TypeProto $protoType)
   {
@@ -203,7 +243,9 @@ class Type extends \Google\Model
     return $this->protoType;
   }
   /**
-   * @param GoogleBigtableAdminV2TypeString
+   * String
+   *
+   * @param GoogleBigtableAdminV2TypeString $stringType
    */
   public function setStringType(GoogleBigtableAdminV2TypeString $stringType)
   {
@@ -217,7 +259,9 @@ class Type extends \Google\Model
     return $this->stringType;
   }
   /**
-   * @param GoogleBigtableAdminV2TypeStruct
+   * Struct
+   *
+   * @param GoogleBigtableAdminV2TypeStruct $structType
    */
   public function setStructType(GoogleBigtableAdminV2TypeStruct $structType)
   {
@@ -231,7 +275,9 @@ class Type extends \Google\Model
     return $this->structType;
   }
   /**
-   * @param GoogleBigtableAdminV2TypeTimestamp
+   * Timestamp
+   *
+   * @param GoogleBigtableAdminV2TypeTimestamp $timestampType
    */
   public function setTimestampType(GoogleBigtableAdminV2TypeTimestamp $timestampType)
   {

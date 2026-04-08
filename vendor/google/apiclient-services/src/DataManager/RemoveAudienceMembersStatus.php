@@ -23,11 +23,17 @@ class RemoveAudienceMembersStatus extends \Google\Model
   protected $mobileDataRemovalStatusDataType = '';
   protected $pairDataRemovalStatusType = RemovePairDataStatus::class;
   protected $pairDataRemovalStatusDataType = '';
+  protected $ppidDataRemovalStatusType = RemovePpidDataStatus::class;
+  protected $ppidDataRemovalStatusDataType = '';
   protected $userDataRemovalStatusType = RemoveUserDataStatus::class;
   protected $userDataRemovalStatusDataType = '';
+  protected $userIdDataRemovalStatusType = RemoveUserIdDataStatus::class;
+  protected $userIdDataRemovalStatusDataType = '';
 
   /**
-   * @param RemoveMobileDataStatus
+   * The status of the mobile data removal from the destination.
+   *
+   * @param RemoveMobileDataStatus $mobileDataRemovalStatus
    */
   public function setMobileDataRemovalStatus(RemoveMobileDataStatus $mobileDataRemovalStatus)
   {
@@ -41,7 +47,9 @@ class RemoveAudienceMembersStatus extends \Google\Model
     return $this->mobileDataRemovalStatus;
   }
   /**
-   * @param RemovePairDataStatus
+   * The status of the pair data removal from the destination.
+   *
+   * @param RemovePairDataStatus $pairDataRemovalStatus
    */
   public function setPairDataRemovalStatus(RemovePairDataStatus $pairDataRemovalStatus)
   {
@@ -55,7 +63,25 @@ class RemoveAudienceMembersStatus extends \Google\Model
     return $this->pairDataRemovalStatus;
   }
   /**
-   * @param RemoveUserDataStatus
+   * The status of the ppid data removal from the destination.
+   *
+   * @param RemovePpidDataStatus $ppidDataRemovalStatus
+   */
+  public function setPpidDataRemovalStatus(RemovePpidDataStatus $ppidDataRemovalStatus)
+  {
+    $this->ppidDataRemovalStatus = $ppidDataRemovalStatus;
+  }
+  /**
+   * @return RemovePpidDataStatus
+   */
+  public function getPpidDataRemovalStatus()
+  {
+    return $this->ppidDataRemovalStatus;
+  }
+  /**
+   * The status of the user data removal from the destination.
+   *
+   * @param RemoveUserDataStatus $userDataRemovalStatus
    */
   public function setUserDataRemovalStatus(RemoveUserDataStatus $userDataRemovalStatus)
   {
@@ -67,6 +93,22 @@ class RemoveAudienceMembersStatus extends \Google\Model
   public function getUserDataRemovalStatus()
   {
     return $this->userDataRemovalStatus;
+  }
+  /**
+   * The status of the user id data removal from the destination.
+   *
+   * @param RemoveUserIdDataStatus $userIdDataRemovalStatus
+   */
+  public function setUserIdDataRemovalStatus(RemoveUserIdDataStatus $userIdDataRemovalStatus)
+  {
+    $this->userIdDataRemovalStatus = $userIdDataRemovalStatus;
+  }
+  /**
+   * @return RemoveUserIdDataStatus
+   */
+  public function getUserIdDataRemovalStatus()
+  {
+    return $this->userIdDataRemovalStatus;
   }
 }
 

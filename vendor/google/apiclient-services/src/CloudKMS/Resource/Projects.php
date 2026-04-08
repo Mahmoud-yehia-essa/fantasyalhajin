@@ -120,15 +120,15 @@ class Projects extends \Google\Service\Resource
     return $this->call('showEffectiveKeyAccessJustificationsPolicyConfig', [$params], ShowEffectiveKeyAccessJustificationsPolicyConfigResponse::class);
   }
   /**
-   * Updates the AutokeyConfig for a folder. The caller must have both
-   * `cloudkms.autokeyConfigs.update` permission on the parent folder and
+   * Updates the AutokeyConfig for a folder or a project. The caller must have
+   * both `cloudkms.autokeyConfigs.update` permission on the parent folder and
    * `cloudkms.cryptoKeys.setIamPolicy` permission on the provided key project. A
    * KeyHandle creation in the folder's descendant projects will use this
    * configuration to determine where to create the resulting CryptoKey.
    * (projects.updateAutokeyConfig)
    *
    * @param string $name Identifier. Name of the AutokeyConfig resource, e.g.
-   * `folders/{FOLDER_NUMBER}/autokeyConfig`
+   * `folders/{FOLDER_NUMBER}/autokeyConfig` or
    * `projects/{PROJECT_NUMBER}/autokeyConfig`.
    * @param AutokeyConfig $postBody
    * @param array $optParams Optional parameters.

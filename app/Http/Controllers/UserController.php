@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 
 use Illuminate\Support\Facades\Hash;
 use Laravel\Sanctum\PersonalAccessToken;
+use Kreait\Laravel\Firebase\Facades\Firebase;
+use Illuminate\Support\Str;          // 👈 استدعاء أداة النصوص (حل مشكلتك)
 
 // use PragmaRX\Countries\Package\Countries;
 
@@ -589,6 +591,63 @@ $countryData = json_decode($request->input('country_data'), true);
 
 
 
+
+    public function socialLoginApi(Request $request) {
+    // 1. التحقق من وصول التوكن من فلاتر
+    $request->validate([
+        'firebase_token' => 'required|string',
+        'provider' => 'nullable|string'
+    ]);
+
+    try {
+        // 2. فحص التوكن عبر Firebase
+        $auth = Firebase::auth();
+        $verifiedIdToken = $auth->verifyIdToken($request->firebase_token);
+
+        $uid = $verifiedIdToken->claims()->get('sub');
+        $userRecord = $auth->getUser($uid);
+        $email = $userRecord->email;
+
+        // 3. البحث عن المستخدم في قاعدة البيانات
+        $user = User::where('email', $email)->first();
+
+        if ($user) {
+            // 🟢 الحالة الأولى: المستخدم مسجل مسبقاً (تم الدخول بنجاح)
+            $token = $user->createToken('ourapptoken')->plainTextToken;
+
+            return response()->json([
+                'success' => true,
+                'is_new_user' => false,
+                'message' => 'Login successful',
+                'user' => $user,
+                'token' => $token
+            ], 200);
+
+        } else {
+            // 🟡 الحالة الثانية: المستخدم جديد (نحتاج رقم الهاتف من فلاتر)
+            return response()->json([
+                'success' => true,
+                'is_new_user' => true,
+                'message' => 'Needs phone number to complete registration',
+                'google_data' => [
+                    'name' => $userRecord->displayName,
+                    'email' => $email,
+                    'avatar' => $userRecord->photoUrl ?? null
+                ]
+            ], 200);
+        }
+
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Invalid or expired Firebase token',
+            'error_details' => $e->getMessage() // 👈 أضفنا هذا السطر لكشف الخطأ
+        ], 401);
+    }
+}
+
+
+
     public function loginApi(Request $request) {
         $incomingFields = $request->validate([
             'email' => 'required|email',
@@ -677,35 +736,267 @@ $countryData = json_decode($request->input('country_data'), true);
     }
 
 
-     public function registerApiV2(Request $request) {
+
+    //Important
+    //  public function registerApiV2(Request $request) {
 
 
 
 
-        // Check if email already exists
+    //     // Check if email already exists
 
-        if (User::where('phone', $request->phone)->where('country_code', $request->country_code)->exists()) {
+    //     if (User::where('phone', $request->phone)->where('country_code', $request->country_code)->exists()) {
+    //         return response()->json([
+    //             'success' => false,
+    //             'message' => 'phone already exists'
+    //         ], 409); // 409 Conflict status code
+    //     }
+
+    //     // Create user
+
+    //         if (isset($request->otp_verification)) {
+
+    //          $userCreated = User::create([
+    //         'fname' => $request->fname,
+    //         'lname' => $request->lname,
+    //         'email' => $request->email,
+    //         'phone' => $request->phone,
+    //         'country_code' => $request->country_code,
+    //                     'country_flag' => $request->country_flag,
+
+    //         'password' => Hash::make($request->password),
+    //         'photo' => $request->photo,
+    //         'is_game_free' => 'paid',
+    //         'otp_verification' => $request->otp_verification,
+    //                     'provider' => $request->provider,
+    //                                             'firebase_token' => $request->firebase_token,
+
+
+    //         'set_password' => $request->set_password,
+
+
+
+    //     ]);
+
+    //         }
+
+    //         else
+    //             {
+    //     $userCreated = User::create([
+    //         'fname' => $request->fname,
+    //         'lname' => $request->lname,
+    //         'email' => $request->email,
+    //         'phone' => $request->phone,
+    //         'country_code' => $request->country_code,
+    //                     'country_flag' => $request->country_flag,
+
+    //         'password' => Hash::make($request->password),
+    //         'photo' => $request->photo,
+    //         'is_game_free' => 'paid',
+
+
+    //     ]);
+    //             }
+
+    //     if ($userCreated) {
+    //         $token = $userCreated->createToken('ourapptoken')->plainTextToken;
+
+    //         return response()->json([
+    //             'success' => true,
+    //             'message' => 'Registration successful',
+    //             'user' => $userCreated,
+    //             'token' => $token
+    //         ], 201);
+    //     }
+
+    //     return response()->json([
+    //         'success' => false,
+    //         'message' => 'Registration failed'
+    //     ], 500);
+    // }
+
+    //End Important
+
+
+
+
+
+// public function registerApiV2(Request $request) {
+
+//     // 1. فحص رقم الهاتف
+//     if (User::where('phone', $request->phone)->where('country_code', $request->country_code)->exists()) {
+//         return response()->json([
+//             'success' => false,
+//             'message' => 'Phone already exists'
+//         ], 409);
+//     }
+
+//     // فحص الإيميل لتجنب انهيار قاعدة البيانات (مهم جداً!)
+//     if (User::where('email', $request->email)->exists()) {
+//         return response()->json([
+//             'success' => false,
+//             'message' => 'Email already exists'
+//         ], 409);
+//     }
+
+//     $passwordToSave = '';
+
+//     // 2. التحقق الأمني لتسجيل الدخول الاجتماعي
+//     if ($request->filled('provider') && $request->filled('firebase_token')) {
+//         try {
+//             $auth = Firebase::auth();
+//             $verifiedIdToken = $auth->verifyIdToken($request->firebase_token);
+//             $uid = $verifiedIdToken->claims()->get('sub');
+
+//             $firebaseEmail = $auth->getUser($uid)->email;
+
+//             if (strtolower($firebaseEmail) !== strtolower($request->email)) {
+//                 return response()->json([
+//                     'success' => false,
+//                     'message' => 'بيانات البريد غير متطابقة، تم رفض الطلب أمنياً.'
+//                 ], 403);
+//             }
+
+//             $passwordToSave = Hash::make(Str::random(24));
+
+//         } catch (\Exception $e) {
+//             return response()->json([
+//                 'success' => false,
+//                 'message' => 'Invalid or expired Firebase token'
+//             ], 401);
+//         }
+//     } else {
+//         // التسجيل العادي
+//         $passwordToSave = Hash::make($request->password);
+//     }
+
+//     // 3. تجهيز بيانات المستخدم
+//     $userData = [
+//         'fname'        => $request->fname,
+//         'lname'        => $request->lname,
+//         'email'        => $request->email,
+//         'phone'        => $request->phone,
+//         'country_code' => $request->country_code,
+//         'country_flag' => $request->country_flag,
+//         'photo'        => $request->photo,
+//         'password'     => $passwordToSave,
+//         'is_game_free' => 'paid',
+//     ];
+
+//     // استخدمنا has بدلاً من filled لضمان قبول القيمة 0
+//     if ($request->has('otp_verification')) {
+//         $userData['otp_verification'] = $request->otp_verification;
+//         $userData['provider']         = $request->provider;
+//         $userData['firebase_token']   = $request->firebase_token;
+//         $userData['set_password']     = $request->set_password;
+//     }
+
+//     // 4. إنشاء المستخدم (محاط بـ Try/Catch لاصطياد أخطاء قاعدة البيانات)
+//     try {
+//         $userCreated = User::create($userData);
+
+//         if ($userCreated) {
+//             $token = $userCreated->createToken('ourapptoken')->plainTextToken;
+
+//             return response()->json([
+//                 'success' => true,
+//                 'message' => 'Registration successful',
+//                 'user'    => $userCreated,
+//                 'token'   => $token
+//             ], 201);
+//         }
+//     } catch (\Exception $e) {
+//         // 🚨 هنا سيكشف لك السيرفر عن الخطأ الحقيقي بدلاً من طباعة HTML!
+//         return response()->json([
+//             'success' => false,
+//             'message' => 'حدث خطأ أثناء الحفظ في قاعدة البيانات',
+//             'error_details' => $e->getMessage()
+//         ], 500);
+//     }
+
+//     return response()->json([
+//         'success' => false,
+//         'message' => 'Registration failed for unknown reason'
+//     ], 500);
+// }
+
+
+public function registerApiV2(Request $request) {
+
+    // 1. فحص رقم الهاتف
+    if (User::where('phone', $request->phone)->where('country_code', $request->country_code)->exists()) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Phone already exists'
+        ], 409);
+    }
+
+    // 🟢 التعديل الأول: لا تفحص الإيميل إلا إذا كان موجوداً وغير فارغ
+    if ($request->filled('email')) {
+        if (User::where('email', $request->email)->exists()) {
             return response()->json([
                 'success' => false,
-                'message' => 'phone already exists'
-            ], 409); // 409 Conflict status code
+                'message' => 'Email already exists'
+            ], 409);
         }
+    }
 
-        // Create user
-        $userCreated = User::create([
-            'fname' => $request->fname,
-            'lname' => $request->lname,
-            'email' => $request->email,
-            'phone' => $request->phone,
-            'country_code' => $request->country_code,
-                        'country_flag' => $request->country_flag,
+    $passwordToSave = '';
 
-            'password' => Hash::make($request->password),
-            'photo' => $request->photo,
-            'is_game_free' => 'paid',
+    // 2. التحقق الأمني لتسجيل الدخول الاجتماعي
+    if ($request->filled('provider') && $request->filled('firebase_token')) {
+        try {
+            $auth = Firebase::auth();
+            $verifiedIdToken = $auth->verifyIdToken($request->firebase_token);
+            $uid = $verifiedIdToken->claims()->get('sub');
 
+            $firebaseEmail = $auth->getUser($uid)->email;
 
-        ]);
+            // هنا يجب أن نتأكد أيضاً أن التطبيق أرسل الإيميل قبل المقارنة
+            if (!$request->filled('email') || strtolower($firebaseEmail) !== strtolower($request->email)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'بيانات البريد غير متطابقة، تم رفض الطلب أمنياً.'
+                ], 403);
+            }
+
+            $passwordToSave = Hash::make(Str::random(24));
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Invalid or expired Firebase token'
+            ], 401);
+        }
+    } else {
+        // التسجيل العادي
+        $passwordToSave = Hash::make($request->password);
+    }
+
+    // 3. تجهيز بيانات المستخدم
+    $userData = [
+        'fname'        => $request->fname,
+        'lname'        => $request->lname,
+        // 🟢 التعديل الثاني: إذا كان الإيميل فارغاً، احفظه كـ Null وليس ""
+        'email'        => $request->filled('email') ? $request->email : null,
+        'phone'        => $request->phone,
+        'country_code' => $request->country_code,
+        'country_flag' => $request->country_flag,
+        'photo'        => $request->photo,
+        'password'     => $passwordToSave,
+        'is_game_free' => 'paid',
+    ];
+
+    if ($request->has('otp_verification')) {
+        $userData['otp_verification'] = $request->otp_verification;
+        $userData['provider']         = $request->provider;
+        $userData['firebase_token']   = $request->firebase_token;
+        $userData['set_password']     = $request->set_password;
+    }
+
+    // 4. إنشاء المستخدم
+    try {
+        $userCreated = User::create($userData);
 
         if ($userCreated) {
             $token = $userCreated->createToken('ourapptoken')->plainTextToken;
@@ -713,48 +1004,112 @@ $countryData = json_decode($request->input('country_data'), true);
             return response()->json([
                 'success' => true,
                 'message' => 'Registration successful',
-                'user' => $userCreated,
-                'token' => $token
+                'user'    => $userCreated,
+                'token'   => $token
             ], 201);
         }
-
+    } catch (\Exception $e) {
         return response()->json([
             'success' => false,
-            'message' => 'Registration failed'
+            'message' => 'حدث خطأ أثناء الحفظ في قاعدة البيانات',
+            'error_details' => $e->getMessage()
         ], 500);
-    }
-
-
-    public function loginApiV2(Request $request)
-{
-    $incomingFields = $request->validate([
-        'phone' => 'required|string',
-        'country_code' => 'required|string',
-    ]);
-
-    // Find user instead of using auth()->attempt()
-    $user = \App\Models\User::where('phone', $incomingFields['phone'])
-                ->where('country_code', $incomingFields['country_code'])
-                ->first();
-
-    if ($user) {
-        // Create Sanctum token
-        $token = $user->createToken('ourapptoken')->plainTextToken;
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Login successful',
-            'user' => $user,
-            'token' => $token
-        ], 200);
     }
 
     return response()->json([
         'success' => false,
-        'message' => 'Invalid credentials'
-    ], 401);
+        'message' => 'Registration failed for unknown reason'
+    ], 500);
 }
 
+//     public function loginApiV2(Request $request)
+// {
+
+
+//     if (!empty($request->password)) {
+
+//       $incomingFields = $request->validate([
+//              'phone' => 'required|string',
+//             'country_code' => 'required|string',
+//             'password' => 'required|min:6'
+//         ]);
+
+//     }
+
+
+//     else
+//         {
+
+//     $incomingFields = $request->validate([
+//         'phone' => 'required|string',
+//         'country_code' => 'required|string',
+//     ]);
+
+//         }
+//     // Find user instead of using auth()->attempt()
+//     $user = \App\Models\User::where('phone', $incomingFields['phone'])
+//                 ->where('country_code', $incomingFields['country_code'])
+//                 ->first();
+
+//     if ($user) {
+//         // Create Sanctum token
+//         $token = $user->createToken('ourapptoken')->plainTextToken;
+
+//         return response()->json([
+//             'success' => true,
+//             'message' => 'Login successful',
+//             'user' => $user,
+//             'token' => $token
+//         ], 200);
+//     }
+
+//     return response()->json([
+//         'success' => false,
+//         'message' => 'Invalid credentials'
+//     ], 401);
+// }
+
+public function loginApiV2(Request $request)
+{
+    // Validation
+    $incomingFields = $request->validate([
+        'phone' => 'required|string',
+        'country_code' => 'required|string',
+        'password' => 'nullable|string|min:6',
+    ]);
+
+    // Find user
+    $user = \App\Models\User::where('phone', $incomingFields['phone'])
+        ->where('country_code', $incomingFields['country_code'])
+        ->first();
+
+    if (!$user) {
+        return response()->json([
+            'success' => false,
+            'message' => 'User not found'
+        ], 404);
+    }
+
+    // If password is provided, verify it
+    if (!empty($incomingFields['password'])) {
+        if (!Hash::check($incomingFields['password'], $user->password)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Invalid password'
+            ], 401);
+        }
+    }
+
+    // Create Sanctum token
+    $token = $user->createToken('ourapptoken')->plainTextToken;
+
+    return response()->json([
+        'success' => true,
+        'message' => 'Login successful',
+        'user' => $user,
+        'token' => $token
+    ], 200);
+}
 
 
     public function uploadUpadteImageApi(Request $request,$user_id)
@@ -808,6 +1163,32 @@ $countryData = json_decode($request->input('country_data'), true);
 
     }
 
+
+
+
+      public function uploadImageForGroupApi(Request $request)
+    {
+
+
+        if ($request->file('photo')) {
+            $file = $request->file('photo');
+            @unlink(public_path('upload/user_images/'.$user->photo));
+            $filename = 'app-'.date('YmdHi').$file->getClientOriginalName();
+            $file->move(public_path('upload/group'),$filename);
+
+
+            return response()->json(['link' => $filename], 200);
+
+        }
+
+      else {
+            return response()->json(['error' => 'Image not provided'], 400);
+        }
+
+
+
+
+    }
 
 
 /// editUserApi
@@ -885,6 +1266,14 @@ $countryData = json_decode($request->input('country_data'), true);
     $user->lname = $request->lname;
     $user->phone = $request->phone;
     $user->photo = $request->photo;
+
+    if (!empty($request->set_password))
+        {
+    $user->set_password = $request->set_password;
+
+        }
+
+
     $user->save();
 
     return response()->json([
@@ -954,9 +1343,13 @@ $countryData = json_decode($request->input('country_data'), true);
     ], 401);
   }
 
-        $email = $request->email;
 
-        $user = User::where('email', $email)->first(); // Returns true or false
+
+        $country_code = $request->country_code;
+                $phone = $request->phone;
+
+
+        $user = User::where('phone', $phone )->where('country_code', $country_code )->first(); // Returns true or false
 
 
         // $user_id = $request->id;

@@ -1,24 +1,25 @@
 <?php
 
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\AppVersionController;
+use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\CouponController;
+use App\Http\Controllers\FestivalController;
+use App\Http\Controllers\FestivalPointController;
 use App\Http\Controllers\GameController;
+use App\Http\Controllers\GroubController;
+use App\Http\Controllers\LiveBroadcastController;
 use App\Http\Controllers\NewsController;
-use App\Http\Controllers\UserController;
+use App\Http\Controllers\NominationController;
+use App\Http\Controllers\NotificationForAppController;
 use App\Http\Controllers\PriceController;
 use App\Http\Controllers\PrizeController;
+use App\Http\Controllers\QuestionController;
 use App\Http\Controllers\RoundController;
-use App\Http\Controllers\CouponController;
 use App\Http\Controllers\SliderController;
 use App\Http\Controllers\SponsorController;
-use App\Http\Controllers\CategoryController;
-use App\Http\Controllers\FestivalController;
-use App\Http\Controllers\QuestionController;
-use App\Http\Controllers\AppVersionController;
-use App\Http\Controllers\NominationController;
-use App\Http\Controllers\FestivalPointController;
-use App\Http\Controllers\LiveBroadcastController;
-use App\Http\Controllers\NotificationForAppController;
+use App\Http\Controllers\UserController;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Route;
 
 
 // PostMan URL for V1 remote : https://chraimba.net/admin-dashboard/public
@@ -26,6 +27,11 @@ use App\Http\Controllers\NotificationForAppController;
 Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
+
+
+
+
+ Route::post('social/login',[UserController::class,'socialLoginApi']);
 
 
 
@@ -111,6 +117,8 @@ Route::post('/prizes',[PrizeController::class,'getPrizeApi']);
 Route::post('/get/rounds',[RoundController::class,'getRoundsDatesApi']);
 
 Route::post('/get/rounds/by/date',[RoundController::class,'getRoundsByDateApi']);
+Route::post('/get/one/round/by/date',[RoundController::class,'getRoundsByDateAndRoundIdApi']);
+
 
 
 
@@ -129,9 +137,16 @@ Route::post('/get/festivals/points/nomination',[NominationController::class,'get
 
 
 Route::post('get/festival/leaderboard',[NominationController::class,'getFestivalLeaderboard']);
+Route::post('get/user/info/nomination',[NominationController::class,'getUserInfoNomination']);
 
 
 Route::post('get/festival/leaderboard/lazy',[NominationController::class,'getFestivalLeaderboardLazy']);
+
+
+Route::post('get/user/winning/festivals',[NominationController::class,'getUserWinningFestivals']);
+
+
+
 
 
 
@@ -150,6 +165,9 @@ Route::post('/get/festival/point',[FestivalPointController::class,'getFestivalPo
 // Route::post('/upload-image/{user_id}', [UserController::class, 'uploadImageApi']);
 
 Route::post('/upload-image', [UserController::class, 'uploadImageApi']);
+
+Route::post('/upload-image-group', [UserController::class, 'uploadImageForGroupApi']);
+
 
 Route::post('/upload-image/{id}',[UserController::class,'uploadUpadteImageApi']);
 
@@ -205,6 +223,23 @@ Route::post('/get/notification',[NotificationForAppController::class,'getNotific
 Route::post('/update/notification/userView',[NotificationForAppController::class,'UpdateNotificationUserView']);
 
 
+Route::post('/create-group', [GroubController::class, 'createGroup']);
+Route::post('/join-group', [GroubController::class, 'joinGroup']);
+Route::post('/my-groups', [GroubController::class, 'myGroups']);
+Route::post('/my-created-groups', [GroubController::class, 'myCreatedGroups']);
+
+Route::post('/group-details', [GroubController::class, 'groubDetailsApi']);
+
+
+Route::post('/get-group-by-code', [GroubController::class, 'getGroupByCode']);
+
+
+
+Route::post('/add-user-double-point-usages', [FestivalController::class, 'addUserDoublePointUsagesApi']);
+
+
+
+Route::post('/get-user-double-points-remaining', [FestivalController::class, 'getUserDoublePointsRemainingApi']);
 
 
 

@@ -19,26 +19,67 @@ namespace Google\Service\Apigee;
 
 class GoogleCloudApigeeV1RuntimeTraceConfig extends \Google\Collection
 {
+  /**
+   * Exporter unspecified
+   */
+  public const EXPORTER_EXPORTER_UNSPECIFIED = 'EXPORTER_UNSPECIFIED';
+  /**
+   * Jaeger exporter
+   */
+  public const EXPORTER_JAEGER = 'JAEGER';
+  /**
+   * Cloudtrace exporter
+   */
+  public const EXPORTER_CLOUD_TRACE = 'CLOUD_TRACE';
+  /**
+   * Open Telemetry Collector
+   */
+  public const EXPORTER_OPEN_TELEMETRY_COLLECTOR = 'OPEN_TELEMETRY_COLLECTOR';
   protected $collection_key = 'overrides';
   /**
+   * Endpoint of the exporter.
+   *
    * @var string
    */
   public $endpoint;
   /**
+   * Exporter that is used to view the distributed trace captured using
+   * OpenCensus. An exporter sends traces to any backend that is capable of
+   * consuming them. Recorded spans can be exported by registered exporters.
+   *
    * @var string
    */
   public $exporter;
   /**
+   * Name of the trace config in the following format:
+   * `organizations/{org}/environment/{env}/traceConfig`
+   *
    * @var string
    */
   public $name;
+  /**
+   * If `true`, the runtime uses OpenTelemetry Protocol (OTLP) to send trace
+   * data. Configuration Requirements (if `open_telemetry_protocol_enabled` is
+   * `true`): - Allowed `Exporter`s: `CLOUD_TRACE` or
+   * `OPEN_TELEMETRY_COLLECTOR`. - If `Exporter` is `OPEN_TELEMETRY_COLLECTOR`:
+   * - `endpoint` refers to a valid OTLP collector URL. - If `Exporter` is
+   * `CLOUD_TRACE`: - `endpoint` refers to a valid project ID
+   *
+   * @var bool
+   */
+  public $openTelemetryProtocolEnabled;
   protected $overridesType = GoogleCloudApigeeV1RuntimeTraceConfigOverride::class;
   protected $overridesDataType = 'array';
   /**
+   * The timestamp that the revision was created or updated.
+   *
    * @var string
    */
   public $revisionCreateTime;
   /**
+   * Revision number which can be used by the runtime to detect if the trace
+   * config has changed between two versions.
+   *
    * @var string
    */
   public $revisionId;
@@ -46,7 +87,9 @@ class GoogleCloudApigeeV1RuntimeTraceConfig extends \Google\Collection
   protected $samplingConfigDataType = '';
 
   /**
-   * @param string
+   * Endpoint of the exporter.
+   *
+   * @param string $endpoint
    */
   public function setEndpoint($endpoint)
   {
@@ -60,21 +103,31 @@ class GoogleCloudApigeeV1RuntimeTraceConfig extends \Google\Collection
     return $this->endpoint;
   }
   /**
-   * @param string
+   * Exporter that is used to view the distributed trace captured using
+   * OpenCensus. An exporter sends traces to any backend that is capable of
+   * consuming them. Recorded spans can be exported by registered exporters.
+   *
+   * Accepted values: EXPORTER_UNSPECIFIED, JAEGER, CLOUD_TRACE,
+   * OPEN_TELEMETRY_COLLECTOR
+   *
+   * @param self::EXPORTER_* $exporter
    */
   public function setExporter($exporter)
   {
     $this->exporter = $exporter;
   }
   /**
-   * @return string
+   * @return self::EXPORTER_*
    */
   public function getExporter()
   {
     return $this->exporter;
   }
   /**
-   * @param string
+   * Name of the trace config in the following format:
+   * `organizations/{org}/environment/{env}/traceConfig`
+   *
+   * @param string $name
    */
   public function setName($name)
   {
@@ -88,7 +141,30 @@ class GoogleCloudApigeeV1RuntimeTraceConfig extends \Google\Collection
     return $this->name;
   }
   /**
-   * @param GoogleCloudApigeeV1RuntimeTraceConfigOverride[]
+   * If `true`, the runtime uses OpenTelemetry Protocol (OTLP) to send trace
+   * data. Configuration Requirements (if `open_telemetry_protocol_enabled` is
+   * `true`): - Allowed `Exporter`s: `CLOUD_TRACE` or
+   * `OPEN_TELEMETRY_COLLECTOR`. - If `Exporter` is `OPEN_TELEMETRY_COLLECTOR`:
+   * - `endpoint` refers to a valid OTLP collector URL. - If `Exporter` is
+   * `CLOUD_TRACE`: - `endpoint` refers to a valid project ID
+   *
+   * @param bool $openTelemetryProtocolEnabled
+   */
+  public function setOpenTelemetryProtocolEnabled($openTelemetryProtocolEnabled)
+  {
+    $this->openTelemetryProtocolEnabled = $openTelemetryProtocolEnabled;
+  }
+  /**
+   * @return bool
+   */
+  public function getOpenTelemetryProtocolEnabled()
+  {
+    return $this->openTelemetryProtocolEnabled;
+  }
+  /**
+   * List of trace configuration overrides for spicific API proxies.
+   *
+   * @param GoogleCloudApigeeV1RuntimeTraceConfigOverride[] $overrides
    */
   public function setOverrides($overrides)
   {
@@ -102,7 +178,9 @@ class GoogleCloudApigeeV1RuntimeTraceConfig extends \Google\Collection
     return $this->overrides;
   }
   /**
-   * @param string
+   * The timestamp that the revision was created or updated.
+   *
+   * @param string $revisionCreateTime
    */
   public function setRevisionCreateTime($revisionCreateTime)
   {
@@ -116,7 +194,10 @@ class GoogleCloudApigeeV1RuntimeTraceConfig extends \Google\Collection
     return $this->revisionCreateTime;
   }
   /**
-   * @param string
+   * Revision number which can be used by the runtime to detect if the trace
+   * config has changed between two versions.
+   *
+   * @param string $revisionId
    */
   public function setRevisionId($revisionId)
   {
@@ -130,7 +211,9 @@ class GoogleCloudApigeeV1RuntimeTraceConfig extends \Google\Collection
     return $this->revisionId;
   }
   /**
-   * @param GoogleCloudApigeeV1RuntimeTraceSamplingConfig
+   * Trace configuration for all API proxies in an environment.
+   *
+   * @param GoogleCloudApigeeV1RuntimeTraceSamplingConfig $samplingConfig
    */
   public function setSamplingConfig(GoogleCloudApigeeV1RuntimeTraceSamplingConfig $samplingConfig)
   {

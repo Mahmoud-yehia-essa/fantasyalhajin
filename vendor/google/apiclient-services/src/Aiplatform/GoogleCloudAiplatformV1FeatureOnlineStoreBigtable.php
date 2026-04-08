@@ -24,12 +24,24 @@ class GoogleCloudAiplatformV1FeatureOnlineStoreBigtable extends \Google\Model
   protected $bigtableMetadataType = GoogleCloudAiplatformV1FeatureOnlineStoreBigtableBigtableMetadata::class;
   protected $bigtableMetadataDataType = '';
   /**
+   * Optional. It true, enable direct access to the Bigtable instance.
+   *
    * @var bool
    */
   public $enableDirectBigtableAccess;
+  /**
+   * Optional. The zone where the underlying Bigtable cluster for the primary
+   * Bigtable instance will be provisioned. Only the zone must be provided. For
+   * example, only "us-central1-a" should be provided.
+   *
+   * @var string
+   */
+  public $zone;
 
   /**
-   * @param GoogleCloudAiplatformV1FeatureOnlineStoreBigtableAutoScaling
+   * Required. Autoscaling config applied to Bigtable Instance.
+   *
+   * @param GoogleCloudAiplatformV1FeatureOnlineStoreBigtableAutoScaling $autoScaling
    */
   public function setAutoScaling(GoogleCloudAiplatformV1FeatureOnlineStoreBigtableAutoScaling $autoScaling)
   {
@@ -43,7 +55,9 @@ class GoogleCloudAiplatformV1FeatureOnlineStoreBigtable extends \Google\Model
     return $this->autoScaling;
   }
   /**
-   * @param GoogleCloudAiplatformV1FeatureOnlineStoreBigtableBigtableMetadata
+   * Output only. Metadata of the Bigtable instance. Output only.
+   *
+   * @param GoogleCloudAiplatformV1FeatureOnlineStoreBigtableBigtableMetadata $bigtableMetadata
    */
   public function setBigtableMetadata(GoogleCloudAiplatformV1FeatureOnlineStoreBigtableBigtableMetadata $bigtableMetadata)
   {
@@ -57,7 +71,9 @@ class GoogleCloudAiplatformV1FeatureOnlineStoreBigtable extends \Google\Model
     return $this->bigtableMetadata;
   }
   /**
-   * @param bool
+   * Optional. It true, enable direct access to the Bigtable instance.
+   *
+   * @param bool $enableDirectBigtableAccess
    */
   public function setEnableDirectBigtableAccess($enableDirectBigtableAccess)
   {
@@ -69,6 +85,24 @@ class GoogleCloudAiplatformV1FeatureOnlineStoreBigtable extends \Google\Model
   public function getEnableDirectBigtableAccess()
   {
     return $this->enableDirectBigtableAccess;
+  }
+  /**
+   * Optional. The zone where the underlying Bigtable cluster for the primary
+   * Bigtable instance will be provisioned. Only the zone must be provided. For
+   * example, only "us-central1-a" should be provided.
+   *
+   * @param string $zone
+   */
+  public function setZone($zone)
+  {
+    $this->zone = $zone;
+  }
+  /**
+   * @return string
+   */
+  public function getZone()
+  {
+    return $this->zone;
   }
 }
 

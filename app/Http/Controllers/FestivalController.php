@@ -3,12 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\Festival;
-
+use App\Models\UserDoublePointUsage;
 use Illuminate\Http\Request;
-
-use Intervention\Image\ImageManager;
-use Intervention\Image\Facades\Image;
 use Intervention\Image\Drivers\Gd\Driver;
+use Intervention\Image\Facades\Image;
+use Intervention\Image\ImageManager;
 
 class FestivalController extends Controller
 {
@@ -99,11 +98,13 @@ class FestivalController extends Controller
         'des'        => 'nullable|string',
         'des_en'     => 'nullable|string',
         'location'   => 'nullable|string|max:255',
+        'count_double_used'  => 'nullable|numeric',
+
         'start'      => 'required|date|after_or_equal:today',
         'end'        => 'required|date|after_or_equal:start',
         'latitude'   => 'nullable|numeric',
         'longitude'  => 'nullable|numeric',
-        'photo'      => 'required|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
+        'photo'      => 'required|image|mimes:jpeg,png,jpg,gif,webp',
     ], [
         'name.required'      => '⚠️ الرجاء اضافة اسم المهرجان',
         'name.string'        => '⚠️ الرجاء كتابة الاسم بشكل صحيح',
@@ -112,6 +113,10 @@ class FestivalController extends Controller
         'name_en.required'   => '⚠️ الرجاء اضافة اسم المهرجان بالانجليزية',
         'name_en.string'     => '⚠️ الرجاء كتابة الاسم بالانجليزية بشكل صحيح',
         'name_en.max'        => '⚠️ الاسم بالانجليزية يجب ألا يتجاوز 255 حرف',
+
+
+                'count_double_used.numeric'   => '⚠️ الرجاء إدخال قيمة صحيحة للـ عدد مرات استخدام دبل النقاط',
+
 
         'des.string'         => '⚠️ الرجاء كتابة الوصف بشكل صحيح',
         'des_en.string'      => '⚠️ الرجاء كتابة الوصف بالانجليزية بشكل صحيح',
@@ -130,7 +135,7 @@ class FestivalController extends Controller
         'photo.required'     => '⚠️ الرجاء اضافة صورة للمهرجان',
         'photo.image'        => '⚠️ تأكد من رفع صورة صحيحة',
         'photo.mimes'        => '⚠️ الصورة يجب أن تكون jpeg, png, jpg, أو gif',
-        'photo.max'          => '⚠️ حجم الصورة يجب ألا يتعدى 2MB',
+        // 'photo.max'          => '⚠️ حجم الصورة يجب ألا يتعدى 2MB',
     ]);
 
     if ($request->hasFile('photo')) {
@@ -161,6 +166,8 @@ class FestivalController extends Controller
         'end'        => $request->end,
         'latitude'   => $request->latitude,
         'longitude'  => $request->longitude,
+                'count_double_used'  => $request->count_double_used,
+
         'photo'      => $save_url ?? null,
     ]);
 
@@ -511,6 +518,8 @@ class FestivalController extends Controller
 
 
 
+/*
+
 public function getFestivalsApi(Request $request)
 {
     $type  = $request->input('type', 'all'); // current, upcoming, ended, all
@@ -610,10 +619,381 @@ public function getFestivalsApi(Request $request)
         return response()->json($festivals->values());
     }
 }
+    */
+
+
+/*
+public function getFestivalsApi(Request $request)
+{
+    $type  = $request->input('type', 'all'); // current, upcoming, ended, active, all
+    $limit = $request->input('limit'); // 0 = all
+
+    $today = \Carbon\Carbon::now('Asia/Riyadh')->startOfDay();
+
+    // helper function لإضافة نوع المهرجان وحساب human
+    $addType = function ($festivals, $status) use ($today) {
+        return $festivals->map(function ($festival) use ($status, $today) {
+            $festival->type = $status;
+
+            if ($festival->start) {
+                $start = \Carbon\Carbon::parse($festival->start)->setTimezone('Asia/Riyadh')->startOfDay();
+                $festival->start_day   = $start->locale('ar')->dayName;
+                $festival->start_month = $start->locale('ar')->translatedFormat('F');
+            }
+
+            if ($festival->end) {
+                $end = \Carbon\Carbon::parse($festival->end)->setTimezone('Asia/Riyadh')->startOfDay();
+                $festival->end_day   = $end->locale('ar')->dayName;
+                $festival->end_month = $end->locale('ar')->translatedFormat('F');
+            }
+
+            // حساب human
+            if (isset($start) && $today->lt($start)) {
+                $festival->human = $today->diffForHumans($start, ['locale' => 'ar']);
+            } elseif (isset($start, $end) && $today->between($start, $end)) {
+                $festival->human = 'يجري الآن';
+            } elseif (isset($end)) {
+                $festival->human = $end->diffForHumans($today, ['locale' => 'ar']);
+            }
+
+            return $festival;
+        });
+    };
+
+    if ($type === 'current') {
+
+        $festivals = Festival::whereDate('start', '<=', $today)
+            ->whereDate('end', '>=', $today)
+            ->where('status', 'active')
+            ->orderBy('start', 'asc');
+
+        if (!is_null($limit) && $limit > 0) {
+            $festivals->take($limit);
+        }
+
+        return response()->json($addType($festivals->get(), 'current'));
+
+    } elseif ($type === 'upcoming') {
+
+        $festivals = Festival::whereDate('start', '>', $today)
+            ->where('status', 'active')
+            ->orderBy('start', 'asc');
+
+        if (!is_null($limit) && $limit > 0) {
+            $festivals->take($limit);
+        }
+
+        return response()->json($addType($festivals->get(), 'upcoming'));
+
+    } elseif ($type === 'active') {
+
+        // الحالية
+        $current = Festival::whereDate('start', '<=', $today)
+            ->whereDate('end', '>=', $today)
+            ->where('status', 'active')
+            ->orderBy('start', 'asc')
+            ->get();
+
+        // القادمة
+        $upcoming = Festival::whereDate('start', '>', $today)
+            ->where('status', 'active')
+            ->orderBy('start', 'asc')
+            ->get();
+
+        $festivals = collect()
+            ->merge($addType($current, 'current'))
+            ->merge($addType($upcoming, 'upcoming'));
+
+        if (!is_null($limit) && $limit > 0) {
+            $festivals = $festivals->take($limit);
+        }
+
+        return response()->json($festivals->values());
+
+    } elseif ($type === 'ended') {
+
+        $festivals = Festival::whereDate('end', '<', $today)
+            ->where('status', 'active')
+            ->orderBy('start', 'desc');
+
+        if (!is_null($limit) && $limit > 0) {
+            $festivals->take($limit);
+        }
+
+        return response()->json($addType($festivals->get(), 'ended'));
+
+    } else {
+
+        // all → return current, then upcoming, then ended
+        $current  = Festival::whereDate('start', '<=', $today)
+            ->whereDate('end', '>=', $today)
+            ->where('status', 'active')
+            ->orderBy('start', 'asc')
+            ->get();
+
+        $upcoming = Festival::whereDate('start', '>', $today)
+            ->where('status', 'active')
+            ->orderBy('start', 'asc')
+            ->get();
+
+        $ended    = Festival::whereDate('end', '<', $today)
+            ->where('status', 'active')
+            ->orderBy('start', 'desc')
+            ->get();
+
+        $festivals = collect()
+            ->merge($addType($current, 'current'))
+            ->merge($addType($upcoming, 'upcoming'))
+            ->merge($addType($ended, 'ended'));
+
+        if (!is_null($limit) && $limit > 0) {
+            $festivals = $festivals->take($limit);
+        }
+
+        return response()->json($festivals->values());
+    }
+}
+    */
 
 
 
+public function getFestivalsApi(Request $request)
+{
+    $type  = $request->input('type', 'all'); // current, upcoming, ended, active, all
+    $limit = $request->input('limit'); // 0 = all
 
+    $today = \Carbon\Carbon::now('Asia/Riyadh')->startOfDay();
+
+    // helper function لإضافة نوع المهرجان وحساب human
+    $addType = function ($festivals, $status) use ($today) {
+        return $festivals->map(function ($festival) use ($status, $today) {
+
+            $festival->type = $status;
+            $festival->is_selected = false;
+
+            if ($festival->start) {
+                $start = \Carbon\Carbon::parse($festival->start)->setTimezone('Asia/Riyadh')->startOfDay();
+                $festival->start_day   = $start->locale('ar')->dayName;
+                $festival->start_month = $start->locale('ar')->translatedFormat('F');
+            }
+
+            if ($festival->end) {
+                $end = \Carbon\Carbon::parse($festival->end)->setTimezone('Asia/Riyadh')->startOfDay();
+                $festival->end_day   = $end->locale('ar')->dayName;
+                $festival->end_month = $end->locale('ar')->translatedFormat('F');
+            }
+
+            // حساب human
+            if (isset($start) && $today->lt($start)) {
+                $festival->human = $today->diffForHumans($start, ['locale' => 'ar']);
+            } elseif (isset($start, $end) && $today->between($start, $end)) {
+                $festival->human = 'يجري الآن';
+            } elseif (isset($end)) {
+                $festival->human = $end->diffForHumans($today, ['locale' => 'ar']);
+            }
+
+            return $festival;
+        });
+    };
+
+    if ($type === 'current') {
+
+        $festivals = Festival::whereDate('start', '<=', $today)
+            ->whereDate('end', '>=', $today)
+            ->where('status', 'active')
+            ->orderBy('start', 'asc');
+
+        if (!is_null($limit) && $limit > 0) {
+            $festivals->take($limit);
+        }
+
+        return response()->json($addType($festivals->get(), 'current'));
+
+    } elseif ($type === 'upcoming') {
+
+        $festivals = Festival::whereDate('start', '>', $today)
+            ->where('status', 'active')
+            ->orderBy('start', 'asc');
+
+        if (!is_null($limit) && $limit > 0) {
+            $festivals->take($limit);
+        }
+
+        return response()->json($addType($festivals->get(), 'upcoming'));
+
+    } elseif ($type === 'active') {
+
+        // الحالية
+        $current = Festival::whereDate('start', '<=', $today)
+            ->whereDate('end', '>=', $today)
+            ->where('status', 'active')
+            ->orderBy('start', 'asc')
+            ->get();
+
+        // القادمة
+        $upcoming = Festival::whereDate('start', '>', $today)
+            ->where('status', 'active')
+            ->orderBy('start', 'asc')
+            ->get();
+
+        $festivals = collect()
+            ->merge($addType($current, 'current'))
+            ->merge($addType($upcoming, 'upcoming'));
+
+        if (!is_null($limit) && $limit > 0) {
+            $festivals = $festivals->take($limit);
+        }
+
+        return response()->json($festivals->values());
+
+    } elseif ($type === 'ended') {
+
+        $festivals = Festival::whereDate('end', '<', $today)
+            ->where('status', 'active')
+            ->orderBy('start', 'desc');
+
+        if (!is_null($limit) && $limit > 0) {
+            $festivals->take($limit);
+        }
+
+        return response()->json($addType($festivals->get(), 'ended'));
+
+    } else {
+
+        // all → return current, then upcoming, then ended
+        $current  = Festival::whereDate('start', '<=', $today)
+            ->whereDate('end', '>=', $today)
+            ->where('status', 'active')
+            ->orderBy('start', 'asc')
+            ->get();
+
+        $upcoming = Festival::whereDate('start', '>', $today)
+            ->where('status', 'active')
+            ->orderBy('start', 'asc')
+            ->get();
+
+        $ended    = Festival::whereDate('end', '<', $today)
+            ->where('status', 'active')
+            ->orderBy('start', 'desc')
+            ->get();
+
+        $festivals = collect()
+            ->merge($addType($current, 'current'))
+            ->merge($addType($upcoming, 'upcoming'))
+            ->merge($addType($ended, 'ended'));
+
+        if (!is_null($limit) && $limit > 0) {
+            $festivals = $festivals->take($limit);
+        }
+
+        return response()->json($festivals->values());
+    }
+}
+
+
+public function addUserDoublePointUsagesApi(Request $request)
+{
+    // التحقق من المدخلات
+    $request->validate([
+        'user_id'     => 'required|exists:users,id',
+        'festival_id' => 'required|exists:festivals,id',
+        'round_id'    => 'required|exists:rounds,id',
+    ]);
+
+    $userId     = $request->input('user_id');
+    $festivalId = $request->input('festival_id');
+    $roundId    = $request->input('round_id');
+
+    // التحقق إذا المستخدم استخدم الدبل مسبقًا في نفس الشوط
+    $alreadyUsed = UserDoublePointUsage::where('user_id', $userId)
+        ->where('festival_id', $festivalId)
+        ->where('round_id', $roundId)
+        ->exists();
+
+    if ($alreadyUsed) {
+        return response()->json([
+            'status' => false,
+            'message' => 'لقد استخدمت دبل النقاط في هذا الشوط مسبقًا.'
+        ], 200);
+    }
+
+    // إضافة السجل
+    $doubleUsage = UserDoublePointUsage::create([
+        'user_id'     => $userId,
+        'festival_id' => $festivalId,
+        'round_id'    => $roundId,
+    ]);
+
+    // جلب معلومات المستخدم والمهرجان والشوط
+    $user     = \App\Models\User::find($userId);
+    $festival = \App\Models\Festival::find($festivalId);
+    $round    = \App\Models\Round::find($roundId);
+
+    return response()->json([
+        'status' => true,
+        'message' => 'تم تسجيل استخدام دبل النقاط بنجاح.',
+        'data' => [
+            'double_usage' => $doubleUsage,
+            'user'         => $user,
+            'festival'     => $festival,
+            'round'        => $round,
+        ]
+    ], 201);
+}
+
+public function getUserDoublePointsRemainingApi(Request $request)
+{
+    // التحقق من المدخلات
+    $request->validate([
+        'user_id'     => 'required|exists:users,id',
+        'festival_id' => 'required|exists:festivals,id',
+    ]);
+
+    $userId     = $request->input('user_id');
+    $festivalId = $request->input('festival_id');
+
+    // جلب معلومات المستخدم والمهرجان
+    $user     = \App\Models\User::find($userId);
+    $festival = \App\Models\Festival::find($festivalId);
+
+    if (!$festival) {
+        return response()->json([
+            'status' => false,
+            'message' => 'المهرجان غير موجود.'
+        ], 404);
+    }
+
+    // إذا count_double_used = null → الوسيلة غير مفعلة
+    if (is_null($festival->count_double_used)) {
+        return response()->json([
+            'status' => false,
+            'message' => 'وسيلة الدبل غير متاحة لهذا المهرجان.'
+        ], 200);
+    }
+
+    // العدد الإجمالي المسموح من الدبل في المهرجان
+    $totalAllowed = $festival->count_double_used;
+
+    // عدد مرات استخدام المستخدم
+    $usedCount = \App\Models\UserDoublePointUsage::where('user_id', $userId)
+        ->where('festival_id', $festivalId)
+        ->count();
+
+    // عدد المرات المتبقية
+    $remaining = max(0, $totalAllowed - $usedCount);
+
+    return response()->json([
+        'status' => true,
+        'message' => 'تم جلب بيانات استخدام الدبل بنجاح.',
+        'data' => [
+            'user'        => $user,
+            'festival'    => $festival,
+            'used_count'  => $usedCount,
+            'remaining'   => $remaining,
+            'total_allowed' => $totalAllowed
+        ]
+    ], 200);
+}
 
 
 }

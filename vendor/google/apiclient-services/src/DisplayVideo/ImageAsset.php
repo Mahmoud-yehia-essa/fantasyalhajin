@@ -20,18 +20,24 @@ namespace Google\Service\DisplayVideo;
 class ImageAsset extends \Google\Model
 {
   /**
+   * Output only. File size of the image asset in bytes.
+   *
    * @var string
    */
   public $fileSize;
   protected $fullSizeType = Dimensions::class;
   protected $fullSizeDataType = '';
   /**
+   * Output only. MIME type of the image asset.
+   *
    * @var string
    */
   public $mimeType;
 
   /**
-   * @param string
+   * Output only. File size of the image asset in bytes.
+   *
+   * @param string $fileSize
    */
   public function setFileSize($fileSize)
   {
@@ -45,7 +51,9 @@ class ImageAsset extends \Google\Model
     return $this->fileSize;
   }
   /**
-   * @param Dimensions
+   * Output only. Metadata for this image at its original size.
+   *
+   * @param Dimensions $fullSize
    */
   public function setFullSize(Dimensions $fullSize)
   {
@@ -59,7 +67,9 @@ class ImageAsset extends \Google\Model
     return $this->fullSize;
   }
   /**
-   * @param string
+   * Output only. MIME type of the image asset.
+   *
+   * @param string $mimeType
    */
   public function setMimeType($mimeType)
   {

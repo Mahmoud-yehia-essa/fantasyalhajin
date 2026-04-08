@@ -17,19 +17,44 @@
 
 namespace Google\Service\DiscoveryEngine;
 
-class GoogleCloudDiscoveryengineV1alphaQuery extends \Google\Model
+class GoogleCloudDiscoveryengineV1alphaQuery extends \Google\Collection
 {
+  protected $collection_key = 'parts';
+  protected $partsType = GoogleCloudDiscoveryengineV1alphaQueryPart::class;
+  protected $partsDataType = 'array';
   /**
+   * Output only. Unique Id for the query.
+   *
    * @var string
    */
   public $queryId;
   /**
+   * Plain text.
+   *
    * @var string
    */
   public $text;
 
   /**
-   * @param string
+   * Query content parts.
+   *
+   * @param GoogleCloudDiscoveryengineV1alphaQueryPart[] $parts
+   */
+  public function setParts($parts)
+  {
+    $this->parts = $parts;
+  }
+  /**
+   * @return GoogleCloudDiscoveryengineV1alphaQueryPart[]
+   */
+  public function getParts()
+  {
+    return $this->parts;
+  }
+  /**
+   * Output only. Unique Id for the query.
+   *
+   * @param string $queryId
    */
   public function setQueryId($queryId)
   {
@@ -43,7 +68,9 @@ class GoogleCloudDiscoveryengineV1alphaQuery extends \Google\Model
     return $this->queryId;
   }
   /**
-   * @param string
+   * Plain text.
+   *
+   * @param string $text
    */
   public function setText($text)
   {
