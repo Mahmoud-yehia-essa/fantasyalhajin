@@ -30,6 +30,7 @@ use App\Http\Controllers\RoundController;
 use App\Http\Controllers\SliderController;
 use App\Http\Controllers\SponsorController;
 use App\Http\Controllers\UserController;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/admin', function () {
@@ -37,6 +38,13 @@ Route::get('/admin', function () {
     return redirect()->route('dashboard');
 });
 
+
+
+Route::get('/clear-cache', function() {
+    Artisan::call('config:clear');
+    Artisan::call('cache:clear');
+    return "تم مسح الكاش بنجاح!";
+});
 
 
 Route::controller(IndexController::class)->group(function () {
