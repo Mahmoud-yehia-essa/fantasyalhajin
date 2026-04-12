@@ -232,6 +232,9 @@ Route::post('/group-details', [GroubController::class, 'groubDetailsApi']);
 
 
 Route::post('/get-group-by-code', [GroubController::class, 'getGroupByCode']);
+// Route::post('/update-group-status', [GroubController::class, 'updateGroupStatus']);
+Route::post('/change-group-status', [GroubController::class, 'changeGroupStatusApi']);
+Route::post('/remove-group-member', [GroubController::class, 'removeMemberApi']);
 
 
 

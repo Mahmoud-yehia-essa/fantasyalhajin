@@ -224,6 +224,8 @@ return response()->json([
     $group = Groub::create([
         'user_id' => $request->user_id,
         'festival_id' => $request->festival_id,
+        'status' => $request->status,
+
         'name' => $request->name,
         'des' => $request->des,
         'code_number' => Str::upper(Str::random(6)),
@@ -434,6 +436,9 @@ $groups = GroupUser::with([
 'groub.festival:id,name'
 ])
 ->where('user_id',$request->user_id)
+->whereHas('groub', function ($query) {
+    $query->where('status', '!=', 'archived');
+})
 ->get()
 ->map(function($item) use ($request){
 
@@ -445,6 +450,8 @@ return [
 'name' => $group->name,
 'photo' => $group->photo,
 'code_number' => $group->code_number,
+'status' => $group->status,
+
 
 'festival' => $group->festival->name ?? null,
 
@@ -860,6 +867,61 @@ public function groubDetailsApi(Request $request)
         'my_points' => $myData['points'] ?? 0,
     ]);
 }
+
+    public function updateGroupStatus(Request $request)
+    {
+        $request->validate([
+            'groub_id' => 'required|exists:groubs,id',
+            'is_open' => 'required|in:0,1',
+        ]);
+
+        $group = Groub::findOrFail($request->groub_id);
+        $group->update([
+            'is_open' => $request->is_open
+        ]);
+
+        return response()->json([
+            'status' => true,
+            'message' => $request->is_open == 1 ? 'تم فتح المجموعة بنجاح' : 'تم غلق المجموعة بنجاح',
+            'data' => $group
+        ]);
+    }
+
+    public function changeGroupStatusApi(Request $request)
+    {
+        $request->validate([
+            'groub_id' => 'required|exists:groubs,id',
+            'status' => 'required|in:active,inactive,closed,archived',
+        ]);
+
+        $group = Groub::findOrFail($request->groub_id);
+        $group->update([
+            'status' => $request->status
+        ]);
+
+        return response()->json([
+            'status' => true,
+            'message' => 'تم تغيير حالة المجموعة بنجاح',
+            'data' => $group
+        ]);
+    }
+
+    public function removeMemberApi(Request $request)
+    {
+        $request->validate([
+            'user_id' => 'required|exists:users,id',
+            'groub_id' => 'required|exists:groubs,id',
+        ]);
+
+        GroupUser::where('groub_id', $request->groub_id)
+            ->where('user_id', $request->user_id)
+            ->delete();
+
+        return response()->json([
+            'status' => true,
+            'message' => 'تم حذف المستخدم من المجموعة بنجاح'
+        ]);
+    }
 
 
 }
