@@ -1409,6 +1409,7 @@ public function getUserNominationsApi(Request $request)
 
 public function getUserFestivalsWithPoints(Request $request)
 {
+    
 
     $userId = $request->input('user_id');
 
@@ -1656,11 +1657,10 @@ public function getFestivalLeaderboard(Request $request)
 //Important
 public function getUserInfoNomination(Request $request)
 {
-
     $festivalId = $request->input('festival_id');
     $userId     = $request->input('user_id');
 
-    // جلب كل المستخدمين مرتبين حسب النقاط ثم الاسم أبجديًا
+    // 1️⃣ جلب كل المستخدمين مع إجمالي النقاط (نفس دالة getFestivalLeaderboardLazy)
     $usersPoints = \DB::table('nominations')
         ->join('users', 'nominations.user_id', '=', 'users.id')
         ->select(
@@ -1671,7 +1671,7 @@ public function getUserInfoNomination(Request $request)
             'users.phone',
             'users.country_flag',
             'users.photo',
-            \DB::raw('SUM(nominations.points) AS total_points')
+            \DB::raw('SUM(nominations.points) as total_points')
         )
         ->where('nominations.festival_id', $festivalId)
         ->groupBy(
@@ -1683,12 +1683,18 @@ public function getUserInfoNomination(Request $request)
             'users.country_flag',
             'users.photo'
         )
-        ->orderByDesc('total_points') // الأعلى نقاط أولاً
-        ->orderBy('fname')            // أبجدي عند التساوي
         ->get();
 
+    // 2️⃣ ترتيب النقاط + الأبجدية عند تساوي النقاط (με الحفاظ على الرموز - نفس دالة getFestivalLeaderboardLazy)
+    $sortedCollection = $usersPoints->sort(function ($a, $b) {
+        if ($a->total_points != $b->total_points) {
+            return $b->total_points <=> $a->total_points; // الأعلى نقاط أولاً
+        }
+        return $a->fname <=> $b->fname; // أبجدي عند تساوي النقاط بدون تنظيف الرموز
+    })->values();
+
     // جلب المستخدم المطلوب
-    $userIndex = $usersPoints->search(fn($u) => $u->id == $userId);
+    $userIndex = $sortedCollection->search(fn($u) => $u->id == $userId);
 
     if ($userIndex === false) {
         return response()->json([
@@ -1697,7 +1703,7 @@ public function getUserInfoNomination(Request $request)
     }
 
     // المستخدم + إضافة الترتيب
-    $user = $usersPoints[$userIndex];
+    $user = $sortedCollection[$userIndex];
     $user->user_rank = $userIndex + 1; // الترتيب يبدأ من 1
 
     return response()->json($user);
