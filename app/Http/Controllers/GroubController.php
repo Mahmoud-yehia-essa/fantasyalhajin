@@ -923,5 +923,37 @@ public function groubDetailsApi(Request $request)
         ]);
     }
 
+    public function editGroupApi(Request $request)
+    {
+        $request->validate([
+            'id' => 'required|exists:groubs,id',
+            'name' => 'required|string|max:255',
+        ]);
+
+        $group = Groub::findOrFail($request->id);
+
+        $group->name = $request->name;
+
+        if ($request->hasFile('photo')) {
+            $file = $request->file('photo');
+            if ($group->photo) {
+                @unlink(public_path('upload/group/'.$group->photo));
+            }
+            $filename = 'app-'.date('YmdHi').$file->getClientOriginalName();
+            $file->move(public_path('upload/group'),$filename);
+            
+            $group->photo = $filename;
+        } else if ($request->has('photo') && !empty($request->photo)) {
+            $group->photo = $request->photo;
+        }
+
+        $group->save();
+
+        return response()->json([
+            'status' => true,
+            'message' => 'تم تعديل المجموعة بنجاح',
+            'data' => $group
+        ]);
+    }
 
 }

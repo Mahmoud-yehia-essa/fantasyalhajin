@@ -228,6 +228,8 @@ Route::post('/join-group', [GroubController::class, 'joinGroup']);
 Route::post('/my-groups', [GroubController::class, 'myGroups']);
 Route::post('/my-created-groups', [GroubController::class, 'myCreatedGroups']);
 
+Route::post('/edit-group', [GroubController::class, 'editGroupApi']);
+
 Route::post('/group-details', [GroubController::class, 'groubDetailsApi']);
 
 
