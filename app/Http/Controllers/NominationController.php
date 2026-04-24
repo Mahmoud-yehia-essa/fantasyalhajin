@@ -903,107 +903,121 @@ public function addNominationUserAPI(Request $request)
 
 public function addNominationUserAPI(Request $request)
 {
-   
     // ✅ التحقق من الحقول المطلوبة
     $request->validate([
-        'user_id' => 'required|integer|exists:users,id',
-        'festival_id' => 'required|integer|exists:festivals,id',
-        'round_id' => 'required|integer|exists:rounds,id',
-        'camal_id' => 'required|integer|exists:camel_round_participations,id',
+        'user_id'    => 'required|integer|exists:users,id',
+        'festival_id'=> 'required|integer|exists:festivals,id',
+        'round_id'   => 'required|integer|exists:rounds,id',
+        'camal_id'   => 'required|integer|exists:camel_round_participations,id',
     ]);
 
     try {
-        // ✅ التحقق من وجود ترشيح مسبق لنفس المستخدم في نفس الشوط
-        $existingNomination = Nomination::where('user_id', $request->user_id)
-            ->where('round_id', $request->round_id)
-            ->first();
+        // ✅ الحل النهائي لمنع التكرار حتى في حالة الطلبات المتزامنة (Race Condition)
+        // نستخدم DB::transaction مع lockForUpdate لضمان أن طلب واحد فقط يُكمل في كل مرة
+        $result = DB::transaction(function () use ($request) {
 
-        if ($existingNomination) {
-            // ✅ ترشيح موجود مسبقاً — نعيد نفس البيانات بدون إضافة جديدة
-            $participation = \App\Models\CamelRoundParticipation::find($existingNomination->camel_round_participations_id);
-            $round = \App\Models\Round::find($existingNomination->round_id);
-            $festival = \App\Models\Festival::find($existingNomination->festival_id);
+            // 🔒 قفل الصف الموجود (إن وجد) لمنع أي طلب آخر من القراءة حتى تنتهي العملية
+            $existingNomination = Nomination::where('user_id', $request->user_id)
+                ->where('festival_id', $request->festival_id)
+                ->where('round_id', $request->round_id)
+                ->lockForUpdate()
+                ->first();
+
+            if ($existingNomination) {
+                // ✅ ترشيح موجود مسبقاً — نعيد نفس البيانات بدون إضافة جديدة
+                $participation = \App\Models\CamelRoundParticipation::find($existingNomination->camel_round_participations_id);
+                $round         = \App\Models\Round::find($existingNomination->round_id);
+                $festival      = \App\Models\Festival::find($existingNomination->festival_id);
+
+                $camelData = null;
+                if ($participation) {
+                    $camelData = [
+                        'id'                  => $participation->id,
+                        'festival_id'         => $participation->festival_id,
+                        'round_id'            => $participation->round_id,
+                        'camel_name'          => $participation->camel_name,
+                        'camel_age_name'      => $participation->camel_age_name,
+                        'camel_owner_name'    => $participation->camel_owner_name,
+                        'camel_owner_country' => $participation->camel_owner_country,
+                        'registration_number' => $participation->registration_number,
+                        'is_winner'           => $participation->is_winner,
+                    ];
+                }
+
+                return [
+                    'is_duplicate' => true,
+                    'nomination'   => $existingNomination,
+                    'camelData'    => $camelData,
+                    'round'        => $round,
+                    'festival'     => $festival,
+                ];
+            }
+
+            // ✅ إنشاء الترشيح (أول مرة فقط — داخل نفس القفل)
+            $nomination = Nomination::create([
+                'user_id'                       => $request->user_id,
+                'festival_id'                   => $request->festival_id,
+                'round_id'                      => $request->round_id,
+                'camel_round_participations_id' => $request->camal_id,
+                'is_winner'                     => 0,
+            ]);
+
+            // ✅ جلب بيانات المشاركة
+            $participation = \App\Models\CamelRoundParticipation::find($request->camal_id);
+            $round         = \App\Models\Round::find($request->round_id);
+            $festival      = \App\Models\Festival::find($request->festival_id);
 
             $camelData = null;
             if ($participation) {
                 $camelData = [
-                    'id' => $participation->id,
-                    'festival_id' => $participation->festival_id,
-                    'round_id' => $participation->round_id,
-                    'camel_name' => $participation->camel_name,
-                    'camel_age_name' => $participation->camel_age_name,
-                    'camel_owner_name' => $participation->camel_owner_name,
+                    'id'                  => $participation->id,
+                    'festival_id'         => $participation->festival_id,
+                    'round_id'            => $participation->round_id,
+                    'camel_name'          => $participation->camel_name,
+                    'camel_age_name'      => $participation->camel_age_name,
+                    'camel_owner_name'    => $participation->camel_owner_name,
                     'camel_owner_country' => $participation->camel_owner_country,
                     'registration_number' => $participation->registration_number,
-                    'is_winner' => $participation->is_winner,
+                    'is_winner'           => $participation->is_winner,
                 ];
             }
 
-            return response()->json([
-                'success' => true,
-                'message' => 'تم إضافة الترشيح بنجاح',
-                'nomination' => $existingNomination,
-                'camel_participation' => $camelData,
-                'round' => $round,
-                'festival' => $festival,
-            ], 201);
+            return [
+                'is_duplicate'         => false,
+                'nomination'           => $nomination,
+                'camelData'            => $camelData,
+                'round'                => $round,
+                'festival'             => $festival,
+                'camelRoundParticip'   => $participation,
+            ];
+        }); // نهاية DB::transaction
+
+        // ✅ إرسال الإشعار فقط عند الإضافة الجديدة (خارج الـ transaction لتجنب تأخير القفل)
+        if (!$result['is_duplicate']) {
+            $admins               = User::where('role', 'admin')->get();
+            $userCreatNomination  = User::find($request->user_id);
+            $camelRoundParticip   = $result['camelRoundParticip'] ?? CamelRoundParticipation::find($request->camal_id);
+            $festivalForNotif     = Festival::find($request->festival_id);
+            $roundForNotif        = Round::find($request->round_id);
+
+            if ($admins->isNotEmpty() && $userCreatNomination) {
+                Notification::send($admins, new NominationNotification(
+                    $userCreatNomination,
+                    $camelRoundParticip,
+                    $festivalForNotif,
+                    $roundForNotif
+                ));
+            }
         }
 
-        // ✅ إنشاء الترشيح (أول مرة فقط)
-        $nomination = Nomination::create([
-            'user_id' => $request->user_id,
-            'festival_id' => $request->festival_id,
-            'round_id' => $request->round_id,
-            'camel_round_participations_id' => $request->camal_id,
-            'is_winner' => 0,
-        ]);
-
-        // ✅ جلب بيانات المشاركة
-        $participation = \App\Models\CamelRoundParticipation::find($request->camal_id);
-
-        if (!$participation) {
-            return response()->json([
-                'success' => false,
-                'message' => 'لم يتم العثور على بيانات المشاركة',
-            ], 404);
-        }
-
-        // ✅ جلب بيانات الجولة والمهرجان
-        $round = \App\Models\Round::find($request->round_id);
-        $festival = \App\Models\Festival::find($request->festival_id);
-
-        // ✅ تجهيز البيانات النهائية
-        $camelData = [
-            'id' => $participation->id,
-            'festival_id' => $participation->festival_id,
-            'round_id' => $participation->round_id,
-            'camel_name' => $participation->camel_name,
-            'camel_age_name' => $participation->camel_age_name,
-            'camel_owner_name' => $participation->camel_owner_name,
-            'camel_owner_country' => $participation->camel_owner_country,
-            'registration_number' => $participation->registration_number,
-            'is_winner' => $participation->is_winner,
-        ];
-
-        // For Notification
-        // who users recive Notifications
-        $user = User::where('role', 'admin')->get();
-        $userCreatNomination = User::find($request->user_id);
-        $camelRoundParticipation = CamelRoundParticipation::find($request->camal_id);
-        $festival = Festival::find($request->festival_id);
-        $round = Round::find($request->round_id);
-
-        Notification::send($user, new NominationNotification($userCreatNomination, $camelRoundParticipation, $festival, $round));
-        // For Notification
-
-        // ✅ استجابة JSON شاملة
+        // ✅ استجابة JSON شاملة (نفس الاستجابة سواء جديد أو مكرر)
         return response()->json([
-            'success' => true,
-            'message' => 'تم إضافة الترشيح بنجاح',
-            'nomination' => $nomination,
-            'camel_participation' => $camelData,
-            'round' => $round,
-            'festival' => $festival,
+            'success'           => true,
+            'message'           => 'تم إضافة الترشيح بنجاح',
+            'nomination'        => $result['nomination'],
+            'camel_participation'=> $result['camelData'],
+            'round'             => $result['round'],
+            'festival'          => $result['festival'],
         ], 201);
 
     } catch (\Exception $e) {
@@ -1011,7 +1025,7 @@ public function addNominationUserAPI(Request $request)
         return response()->json([
             'success' => false,
             'message' => 'حدث خطأ أثناء الإضافة',
-            'error' => $e->getMessage(),
+            'error'   => $e->getMessage(),
         ], 500);
     }
 }
