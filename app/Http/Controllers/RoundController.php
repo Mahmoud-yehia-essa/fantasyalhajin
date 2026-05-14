@@ -806,186 +806,7 @@ public function getRoundsDatesApi(Request $request)
 }
 
 
-// public function getRoundsByDateApi(Request $request)
-// {
-//     $festivalId = $request->input('festival_id');
-//     $date = $request->input('date'); // صيغة YYYY-MM-DD
-
-//     $rounds = Round::where('festival_id', $festivalId)
-//         ->whereDate('start', $date)
-//         ->orderBy('start', 'asc')
-//         ->get();
-
-//     return response()->json($rounds);
-// }
-
-
-// public function getRoundsByDateApi(Request $request)
-// {
-//     $festivalId = $request->input('festival_id');
-//     $date = $request->input('date'); // صيغة YYYY-MM-DD
-//     $now = now();
-
-//     $rounds = Round::where('festival_id', $festivalId)
-//         ->whereDate('start', $date)
-//         ->orderBy('start', 'asc')
-//         ->get()
-//         ->map(function ($item) use ($now) {
-//             $start = \Carbon\Carbon::parse($item->start);
-//             $end   = \Carbon\Carbon::parse($item->end);
-
-//             // صيغة الوقت
-//             $startTime = $start->format('h:i A'); // 09:00 AM
-//             $endTime   = $end->format('h:i A');   // 05:00 PM
-
-//             // حالة الوقت
-//             if ($now->lt($start)) {
-//                 $statusText = 'سيبدأ بعد ' . $now->diffForHumans($start, [
-//                     'parts' => 2,
-//                     'short' => false,
-//                 ]);
-//             } elseif ($now->between($start, $end)) {
-//                 $statusText = 'سينتهي بعد ' . $now->diffForHumans($end, [
-//                     'parts' => 2,
-//                     'short' => false,
-//                 ]);
-//             } else {
-//                 $statusText = 'انتهى الشوط';
-//             }
-
-//             // نحافظ على الأعمدة الأصلية + نضيف الجديد
-//             $data = $item->toArray();
-//             $data['start_time'] = $startTime;
-//             $data['end_time']   = $endTime;
-//             $data['time_status'] = $statusText;
-
-//             return $data;
-//         });
-
-//     return response()->json($rounds);
-// }
-
-
-// public function getRoundsByDateApi(Request $request)
-// {
-//     $festivalId = $request->input('festival_id');
-//     $date = $request->input('date'); // صيغة YYYY-MM-DD
-
-//     // نخلي الوقت الحالي بتوقيت الكويت
-//     $now = now('Asia/Kuwait');
-
-//     $rounds = Round::where('festival_id', $festivalId)
-//         ->whereDate('start', $date)
-//         ->orderBy('start', 'asc')
-//         ->get()
-//         ->map(function ($item) use ($now) {
-//             $start = \Carbon\Carbon::parse($item->start)->setTimezone('Asia/Kuwait');
-//             $end   = \Carbon\Carbon::parse($item->end)->setTimezone('Asia/Kuwait');
-
-//             // صيغة الوقت (12 ساعة AM/PM)
-//             $startTime = $start->format('h:i A'); // مثال: 09:00 AM
-//             $endTime   = $end->format('h:i A');   // مثال: 05:00 PM
-
-//             // حالة الوقت
-//             if ($now->lt($start)) {
-//                 // $statusText = 'سيبدأ بعد ' . $now->diffForHumans($start, [
-//                 //     'parts' => 1,
-//                 //     'short' => false,
-//                 // ]);
-
-//                   $statusText = 'سيبدأ قريبا ';
-
-//             } elseif ($now->between($start, $end)) {
-
-//   $statusText = 'سينتهي قريبا ';
-
-
-//                 // $statusText = 'سينتهي بعد ' . $now->diffForHumans($end, [
-//                 //     'parts' => 2,
-//                 //     'short' => false,
-//                 // ]);
-
-
-//             } else {
-//                 $statusText = 'انتهى الشوط';
-//             }
-
-//             // نحافظ على الأعمدة الأصلية + نضيف الجديد
-//             $data = $item->toArray();
-//             $data['start_time']  = $startTime;
-//             $data['end_time']    = $endTime;
-//             $data['time_status'] = $statusText;
-
-//             return $data;
-//         });
-
-//     return response()->json($rounds);
-// }
-
-
-
-// public function getRoundsByDateApi(Request $request)
-// {
-//     $festivalId = $request->input('festival_id');
-//     $date = $request->input('date'); // صيغة YYYY-MM-DD
-
-//     // الوقت الحالي بتوقيت الكويت
-//     $now = now('Asia/Kuwait');
-
-//     $rounds = Round::where('festival_id', $festivalId)
-//         ->whereDate('start', $date)
-//         ->orderBy('start', 'asc')
-//         ->get()
-//         ->map(function ($item) use ($now) {
-//             $start = \Carbon\Carbon::parse($item->start)->setTimezone('Asia/Kuwait');
-//             $end   = \Carbon\Carbon::parse($item->end)->setTimezone('Asia/Kuwait');
-
-//             // صيغة الوقت (12 ساعة AM/PM)
-//             $startTime = $start->format('h:i A');
-//             $endTime   = $end->format('h:i A');
-
-//             // اليوم بالاسم
-//             $startDay = $start->locale('ar')->isoFormat('dddd');
-//             $endDay   = $end->locale('ar')->isoFormat('dddd');
-
-//             // حساب الوقت المتبقي بدقة
-//             if ($now->lt($start)) {
-//                 $diff = $now->diff($start);
-//                 $statusText = sprintf(
-//                     'سيبدأ بعد %d يوم %d ساعة %d دقيقة',
-//                     $diff->d,
-//                     $diff->h,
-//                     $diff->i
-//                 );
-//             } elseif ($now->between($start, $end)) {
-//                 $diff = $now->diff($end);
-//                 $statusText = sprintf(
-//                     'سينتهي بعد %d يوم %d ساعة %d دقيقة',
-//                     $diff->d,
-//                     $diff->h,
-//                     $diff->i
-//                 );
-//             } else {
-//                 $statusText = 'انتهى الشوط';
-//             }
-
-//             // نحافظ على الأعمدة الأصلية + نضيف الجديد
-//             $data = $item->toArray();
-//             $data['start_time']  = $startTime;
-//             $data['end_time']    = $endTime;
-//             $data['time_status'] = $statusText;
-//             $data['start_day']   = $startDay;
-//             $data['end_day']     = $endDay;
-//             $data['start_date']  = $start->toDateString();
-//             $data['end_date']    = $end->toDateString();
-
-//             return $data;
-//         });
-
-//     return response()->json($rounds);
-// }
-
-
+/* very important stop
 public function getRoundsByDateApi(Request $request)
 {
     $festivalId = $request->input('festival_id');
@@ -1055,8 +876,81 @@ $end   = \Carbon\Carbon::parse($item->end)->setTimezone('Asia/Riyadh');
 
     return response()->json($rounds);
 }
+*/
 
 
+
+//////
+
+public function getRoundsByDateApi(Request $request)
+{
+    $festivalId = $request->input('festival_id');
+    $date = $request->input('date'); // صيغة YYYY-MM-DD
+
+
+    // الوقت الحالي بتوقيت الكويت
+    $now = now('Asia/Riyadh');
+
+    $rounds = Round::where('festival_id', $festivalId)
+        ->whereDate('start', $date)
+        ->orderBy('created_at', 'asc')
+        ->get()
+        ->map(function ($item) use ($now) {
+            // $start = \Carbon\Carbon::parse($item->start)->setTimezone('Asia/Kuwait');
+            // $end   = \Carbon\Carbon::parse($item->end)->setTimezone('Asia/Kuwait');
+
+            $start = \Carbon\Carbon::parse($item->start)->setTimezone('Asia/Riyadh');
+$end   = \Carbon\Carbon::parse($item->end)->setTimezone('Asia/Riyadh');
+
+
+            // صيغة الوقت (12 ساعة AM/PM)
+            $startTime = $start->format('h:i A');
+            $endTime   = $end->format('h:i A');
+
+            // اليوم بالاسم
+            $startDay = $start->locale('ar')->isoFormat('dddd');
+            $endDay   = $end->locale('ar')->isoFormat('dddd');
+
+            // حساب الوقت المتبقي
+            if ($now->lt($start)) {
+                $diff = $now->diff($start);
+                $timeStatus = sprintf(
+                    'سيبدأ بعد %d يوم %d ساعة %d دقيقة',
+                    $diff->d,
+                    $diff->h,
+                    $diff->i
+                );
+                $type = 'upcoming';
+            } elseif ($now->between($start, $end)) {
+                $diff = $now->diff($end);
+                $timeStatus = sprintf(
+                    'سينتهي بعد %d يوم %d ساعة %d دقيقة',
+                    $diff->d,
+                    $diff->h,
+                    $diff->i
+                );
+                $type = 'current';
+            } else {
+                $timeStatus = 'انتهى الشوط';
+                $type = 'ended';
+            }
+
+            // نحافظ على الأعمدة الأصلية + نضيف الجديد
+            $data = $item->toArray();
+            $data['start_time']  = $startTime;
+            $data['end_time']    = $endTime;
+            $data['time_status'] = $timeStatus;
+            $data['start_day']   = $startDay;
+            $data['end_day']     = $endDay;
+            $data['start_date']  = $start->toDateString();
+            $data['end_date']    = $end->toDateString();
+            $data['type']        = $type;
+
+            return $data;
+        });
+
+    return response()->json($rounds);
+}
 
 
 
