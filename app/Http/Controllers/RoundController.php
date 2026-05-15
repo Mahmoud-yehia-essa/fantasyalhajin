@@ -267,6 +267,7 @@ public function storeRound(Request $request)
         'start'        => $request->start,
         'end'          => $request->end,
         'round_type'   => $request->round_type,
+        'open_nomination' => 'close',
     ]);
 
     // ✅ حفظ المطايا

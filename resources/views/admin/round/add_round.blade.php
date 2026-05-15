@@ -2,6 +2,7 @@
 @section('admin')
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
 <div class="col-lg-16">
     <div class="card">
@@ -105,7 +106,15 @@
 
                 {{-- المطايا المشاركة --}}
                 <div class="row mb-3">
-                    {{-- <div class="col-sm-3"><h6 class="mb-0">المطايا المشاركة</h6></div> --}}
+                    <div class="col-12 text-secondary d-flex justify-content-between mb-2">
+                        <h6 class="mb-0">المطايا المشاركة</h6>
+                        <div>
+                            <button type="button" class="btn btn-success btn-sm text-white" id="exportCurrentData">📤 تصدير البيانات</button>
+                            <button type="button" class="btn btn-info btn-sm text-white" id="downloadExcelTemplate">📥 تحميل قالب إكسيل</button>
+                            <label for="uploadExcel" class="btn btn-warning btn-sm mb-0">📤 رفع ملف إكسيل</label>
+                            <input type="file" id="uploadExcel" accept=".xlsx, .xls" style="display: none;">
+                        </div>
+                    </div>
                     <div class="col-12 text-secondary">
 
                         @if($errors->has('camals'))
@@ -125,15 +134,38 @@
                                 <tr>
     <th style="width:100px;">رقم التسجيل</th>
     <th style="min-width:250px;">اسم المطية</th>
-    <th style="width:180px;">الفئة العمرية</th>
+    <th style="width:180px;">
+        الفئة العمرية
+        <select id="globalAgeCategory" class="form-control form-control-sm mt-1" style="font-size: 0.85rem; padding: 2px 5px;">
+            <option value="">تطبيق على الكل</option>
+            <option value="مفاريد">مفاريد</option>
+            <option value="الحقايق">الحقايق</option>
+            <option value="اللقايا">اللقايا</option>
+            <option value="الجذاع">الجذاع</option>
+            <option value="الثنايا">الثنايا</option>
+            <option value="زمول">زمول</option>
+            <option value="الحيل">الحيل</option>
+        </select>
+    </th>
     <th style="min-width:300px;">اسم المالك</th>
-    <th style="width:200px;">الدولة</th>
+    <th style="width:200px;">
+        الدولة
+        <div class="form-check mt-1 d-inline-block ms-2">
+            <input class="form-check-input" type="checkbox" id="noCountryGlobal">
+            <label class="form-check-label" for="noCountryGlobal" style="font-size: 0.85rem;">
+                بدون دولة
+            </label>
+        </div>
+    </th>
     <th style="width:100px;">إجراء</th>
 </tr>
                             </thead>
                             <tbody id="camalsTableBody">
                                 <tr>
-                                    <td class="text-center">1</td>
+                                    <td class="text-center">
+                                        <input type="hidden" name="camals[0][registration_number]" value="1">
+                                        <span class="row-number">1</span>
+                                    </td>
                                     <td><input type="text" name="camals[0][name]" class="form-control" placeholder="اسم المطية" required></td>
                                     <td>
                                         <select name="camals[0][age_name]" class="form-control" required>
@@ -182,7 +214,10 @@ $(document).ready(function() {
         rowIndex++;
         const newRow = `
             <tr>
-                <td class="text-center">${rowIndex}</td>
+                <td class="text-center">
+                    <input type="hidden" name="camals[${rowIndex - 1}][registration_number]" value="${rowIndex}">
+                    <span class="row-number">${rowIndex}</span>
+                </td>
                 <td><input type="text" name="camals[${rowIndex - 1}][name]" class="form-control" placeholder="اسم المطية" required></td>
                 <td>
                     <select name="camals[${rowIndex - 1}][age_name]" class="form-control" required>
@@ -214,12 +249,127 @@ $(document).ready(function() {
     function updateRowNumbers() {
         let i = 1;
         $('#camalsTableBody tr').each(function() {
-            $(this).find('td:first').text(i);
+            // Update row numbers only if no hidden reg num is set manually by excel
+            let regNum = $(this).find('input[type="hidden"]').val();
+            if(!regNum || isNaN(regNum) || regNum == (i - 1)) {
+                $(this).find('input[type="hidden"]').val(i);
+            }
+            $(this).find('.row-number').text(regNum ? regNum : i);
             i++;
         });
         rowIndex = i;
     }
+
+    // Apply global age category to all rows
+    $('#globalAgeCategory').on('change', function() {
+        const selectedValue = $(this).val();
+        if (selectedValue) {
+            $('select[name*="[age_name]"]').val(selectedValue);
+        }
+    });
+
+    // Apply "No Country" to all rows
+    $('#noCountryGlobal').on('change', function() {
+        if ($(this).is(':checked')) {
+            $('input[name*="[country]"]').val('-');
+        } else {
+            $('input[name*="[country]"]').val('');
+        }
+    });
+
+    // Excel Export Template
+    $('#downloadExcelTemplate').on('click', function() {
+        const ws_data = [['اسم المطية', 'اسم المالك', 'الدولة']];
+        const ws = XLSX.utils.aoa_to_sheet(ws_data);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "Template");
+        XLSX.writeFile(wb, "template.xlsx");
+    });
+
+    // Export Current Data
+    $('#exportCurrentData').on('click', function() {
+        const ws_data = [['اسم المطية', 'اسم المالك', 'الدولة']];
+        
+        $('#camalsTableBody tr').each(function() {
+            const name = $(this).find('input[name*="[name]"]').val();
+            const owner = $(this).find('input[name*="[owner_name]"]').val();
+            const country = $(this).find('input[name*="[country]"]').val();
+            
+            ws_data.push([name, owner, country]);
+        });
+
+        const ws = XLSX.utils.aoa_to_sheet(ws_data);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "Current_Data");
+        
+        let roundName = $('input[name="name"]').val().trim();
+        let fileName = roundName ? roundName + '.xlsx' : 'rounds_data.xlsx';
+        XLSX.writeFile(wb, fileName);
+    });
+
+    // Excel Import
+    $('#uploadExcel').on('change', function(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const data = new Uint8Array(e.target.result);
+            const workbook = XLSX.read(data, {type: 'array'});
+            const firstSheetName = workbook.SheetNames[0];
+            const worksheet = workbook.Sheets[firstSheetName];
+            const jsonData = XLSX.utils.sheet_to_json(worksheet, {header: 1});
+
+            if(jsonData.length > 1) {
+                // Clear the table for new data
+                $('#camalsTableBody').empty();
+                rowIndex = 1;
+
+                for(let i = 1; i < jsonData.length; i++) {
+                    const row = jsonData[i];
+                    if(row.length === 0) continue; // skip empty rows
+
+                    const regNum = rowIndex;
+                    const name = row[0] || '';
+                    const owner = row[1] || '';
+                    const country = row[2] || '';
+
+                    const newRow = `
+                        <tr>
+                            <td class="text-center">
+                                <input type="hidden" name="camals[${rowIndex - 1}][registration_number]" value="${regNum}">
+                                <span class="row-number">${regNum}</span>
+                            </td>
+                            <td><input type="text" name="camals[${rowIndex - 1}][name]" value="${name}" class="form-control" placeholder="اسم المطية" required></td>
+                            <td>
+                                <select name="camals[${rowIndex - 1}][age_name]" class="form-control" required>
+                                    <option value="">اختر الفئة</option>
+                                    <option value="مفاريد">مفاريد</option>
+                                    <option value="الحقايق">الحقايق</option>
+                                    <option value="اللقايا">اللقايا</option>
+                                    <option value="الجذاع">الجذاع</option>
+                                    <option value="الثنايا">الثنايا</option>
+                                    <option value="زمول">زمول</option>
+                                    <option value="الحيل">الحيل</option>
+                                </select>
+                            </td>
+                            <td><input type="text" name="camals[${rowIndex - 1}][owner_name]" value="${owner}" class="form-control" placeholder="اسم المالك" required></td>
+                            <td><input type="text" name="camals[${rowIndex - 1}][country]" value="${country}" class="form-control" placeholder="الدولة" required></td>
+                            <td class="text-center">
+                                <button type="button" class="btn btn-danger btn-sm removeRow">حذف</button>
+                            </td>
+                        </tr>`;
+                    $('#camalsTableBody').append(newRow);
+                    rowIndex++;
+                }
+            }
+            // reset file input
+            $('#uploadExcel').val('');
+        };
+        reader.readAsArrayBuffer(file);
+    });
 });
+
 </script>
 
 <style>
