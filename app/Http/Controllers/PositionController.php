@@ -114,7 +114,8 @@ public function addPositionUserStore(Request $request)
         //                  ->with('error', 'هذا المستخدم تم إدخاله مسبقًا في نفس المهرجان.');
     }
 
-    // 3️⃣ التأكد من عدم تكرار نفس الترتيب في نفس المهرجان
+    // 3️⃣ التأكد من عدم تكرار نفس الترتيب في نفس المهرجان (تم إيقافه للسماح بتكرار نفس الترتيب لأكثر من مستخدم)
+    /*
     $positionExists = UserPosition::where('festival_id', $festivalId)
                                   ->where('user_position', $userPosition)
                                   ->first();
@@ -130,6 +131,7 @@ public function addPositionUserStore(Request $request)
 
 
     }
+    */
 
     // 4️⃣ إضافة المستخدم إلى الجدول
     $newPosition = new UserPosition();
