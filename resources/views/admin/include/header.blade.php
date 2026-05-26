@@ -625,8 +625,14 @@
                     </li>
 
     @php
-    $ncount = Auth::user()->unreadNotifications()->count();
-@endphp
+        $ncount = session()->get('unread_notifications_count');
+        $ncount_time = session()->get('unread_notifications_time', 0);
+        if ($ncount === null || $ncount_time < time() - 30) {
+            $ncount = Auth::user()->unreadNotifications()->count();
+            session()->put('unread_notifications_count', $ncount);
+            session()->put('unread_notifications_time', time());
+        }
+    @endphp
 {{--
 <li class="nav-item dropdown dropdown-large">
     <a class="nav-link dropdown-toggle dropdown-toggle-nocaret position-relative" href="#" data-bs-toggle="dropdown" aria-expanded="false">

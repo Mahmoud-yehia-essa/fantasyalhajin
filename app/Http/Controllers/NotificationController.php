@@ -78,6 +78,8 @@ return response()->json([
     {
         $notification = Auth::user()->notifications()->findOrFail($id);
         $notification->markAsRead();
+        
+        session()->forget('unread_notifications_count');
 
         return redirect()->back();
     }

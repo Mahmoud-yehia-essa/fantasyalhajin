@@ -45,7 +45,15 @@ Route::get('/clear-cache', function() {
     Artisan::call('route:clear');
     Artisan::call('view:clear');
     Artisan::call('cache:clear');
-    return "تم مسح كاش الإعدادات، والمسارات، والواجهات، والذاكرة المؤقتة بنجاح على الاستضافة!";
+    
+    // Run migrations automatically to apply the new index
+    try {
+        Artisan::call('migrate', ['--force' => true]);
+    } catch (\Exception $e) {
+        \Log::error("Migration failed: " . $e->getMessage());
+    }
+    
+    return "تم مسح كاش الإعدادات، والمسارات، والواجهات، والذاكرة المؤقتة وتشغيل الهجرات بنجاح على الاستضافة!";
 });
 
 

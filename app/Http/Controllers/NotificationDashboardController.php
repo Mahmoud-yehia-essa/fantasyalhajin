@@ -25,6 +25,8 @@ class NotificationDashboardController extends Controller
 $notification = $user->unreadNotifications()->where('id', $notificationId)->first();
 if ($notification) {
     $notification->markAsRead();
+    
+    session()->forget('unread_notifications_count');
 
 
     if($notification->type == "App\Notifications\NominationNotification")
