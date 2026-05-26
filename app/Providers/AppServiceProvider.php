@@ -27,8 +27,8 @@ class AppServiceProvider extends ServiceProvider
             Paginator::useBootstrapFive();
 
             \DB::listen(function($query) {
-                if (request()->has('debug_queries') || env('APP_DEBUG')) {
-                    \Log::info("SQL: {$query->sql} | Time: {$query->time}ms");
+                if ($query->time > 100 || request()->has('debug_queries') || env('APP_DEBUG')) {
+                    \Log::warning("Slow SQL (>100ms) on URL " . request()->fullUrl() . ": {$query->sql} | Time: {$query->time}ms | Bindings: " . json_encode($query->bindings));
                 }
             });
     }

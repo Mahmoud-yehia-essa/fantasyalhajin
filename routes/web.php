@@ -111,6 +111,52 @@ Route::get('/debug-queries-log', function() {
 });
 
 
+Route::get('/debug-db-status', function() {
+    $results = [];
+    
+    // 1. Check migrations table
+    try {
+        $migrations = \DB::table('migrations')->get();
+        $results['migrations_in_db'] = $migrations->pluck('migration')->toArray();
+    } catch (\Exception $e) {
+        $results['migrations_error'] = $e->getMessage();
+    }
+    
+    // 2. Check indexes of notifications table
+    try {
+        $indexes = \DB::select('SHOW INDEX FROM notifications');
+        $results['notifications_indexes'] = collect($indexes)->pluck('Key_name')->unique()->toArray();
+    } catch (\Exception $e) {
+        $results['notifications_indexes_error'] = $e->getMessage();
+    }
+    
+    // 3. Count in notifications table
+    try {
+        $t0 = microtime(true);
+        $total = \DB::table('notifications')->count();
+        $t1 = microtime(true);
+        $results['notifications_total_count'] = $total;
+        $results['notifications_count_query_time'] = number_format(($t1 - $t0) * 1000, 2) . ' ms';
+    } catch (\Exception $e) {
+        $results['notifications_count_error'] = $e->getMessage();
+    }
+    
+    // 4. Count of unread notifications
+    try {
+        $t0 = microtime(true);
+        $unread = \DB::table('notifications')->whereNull('read_at')->count();
+        $t1 = microtime(true);
+        $results['notifications_unread_count'] = $unread;
+        $results['notifications_unread_query_time'] = number_format(($t1 - $t0) * 1000, 2) . ' ms';
+    } catch (\Exception $e) {
+        $results['notifications_unread_error'] = $e->getMessage();
+    }
+    
+    return response()->json($results);
+});
+
+
+
 Route::controller(IndexController::class)->group(function () {
 
 
