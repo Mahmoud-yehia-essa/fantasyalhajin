@@ -49,6 +49,43 @@ Route::get('/clear-cache', function() {
 });
 
 
+Route::get('/debug-speed', function() {
+    $t0 = microtime(true);
+    
+    // 1. Database Connection Speed
+    $db_time = 'Error';
+    try {
+        $db_start = microtime(true);
+        \DB::connection()->getPdo();
+        $db_time = number_format(microtime(true) - $db_start, 4) . ' seconds';
+    } catch (\Exception $e) {
+        $db_time = 'Failed: ' . $e->getMessage();
+    }
+    
+    // 2. OPCache Status
+    $opcache_enabled = function_exists('opcache_get_status') && !empty(opcache_get_status()['opcache_enabled']) ? 'Enabled' : 'Disabled';
+    
+    // 3. Check for Cached Configurations (potential local path leak)
+    $config_cached = file_exists(base_path('bootstrap/cache/config.php')) ? 'Yes (Can cause path issues)' : 'No (Clean)';
+    $route_cached = file_exists(base_path('bootstrap/cache/routes.php')) ? 'Yes (Can cause path issues)' : 'No (Clean)';
+    
+    $total_time = number_format(microtime(true) - $t0, 4) . ' seconds';
+    
+    return response()->json([
+        'PHP Version' => PHP_VERSION,
+        'Database Connection Time' => $db_time,
+        'OPCache Status' => $opcache_enabled,
+        'Config Cached' => $config_cached,
+        'Route Cached' => $route_cached,
+        'Session Driver' => config('session.driver'),
+        'Cache Store' => config('cache.default'),
+        'Queue Connection' => config('queue.default'),
+        'App Debug Mode' => config('app.debug') ? 'ON (Slow)' : 'OFF (Fast)',
+        'Diagnostics Exec Time' => $total_time
+    ]);
+});
+
+
 Route::controller(IndexController::class)->group(function () {
 
 
