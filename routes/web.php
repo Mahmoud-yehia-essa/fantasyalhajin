@@ -156,6 +156,31 @@ Route::get('/debug-db-status', function() {
 });
 
 
+Route::get('/run-migration-debug', function() {
+    // Extend execution time limit as table is huge (600k+ rows)
+    @set_time_limit(300);
+    @ini_set('max_execution_time', 300);
+    
+    try {
+        $output = '';
+        $exitCode = Artisan::call('migrate', ['--force' => true]);
+        $output .= Artisan::output();
+        return response()->json([
+            'status' => 'success',
+            'exit_code' => $exitCode,
+            'output' => $output
+        ]);
+    } catch (\Exception $e) {
+        return response()->json([
+            'status' => 'failed',
+            'error' => $e->getMessage(),
+            'trace' => $e->getTraceAsString()
+        ]);
+    }
+});
+
+
+
 
 Route::controller(IndexController::class)->group(function () {
 
