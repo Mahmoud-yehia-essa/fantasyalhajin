@@ -88,6 +88,21 @@ Route::get('/debug-speed', function() {
 });
 
 
+Route::get('/debug-queries-log', function() {
+    $log_path = storage_path('logs/laravel.log');
+    if (!file_exists($log_path)) {
+        return 'Log file does not exist.';
+    }
+    
+    $file = file($log_path);
+    $lines = array_slice($file, -150); // get last 150 lines
+    
+    header('Content-Type: text/plain; charset=utf-8');
+    echo implode("", $lines);
+    exit;
+});
+
+
 Route::controller(IndexController::class)->group(function () {
 
 

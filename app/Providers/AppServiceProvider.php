@@ -26,5 +26,10 @@ class AppServiceProvider extends ServiceProvider
         // $kernel->appendMiddlewareToGroup('web', CheckUserRole::class);
             Paginator::useBootstrapFive();
 
+            \DB::listen(function($query) {
+                if (request()->has('debug_queries') || env('APP_DEBUG')) {
+                    \Log::info("SQL: {$query->sql} | Time: {$query->time}ms");
+                }
+            });
     }
 }
