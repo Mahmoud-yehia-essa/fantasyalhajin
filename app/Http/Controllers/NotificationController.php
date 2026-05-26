@@ -54,7 +54,7 @@ return view('admin.notification.all_notification');
 
 
 
-$notifications = Auth::user()->unreadNotifications()->latest()->paginate(10);
+$notifications = Auth::user()->unreadNotifications()->latest()->simplePaginate(10);
 
 $notifications->getCollection()->transform(function ($notification) {
     // تحويل الوقت لتوقيت الكويت
