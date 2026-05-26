@@ -42,8 +42,10 @@ Route::get('/admin', function () {
 
 Route::get('/clear-cache', function() {
     Artisan::call('config:clear');
+    Artisan::call('route:clear');
+    Artisan::call('view:clear');
     Artisan::call('cache:clear');
-    return "تم مسح الكاش بنجاح!";
+    return "تم مسح كاش الإعدادات، والمسارات، والواجهات، والذاكرة المؤقتة بنجاح على الاستضافة!";
 });
 
 
