@@ -63,6 +63,7 @@ Route::get('/debug-speed', function() {
     }
     
     // 2. OPCache Status
+    $opcache_loaded = extension_loaded('opcache') ? 'Yes' : 'No';
     $opcache_enabled = function_exists('opcache_get_status') && !empty(opcache_get_status()['opcache_enabled']) ? 'Enabled' : 'Disabled';
     
     // 3. Check for Cached Configurations (potential local path leak)
@@ -74,6 +75,7 @@ Route::get('/debug-speed', function() {
     return response()->json([
         'PHP Version' => PHP_VERSION,
         'Database Connection Time' => $db_time,
+        'OPCache Extension Loaded' => $opcache_loaded,
         'OPCache Status' => $opcache_enabled,
         'Config Cached' => $config_cached,
         'Route Cached' => $route_cached,
