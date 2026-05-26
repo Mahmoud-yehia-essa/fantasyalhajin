@@ -18,7 +18,7 @@ class CamalController extends Controller
     {
         // $users = User::latest()->get();
         // $users = User::where('role', '!=', 'admin')->latest()->get();
-        $camals = Camal::latest()->get();
+        $camals = Camal::with('user')->latest()->get();
 
 
         return view('admin.camal.all_camal',compact('camals'));

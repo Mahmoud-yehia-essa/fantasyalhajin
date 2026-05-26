@@ -14,17 +14,17 @@
         ['Task', 'Hours per Day'],
 
 
-          ['عدد المهرجنات', {{$festival->count()}}],
+          ['عدد المهرجنات', {{$festival_count}}],
 
-        ['عدد الأشواط', {{$rounds->count()}}],
-        ['عدد المطايا', {{$camal->count()}}],
-        ['عدد الترشيحات', {{$nomination->count()}}],
+        ['عدد الأشواط', {{$rounds_count}}],
+        ['عدد المطايا', {{$camal_count}}],
+        ['عدد الترشيحات', {{$nomination_count}}],
 
-        ['الفئات', {{$category->count()}}],
+        ['الفئات', {{$category_count}}],
 
-        ['المستخدمين المسجلين', {{$users->count()}}],
-        ['الأسئلة', {{$questions->count()}}],
-        ['الألعاب', {{$games->count()}}],
+        ['المستخدمين المسجلين', {{$users_count}}],
+        ['الأسئلة', {{$questions_count}}],
+        ['الألعاب', {{$games_count}}],
     ]);
 
     var options = {
@@ -75,7 +75,7 @@
         <div class="card radius-10 bg-gradient-magenta">
          <div class="card-body">
             <div class="d-flex align-items-center">
-                <h5 class="mb-0 text-white">{{$festival->count()}}</h5>
+                <h5 class="mb-0 text-white">{{$festival_count}}</h5>
                 <div class="ms-auto">
                     <i class='bx bx-party fs-3 text-white'></i>
 
@@ -98,7 +98,7 @@
         <div class="card radius-10 bg-gradient-cyan">
         <div class="card-body">
             <div class="d-flex align-items-center">
-                <h5 class="mb-0 text-white"> {{$rounds->count()}}</h5>
+                <h5 class="mb-0 text-white"> {{$rounds_count}}</h5>
                 <div class="ms-auto">
                     <i class='bx bx-category fs-3 text-white'></i>
                 </div>
@@ -120,7 +120,7 @@
         <div class="card radius-10 bg-gradient-darkteal">
         <div class="card-body">
             <div class="d-flex align-items-center">
-                <h5 class="mb-0 text-white">{{$camal->count()}}</h5>
+                <h5 class="mb-0 text-white">{{$camal_count}}</h5>
                 <div class="ms-auto">
                     <i class='bx  bx-category fs-3 text-white'></i>
 
@@ -143,7 +143,7 @@
         <div class="card radius-10 bg-gradient-darkorange bg-warning">
          <div class="card-body">
             <div class="d-flex align-items-center">
-                <h5 class="mb-0 text-white">{{$nomination->count()}}</h5>
+                <h5 class="mb-0 text-white">{{$nomination_count}}</h5>
                 <div class="ms-auto">
                     <i class='bx bx-trophy fs-3 text-white'></i>
                 </div>
@@ -169,7 +169,7 @@
         <div class="card radius-10 bg-gradient-deepblue">
          <div class="card-body">
             <div class="d-flex align-items-center">
-                <h5 class="mb-0 text-white">{{$users->count()}}</h5>
+                <h5 class="mb-0 text-white">{{$users_count}}</h5>
                 <div class="ms-auto">
                     <i class='bx bx-user fs-3 text-white'></i>
 
@@ -192,7 +192,7 @@
         <div class="card radius-10 bg-gradient-ohhappiness">
         <div class="card-body">
             <div class="d-flex align-items-center">
-                <h5 class="mb-0 text-white"> {{$category->count()}}</h5>
+                <h5 class="mb-0 text-white"> {{$category_count}}</h5>
                 <div class="ms-auto">
                     <i class='bx bx-category fs-3 text-white'></i>
                 </div>
@@ -214,7 +214,7 @@
         <div class="card radius-10 bg-gradient-ibiza">
         <div class="card-body">
             <div class="d-flex align-items-center">
-                <h5 class="mb-0 text-white">{{$questions->count()}}</h5>
+                <h5 class="mb-0 text-white">{{$questions_count}}</h5>
                 <div class="ms-auto">
                     <i class='bx bx-help-circle fs-3 text-white'></i>
 
@@ -237,7 +237,7 @@
         <div class="card radius-10 bg-gradient-moonlit bg-warning">
          <div class="card-body">
             <div class="d-flex align-items-center">
-                <h5 class="mb-0 text-white">{{$games->count()}}</h5>
+                <h5 class="mb-0 text-white">{{$games_count}}</h5>
                 <div class="ms-auto">
                     <i class='bx bx-joystick fs-3 text-white'></i>
                 </div>
@@ -271,7 +271,7 @@
 
 
     <hr>
-    <h4 class="mb-4">المستخدمين</h4>
+    <h4 class="mb-4">آخر 10 مستخدمين مسجلين</h4>
 
 
     <div class="card">

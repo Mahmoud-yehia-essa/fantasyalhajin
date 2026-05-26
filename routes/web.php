@@ -95,8 +95,8 @@ Route::get('/notifications/load', [NotificationController::class, 'loadMore'])
     ->name('notifications.load')
     ->middleware('auth');
 
-Route::get('/notification/read/{notification}', [NotificationController::class, 'read'])
-    ->name('notification.read')
+Route::get('/notification/read_simple/{notification}', [NotificationController::class, 'read'])
+    ->name('notification.read_simple')
     ->middleware('auth');
 
 Route::controller(NotificationForAppController::class)->middleware(['checkUserRole','auth'])->group(function () {
