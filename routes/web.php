@@ -919,3 +919,15 @@ Route::controller(QuestionAIController::class)->middleware(['checkUserRole','aut
 Route::get('/payment', [PayMentController::class, 'showPaymentPage']);
 
 require __DIR__.'/auth.php';
+
+// Support legacy mobile application published on app stores
+Route::prefix('public/api')->middleware('api')->group(base_path('routes/api.php'));
+
+Route::prefix('public')->group(function () {
+    Route::controller(IndexController::class)->group(function () {
+        Route::get('/ranking', 'showRanking');
+        Route::get('/privacy', 'showPrivacy');
+        Route::get('/group/invitation/{code_number}', 'groupJoin');
+        Route::get('/group/invitation/{code_number}/steps', 'groupJoinSteps');
+    });
+});
